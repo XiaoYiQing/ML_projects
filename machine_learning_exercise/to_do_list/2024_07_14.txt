@@ -1,0 +1,27 @@
+
+
+
+- For the 'ML_5fdGr.py' class file. 
+	Accessing the nutritient format csv file is a bit stiff. You cannot dictate the
+	nutrient format within the code directly.
+	Modify so that only one csv file is present and you simply specify which nutrients in the csv file
+	you are going to use.
+	
+	The use of csv files to specify specific nutrient group formats is specific to the food class.
+	It is there that we must modify the definition of nutrient sub-groups.
+	There should be just ONE csv file which defines the whole set of nutrients that are relevant to our simulations.
+	Further sub-grouping based on this one file should not be done through access to their own csv files.
+	We can create some presets which allows the user to quickly define some relevant sub-groups, but the base definition
+	must allow the user to DIRECTLY specify which entries of the one csv file we are to take.
+	This specification should be done using an array of 'nut_id', ideally just a NumPy array.
+	
+	[DONE]
+	
+- We can now automate a process which identifies how well each nutrient can differentiate foods from different
+	food groups.
+	This requires a form of exhaustive scan where a single nutrient is used during the ML process to categorize 
+	foods into different food groups.
+	The best nutrients ( Those who achieve greatest differentiation effect) will be chosen to be put in the final 
+	nutrient list.
+	
+	

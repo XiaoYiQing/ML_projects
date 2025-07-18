@@ -1,0 +1,44 @@
+,nutrient_id,nut_name_list,nut_amt,nut_unit
+0,1085,Total fat (NLEA),3.05,G
+1,1004,Total lipid (fat),3.24,G
+2,1258,Saturated fat,1.01,G
+3,1292,"Fatty acids, total monounsaturated",1.26,G
+4,1293,"Fatty acids, total polyunsaturated",0.766,G
+5,1257,Trans fat,0.013,G
+6,1253,Cholesterol,116.0,MG
+7,1093,Sodium,47.0,MG
+8,1005,"Carbohydrate, by difference",0.0,G
+9,1050,"Carbohydrate, by summation",0.0,
+10,1079,"Fiber, total dietary",0.0,
+11,1063,"Sugars, total",0.0,
+12,1002,Nitrogen,5.13,G
+13,1003,Protein,32.1,G
+14,1106,"Vitamin A, RAE",0.0,
+15,1162,Vitamin C (total ascorbic acid),0.0,
+16,1114,Vitamin D,0.0,
+17,1109,Vitamin E (alpha-tocopherol),0.33,MG
+18,1183,Vitamin K (Menaquinone-4),0.0,
+19,1184,Vitamin K (Dihydrophylloquinone),0.0,
+20,1185,Vitamin K (phylloquinone),0.0,
+21,1165,Vitamin B1 (thiamin),0.098,MG
+22,1166,Vitamin B2 (riboflavin),0.187,MG
+23,1167,Vitamin B3 (niacin),9.45,MG
+24,1170,Vitamin B5 (pantothenic acid),1.58,MG
+25,1175,Vitamin B6 (pyridoxine),0.921,MG
+26,1176,Vitamin B7 (biotin),0.0,
+27,1177,Vitamin B9 (folate),0.0,
+28,1178,Vitamin B12 (cobalamin),0.2,UG
+29,1087,Calcium,6.0,MG
+30,1091,Phosphorus,241.0,MG
+31,1092,Potassium,343.0,MG
+32,1088,Chloride,0.0,
+33,1090,Magnesium,32.0,MG
+34,1089,Iron,0.49,MG
+35,1095,Zinc,0.96,MG
+36,1100,Iodine,0.0,
+37,1094,Sulfur,0.0,
+38,1097,Cobalt,0.0,
+39,1098,Copper,0.044,MG
+40,1099,Fluoride,0.0,
+41,1101,Manganese,0.012,MG
+42,1103,Selenium,31.9,UG

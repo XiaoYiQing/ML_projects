@@ -1,0 +1,73 @@
+
+
+I want to write a classification function which determines if a food is considered healthy or not.
+
+Obviously, we need to create a food class which describes the food item.
+The properties of a food item are its nutrients facts.
+However, the classification into either healthy or unhealthy will be based on a combination of factors:
+	- Nutrients meeting certain conditions
+	- General public bias regarding certain food 
+		(For example, multi-grain bread, many types of yogurt, etc. which shouldn't but are considered healthy.)
+	- My own perception
+		(For example, Rice for life.)
+
+
+
+[2024/06/20]:
+
+	The idea has changed to something more straightforward.
+	Instead of categorizing food products into health and unhealthy foods, we are simply going to categorize
+	them into 5 major food groups.
+	
+	The 5 major food groups are:
+	(https://www.usda.gov/media/blog/2017/09/26/back-basics-all-about-myplate-food-groups#:~:text=Now%20that%20the%20back%2Dto,lesson%20on%20the%20food%20groups.&text=As%20the%20MyPlate%20icon%20shows,%2C%20Protein%20Foods%2C%20and%20Dairy.):
+	
+		> Fruits [A]:
+			> Whole Fruit:
+				Apple, banana, orange, peach, pear, grapes, strawberries,
+				cantaloupe, pomegranate, strawberry, pineapple, mango, raisins,
+				grapefruit, cherries, nectarines, blueberries, etc.
+			> Fruit Juice:
+				100% fruit juice.
+				
+		> Vegetables [B]:
+			> Dark green vegetables:
+				broccoli, collard greens, spinach, romaine, kale, bok choy, etc.
+			> Red and Orange Vegetables:
+				carrots, red peppers, tomatoes, sweet potatoes, etc.
+			> Beans and Peas:
+				kidney beans, black beans, chickpeas, split peas, lentils, etc.
+			> Starchy Vegetables: 
+				white potatoes, corn, green peas, etc.
+			> Other Vegetables:
+				mushrooms, summer squash, iceberg lettuce, etc.
+					
+		> Grains [C]:
+			> Whole Grains:
+				whole wheat bread, brown rice, oatmeal, Buckwheat, flour, etc.
+			> Refined Grains:
+				pretzels, english muffins, corn tortilla, grits, regular pasta,
+				etc.
+			
+		> Protein Foods [D]:
+			> Seafood:
+				salmon, cod, tuna, tilapia, mackerel, 
+				shrimp, crab, etc.
+			> Meat, Poultry, and Eggs:
+				beef, chicken, turkey, pork, eggs, etc.
+			> Nuts, Seeds, and Soy:
+				nuts, nut butters, seeds, soy products, etc.
+					
+		> Dairy [E]:
+			> Milk and Yogurt and Cheese:
+				milk, yogurt, kefir, cheese, cottage cheese, 
+				calcium-fortified soymilk, etc.
+			
+	
+[2025/07/13]
+
+	> The plan has finally been completed: I have a neural network (NN) that predicts a food's 
+		category with an accuracy of above 90%.
+	> I should now check how to put regularization, as the NN fitting might be way too tight.
+	> The above also require a way to visualize how the NN is drawing the line of decision.
+	

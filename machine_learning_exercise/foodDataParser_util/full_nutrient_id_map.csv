@@ -1,0 +1,478 @@
+name,nutrient_id
+Energy (Atwater General Factors),2047
+Energy (Atwater Specific Factors),2048
+Solids,1001
+Nitrogen,1002
+Protein,1003
+Total lipid (fat),1004
+"Carbohydrate, by difference",1005
+"Fiber, crude (DO NOT USE - Archived)",1006
+Ash,1007
+Energy,1008
+Starch,1009
+Sucrose,1010
+Glucose,1011
+Fructose,1012
+Lactose,1013
+Maltose,1014
+Amylose,1015
+Amylopectin,1016
+Pectin,1017
+"Alcohol, ethyl",1018
+Pentosan,1019
+Pentoses,1020
+Hemicellulose,1021
+Cellulose,1022
+pH,1023
+Specific Gravity,1024
+Organic acids,1025
+Acetic acid,1026
+Aconitic acid,1027
+Benzoic acid,1028
+Chelidonic acid,1029
+Chlorogenic acid,1030
+Cinnamic acid,1031
+Citric acid,1032
+Fumaric acid,1033
+Galacturonic acid,1034
+Gallic acid,1035
+Glycolic acid,1036
+Isocitric acid,1037
+Lactic acid,1038
+Malic acid,1039
+Oxaloacetic acid,1040
+Oxalic acid,1041
+Phytic acid,1042
+Pyruvic acid,1043
+Quinic acid,1044
+Salicylic acid,1045
+Succinic acid,1046
+Tartaric acid,1047
+Ursolic acid,1048
+"Solids, non-fat",1049
+"Carbohydrate, by summation",1050
+Water,1051
+Adjusted Nitrogen,1052
+Adjusted Protein,1053
+Piperine,1054
+Mannitol,1055
+Sorbitol,1056
+Caffeine,1057
+Theobromine,1058
+Nitrates,1059
+Nitrites,1060
+"Nitrosamine,total",1061
+Energy,1062
+"Sugars, Total",1063
+"Solids, soluble",1064
+Glycogen,1065
+"Fiber, neutral detergent (DO NOT USE - Archived)",1066
+Reducing sugars,1067
+Beta-glucans,1068
+Oligosaccharides,1069
+Nonstarch polysaccharides,1070
+Resistant starch,1071
+"Carbohydrate, other",1072
+Arabinose,1073
+Xylose,1074
+Galactose,1075
+Raffinose,1076
+Stachyose,1077
+Xylitol,1078
+"Fiber, total dietary",1079
+Lignin,1080
+Ribose,1081
+"Fiber, soluble",1082
+Theophylline,1083
+"Fiber, insoluble",1084
+Total fat (NLEA),1085
+Total sugar alcohols,1086
+"Calcium, Ca",1087
+"Chlorine, Cl",1088
+"Iron, Fe",1089
+"Magnesium, Mg",1090
+"Phosphorus, P",1091
+"Potassium, K",1092
+"Sodium, Na",1093
+"Sulfur, S",1094
+"Zinc, Zn",1095
+"Chromium, Cr",1096
+"Cobalt, Co",1097
+"Copper, Cu",1098
+"Fluoride, F",1099
+"Iodine, I",1100
+"Manganese, Mn",1101
+"Molybdenum, Mo",1102
+"Selenium, Se",1103
+"Vitamin A, IU",1104
+Retinol,1105
+"Vitamin A, RAE",1106
+"Carotene, beta",1107
+"Carotene, alpha",1108
+Vitamin E (alpha-tocopherol),1109
+"Vitamin D (D2 + D3), International Units",1110
+Vitamin D2 (ergocalciferol),1111
+Vitamin D3 (cholecalciferol),1112
+25-hydroxycholecalciferol,1113
+Vitamin D (D2 + D3),1114
+25-hydroxyergocalciferol,1115
+Phytoene,1116
+Phytofluene,1117
+"Carotene, gamma",1118
+Zeaxanthin,1119
+"Cryptoxanthin, beta",1120
+Lutein,1121
+Lycopene,1122
+Lutein + zeaxanthin,1123
+Vitamin E (label entry primarily),1124
+"Tocopherol, beta",1125
+"Tocopherol, gamma",1126
+"Tocopherol, delta",1127
+"Tocotrienol, alpha",1128
+"Tocotrienol, beta",1129
+"Tocotrienol, gamma",1130
+"Tocotrienol, delta",1131
+"Aluminum, Al",1132
+"Antimony, Sb",1133
+"Arsenic, As",1134
+"Barium, Ba",1135
+"Beryllium, Be",1136
+"Boron, B",1137
+"Bromine, Br",1138
+"Cadmium, Cd",1139
+"Gold, Au",1140
+"Iron, heme",1141
+"Iron, non-heme",1142
+"Lead, Pb",1143
+"Lithium, Li",1144
+"Mercury, Hg",1145
+"Nickel, Ni",1146
+"Rubidium, Rb",1147
+Fluoride - DO NOT USE; use 313,1148
+"Salt, NaCl",1149
+"Silicon, Si",1150
+"Silver, Ag",1151
+"Strontium, Sr",1152
+"Tin, Sn",1153
+"Titanium, Ti",1154
+"Vanadium, V",1155
+"Vitamin A, RE",1156
+Carotene,1157
+Vitamin E,1158
+cis-beta-Carotene,1159
+cis-Lycopene,1160
+cis-Lutein/Zeaxanthin,1161
+"Vitamin C, total ascorbic acid",1162
+"Vitamin C, reduced ascorbic acid",1163
+"Vitamin C, dehydro ascorbic acid",1164
+Thiamin,1165
+Riboflavin,1166
+Niacin,1167
+"Niacin from tryptophan, determined",1168
+Niacin equivalent N406 +N407,1169
+Pantothenic acid,1170
+"Vitamin B-6, pyridoxine, alcohol form",1171
+"Vitamin B-6, pyridoxal, aldehyde form",1172
+"Vitamin B-6, pyridoxamine, amine form",1173
+"Vitamin B-6, N411 + N412 +N413",1174
+Vitamin B-6,1175
+Biotin,1176
+"Folate, total",1177
+Vitamin B-12,1178
+"Folate, free",1179
+"Choline, total",1180
+Inositol,1181
+Inositol phosphate,1182
+Vitamin K (Menaquinone-4),1183
+Vitamin K (Dihydrophylloquinone),1184
+Vitamin K (phylloquinone),1185
+Folic acid,1186
+"Folate, food",1187
+5-methyl tetrahydrofolate (5-MTHF),1188
+"Folate, not 5-MTHF",1189
+"Folate, DFE",1190
+10-Formyl folic acid (10HCOFA),1191
+5-Formyltetrahydrofolic acid (5-HCOH4,1192
+Tetrahydrofolic acid (THF),1193
+"Choline, free",1194
+"Choline, from phosphocholine",1195
+"Choline, from phosphotidyl choline",1196
+"Choline, from glycerophosphocholine",1197
+Betaine,1198
+"Choline, from sphingomyelin",1199
+p-Hydroxy benzoic acid,1200
+Caffeic acid,1201
+p-Coumaric acid,1202
+Ellagic acid,1203
+Ferrulic acid,1204
+Gentisic acid,1205
+Tyrosol,1206
+Vanillic acid,1207
+"Phenolic acids, total",1208
+"Polyphenols, total",1209
+Tryptophan,1210
+Threonine,1211
+Isoleucine,1212
+Leucine,1213
+Lysine,1214
+Methionine,1215
+Cystine,1216
+Phenylalanine,1217
+Tyrosine,1218
+Valine,1219
+Arginine,1220
+Histidine,1221
+Alanine,1222
+Aspartic acid,1223
+Glutamic acid,1224
+Glycine,1225
+Proline,1226
+Serine,1227
+Hydroxyproline,1228
+Cysteine and methionine(sulfer containig AA),1229
+Phenylalanine and tyrosine (aromatic  AA),1230
+Asparagine,1231
+Cysteine,1232
+Glutamine,1233
+Taurine,1234
+"Sugars, added",1235
+"Sugars, intrinsic",1236
+"Calcium, added",1237
+"Iron, added",1238
+"Calcium, intrinsic",1239
+"Iron, intrinsic",1240
+"Vitamin C, added",1241
+"Vitamin E, added",1242
+"Thiamin, added",1243
+"Riboflavin, added",1244
+"Niacin, added",1245
+"Vitamin B-12, added",1246
+"Vitamin C, intrinsic",1247
+"Vitamin E, intrinsic",1248
+"Thiamin, intrinsic",1249
+"Riboflavin, intrinsic",1250
+"Niacin, intrinsic",1251
+"Vitamin B-12, intrinsic",1252
+Cholesterol,1253
+Glycerides,1254
+Phospholipids,1255
+Glycolipids,1256
+"Fatty acids, total trans",1257
+"Fatty acids, total saturated",1258
+SFA 4:0,1259
+SFA 6:0,1260
+SFA 8:0,1261
+SFA 10:0,1262
+SFA 12:0,1263
+SFA 14:0,1264
+SFA 16:0,1265
+SFA 18:0,1266
+SFA 20:0,1267
+MUFA 18:1,1268
+PUFA 18:2,1269
+PUFA 18:3,1270
+PUFA 20:4,1271
+PUFA 22:6 n-3 (DHA),1272
+SFA 22:0,1273
+MUFA 14:1,1274
+MUFA 16:1,1275
+PUFA 18:4,1276
+MUFA 20:1,1277
+PUFA 20:5 n-3 (EPA),1278
+MUFA 22:1,1279
+PUFA 22:5 n-3 (DPA),1280
+TFA 14:1 t,1281
+Phytosterols,1283
+Ergosterol,1284
+Stigmasterol,1285
+Campesterol,1286
+Brassicasterol,1287
+Beta-sitosterol,1288
+Campestanol,1289
+Unsaponifiable matter (lipids),1290
+"Fatty acids, other than 607-615, 617-621, 624-632, 652-654, 686-689)",1291
+"Fatty acids, total monounsaturated",1292
+"Fatty acids, total polyunsaturated",1293
+Beta-sitostanol,1294
+Delta-7-avenasterol,1295
+Delta-5-avenasterol,1296
+Alpha-spinasterol,1297
+"Phytosterols, other",1298
+SFA 15:0,1299
+SFA 17:0,1300
+SFA 24:0,1301
+Wax Esters(Total Wax),1302
+TFA 16:1 t,1303
+TFA 18:1 t,1304
+TFA 22:1 t,1305
+TFA 18:2 t not further defined,1306
+PUFA 18:2 i,1307
+"PUFA 18:2 t,c",1308
+"PUFA 18:2 c,t",1309
+"TFA 18:2 t,t",1310
+PUFA 18:2 CLAs,1311
+MUFA 24:1 c,1312
+"PUFA 20:2 n-6 c,c",1313
+MUFA 16:1 c,1314
+MUFA 18:1 c,1315
+"PUFA 18:2 n-6 c,c",1316
+MUFA 22:1 c,1317
+"Fatty acids, saturated, other",1318
+"Fatty acids, monounsat., other",1319
+"Fatty acids, polyunsat., other",1320
+"PUFA 18:3 n-6 c,c,c",1321
+SFA 19:0,1322
+MUFA 17:1,1323
+PUFA 16:2,1324
+PUFA 20:3,1325
+"Fatty acids, total sat., NLEA",1326
+"Fatty acids, total monounsat., NLEA",1327
+"Fatty acids, total polyunsat., NLEA",1328
+"Fatty acids, total trans-monoenoic",1329
+"Fatty acids, total trans-dienoic",1330
+"Fatty acids, total trans-polyenoic",1331
+SFA 13:0,1332
+MUFA 15:1,1333
+PUFA 22:2,1334
+SFA 11:0,1335
+"ORAC, Hydrophyllic",1336
+"ORAC, Lipophillic",1337
+"ORAC, Total",1338
+Total Phenolics,1339
+Daidzein,1340
+Genistein,1341
+Glycitein,1342
+Isoflavones,1343
+Biochanin A,1344
+Formononetin,1345
+Coumestrol,1346
+"Flavonoids, total",1347
+Anthocyanidins,1348
+Cyanidin,1349
+Proanthocyanidin (dimer-A linkage),1350
+Proanthocyanidin monomers,1351
+Proanthocyanidin dimers,1352
+Proanthocyanidin trimers,1353
+Proanthocyanidin 4-6mers,1354
+Proanthocyanidin 7-10mers,1355
+Proanthocyanidin polymers (>10mers),1356
+Delphinidin,1357
+Malvidin,1358
+Pelargonidin,1359
+Peonidin,1360
+Petunidin,1361
+"Flavans, total",1362
+"Catechins, total",1363
+Catechin,1364
+Epigallocatechin,1365
+Epicatechin,1366
+Epicatechin-3-gallate,1367
+Epigallocatechin-3-gallate,1368
+"Procyanidins, total",1369
+Theaflavins,1370
+Thearubigins,1371
+"Flavanones, total",1372
+Eriodictyol,1373
+Hesperetin,1374
+Isosakuranetin,1375
+Liquiritigenin,1376
+Naringenin,1377
+"Flavones, total",1378
+Apigenin,1379
+Chrysoeriol,1380
+Diosmetin,1381
+Luteolin,1382
+Nobiletin,1383
+Sinensetin,1384
+Tangeretin,1385
+"Flavonols, total",1386
+Isorhamnetin,1387
+Kaempferol,1388
+Limocitrin,1389
+Myricetin,1390
+Quercetin,1391
+Theogallin,1392
+"Theaflavin -3,3' -digallate",1393
+Theaflavin -3' -gallate,1394
+Theaflavin -3 -gallate,1395
+(+) -Gallo catechin,1396
+(+)-Catechin 3-gallate,1397
+(+)-Gallocatechin 3-gallate,1398
+Mannose,1399
+Triose,1400
+Tetrose,1401
+Other Saccharides,1402
+Inulin,1403
+"PUFA 18:3 n-3 c,c,c (ALA)",1404
+PUFA 20:3 n-3,1405
+PUFA 20:3 n-6,1406
+PUFA 20:4 n-3,1407
+PUFA 20:4 n-6,1408
+PUFA 18:3i,1409
+PUFA 21:5,1410
+PUFA 22:4,1411
+MUFA 18:1-11 t (18:1t n-7),1412
+MUFA 18:1-11 c (18:1c n-7),1413
+PUFA 20:3 n-9,1414
+Total Sugars,2000
+SFA 5:0,2003
+SFA 7:0,2004
+SFA 9:0,2005
+SFA 21:0,2006
+SFA 23:0,2007
+MUFA 12:1,2008
+MUFA 14:1 c,2009
+MUFA 17:1 c,2010
+TFA 17:1 t,2011
+MUFA 20:1 c,2012
+TFA 20:1 t,2013
+MUFA 22:1 n-9,2014
+MUFA 22:1 n-11,2015
+PUFA 18:2 c,2016
+TFA 18:2 t,2017
+PUFA 18:3 c,2018
+TFA 18:3 t,2019
+PUFA 20:3 c,2020
+PUFA 22:3,2021
+PUFA 20:4c,2022
+PUFA 20:5c,2023
+PUFA 22:5 c,2024
+PUFA 22:6 c,2025
+PUFA 20:2 c,2026
+Proximate,2027
+trans-beta-Carotene,2028
+trans-Lycopene,2029
+"Cryptoxanthin, alpha",2032
+Total dietary fiber (AOAC 2011.25),2033
+Insoluble dietary fiber (IDF),2034
+Soluble dietary fiber (SDFP+SDFS),2035
+Soluble dietary fiber (SDFP),2036
+Soluble dietary fiber (SDFS),2037
+High Molecular Weight Dietary Fiber (HMWDF),2038
+Carbohydrates,2039
+Other carotenoids,2040
+Tocopherols and tocotrienols,2041
+Amino acids,2042
+Minerals,2043
+Lipids,2044
+Proximates,2045
+Vitamins and Other Components,2046
+Total Tocopherols,2055
+Total Tocotrienols,2054
+Stigmastadiene,2053
+Delta-7-Stigmastenol,2052
+Daidzin,2049
+Genistin,2050
+Glycitin,2051
+Ergothioneine,2057
+Beta-glucan,2058
+Vitamin D4,2059
+Ergosta-7-enol,2060
+"Ergosta-7,22-dienol",2061
+"Ergosta-5,7-dienol",2062
+Verbascose,2063
+Oligosaccharides,2064
+Low Molecular Weight Dietary Fiber (LMWDF),2065
+Vitamin E,2068
+Vitamin A,2067
+Glutathione,2069

@@ -1,0 +1,32 @@
+name,nutrient_id
+Water,1051
+Total fat (NLEA),1085
+Saturated fat,1258
+Trans fat,1257
+Cholesterol,1253
+Sodium,1093
+"Carbohydrate, by difference",1005
+"Fiber, total dietary",1079
+"Sugars, total",1063
+Protein,1003
+"Vitamin A, RAE",1106
+Vitamin C (total ascorbic acid),1162
+Vitamin D,1114
+Vitamin E (alpha-tocopherol),1109
+Vitamin K (Menaquinone-4),1183
+Vitamin K (Dihydrophylloquinone),1184
+Vitamin K (phylloquinone),1185
+Vitamin B1 (thiamin),1165
+Vitamin B2 (riboflavin),1166
+Vitamin B3 (niacin),1167
+Vitamin B5 (pantothenic acid),1170
+Vitamin B6 (pyridoxine),1175
+Vitamin B7 (biotin),1176
+Vitamin B9 (folate),1177
+Vitamin B12 (cobalamin),1178
+Calcium,1087
+Phosphorus,1091
+Potassium,1092
+Chloride,1088
+Magnesium,1090
+Iron,1089
