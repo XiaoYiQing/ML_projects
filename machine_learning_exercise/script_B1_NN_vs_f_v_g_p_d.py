@@ -231,7 +231,7 @@ model.compile(
 
 history = model.fit(
     X_tr_norm,y_train,
-    epochs=500,
+    epochs=150,
     verbose=1
 )
 
@@ -277,14 +277,19 @@ y_err = y_cv != y_pred
 fdc_wrong_arr = fdc_cv[ y_err ]
 wrong_cnt = np.sum( y_err )
 
+y_wrong_pred_arr = y_tmp[ y_err, : ]
+
+
 # Print the wrongly predicted food details.
 for z in range( wrong_cnt ):
     tmp = parser.findFood_nutrients( fdc_id = fdc_wrong_arr[z] )
     print( tmp )
+    print( y_wrong_pred_arr[z,:] )
     nut_tmp = tmp.get_nutrients( nut_id_list = nut_id_preset )
     print( nut_tmp )
 
 print( f"Wrong count: {wrong_cnt}" )
+
 
 
 # ======================================================================= <<<<<
