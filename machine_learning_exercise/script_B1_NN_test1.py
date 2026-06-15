@@ -7,7 +7,8 @@ nutrients of this food.
 
 
 import os, sys
-# Make sure the directory above this current one is visible.
+# Make sure the directory above this current one is visible. This is to
+# provide access to some local libraries.
 currentdir = os.path.dirname(__file__)
 src = '../'
 sys.path.append( os.path.abspath(os.path.join(currentdir, src)) )
