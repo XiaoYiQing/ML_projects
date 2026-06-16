@@ -122,3 +122,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+p1_char_parser/char_img_data/
+
+p1_char_parser/doc/
