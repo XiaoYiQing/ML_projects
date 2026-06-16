@@ -15,9 +15,6 @@ sys.path.append( os.path.abspath(os.path.join(currentdir, src)) )
 
 
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import tensorflow as tf
 
 from PIL import Image
 
