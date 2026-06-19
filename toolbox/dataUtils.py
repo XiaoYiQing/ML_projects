@@ -31,9 +31,9 @@ def get_mnist_tr_ts_sets( tr_set_indiv_size ):
   Returns:
     Two dictionaries that has as labels the digits 0 to 9:
 
-    - tr_set ( tr_set[z] for z in [0,9] is np array of dimensions [ tr_set_indiv_size, 28, 28, 1 ] )
+    - Training set X_tr ( X_tr[z] for z in [0,9] is np array of dimensions [ tr_set_indiv_size, 28, 28, 1 ] )
 
-    - ts_set ( tr_set[z] for z in [0,9] is np array of dimensions [ remain digit cnt, 28, 28, 1 ] )
+    - Testing set X_ts ( X_ts[z] for z in [0,9] is np array of dimensions [ remain digit cnt, 28, 28, 1 ] )
 
   '''
 
@@ -99,7 +99,7 @@ def get_mnist_tr_ts_sets( tr_set_indiv_size ):
   # ===================================================================== >>>>>
 
   # Define the number of image samples to retain from each digit's image array.
-  subset_size = 1500
+  subset_size = tr_set_indiv_size
   subset_size = min( subset_size, min_digit_cnt )
 
   # Initialize a dictionary to store training images by their label.

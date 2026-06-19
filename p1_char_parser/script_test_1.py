@@ -71,7 +71,7 @@ from toolbox.dataUtils import get_mnist_tr_ts_sets
 
 X_tr, X_ts = get_mnist_tr_ts_sets( 200 )
 
-print( 'Train set label count: ', len( X_tr ), 'Test set label count: ', len( X_ts ) )
+print( 'Train set label count: ', len( X_tr ), '.  Test set label count: ', len( X_ts ) )
 
 for z in range(10):
     print( z, ' train set shape: ', X_tr[z].shape, ', test set shape: ', X_ts[z].shape )
