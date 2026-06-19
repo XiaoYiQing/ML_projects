@@ -85,7 +85,7 @@ def get_mnist_tr_ts_sets( tr_set_indiv_size ):
 
     images_z = digit_arrs_list[label_z]
     # Adding the singular channel dimension and converting lists to np.array
-    digit_arrs_list[label_z] = np.array(images_z).reshape(-1, img_height, img_width, 1)
+    digit_arrs_list[ label_z ] = np.array(images_z).reshape(-1, img_height, img_width, 1)
 
 
   # Obtain the smallest digit batch size amongst the numbers from 0 to 9.
