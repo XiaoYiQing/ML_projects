@@ -26,8 +26,7 @@ from toolbox import indexingUtils as idxUtils
 from toolbox.dataUtils import load_png_files_as_gs
 from toolbox.dataUtils import get_mnist_tr_ts_sets
 
-
-
+from toolbox.indexingUtils import rand_samp
 
 
 
@@ -36,7 +35,7 @@ from toolbox.dataUtils import get_mnist_tr_ts_sets
 # ======================================================================= >>>>>
 
 # The number of training images for each digit.
-indiv_tr_set_cnt = 1500
+indiv_tr_set_cnt = 3000
 
 X_tr_arr, X_ts_arr = get_mnist_tr_ts_sets( indiv_tr_set_cnt )
 
@@ -45,10 +44,10 @@ img_h = img_shape[0]
 img_w = img_shape[1]
 channel_cnt = img_shape[2]
 
-print( 'Train set label count: ', len( X_tr_arr ), '.  Test set label count: ', len( X_ts_arr ) )
+# print( 'Train set label count: ', len( X_tr_arr ), '.  Test set label count: ', len( X_ts_arr ) )
 
-for z in range(10):
-    print( z, ' train set shape: ', X_tr_arr[z].shape, ', test set shape: ', X_ts_arr[z].shape )
+# for z in range(10):
+#     print( z, ' train set shape: ', X_tr_arr[z].shape, ', test set shape: ', X_ts_arr[z].shape )
 
 # ======================================================================= <<<<<
 
@@ -61,12 +60,12 @@ tr_set_size = 0
 ts_set_size = 0
 
 for label_z in X_tr_arr:
+
     X_tr_arr[ label_z ] = X_tr_arr[ label_z ].astype('float32') /255.0
     X_ts_arr[ label_z ] = X_ts_arr[ label_z ].astype('float32') /255.0
 
     tr_set_size += len( X_tr_arr[ label_z ] )
     ts_set_size += len( X_ts_arr[ label_z ] )
-
 
 # ======================================================================= <<<<<
 
@@ -96,38 +95,42 @@ for label_z in X_tr_arr:
     label_z_ts_img_cnt = len( X_ts_arr[label_z] )
     y_ts_set = np.concatenate( ( y_ts_set, label_z * np.ones( label_z_ts_img_cnt ) ), axis = 0 )
 
-# ======================================================================= <<<<<
+# Generate a subset sampling set.
+samp_idx, rem_idx = rand_samp( len( X_tr_set ), len( X_tr_set ) )
 
-
-
-# ======================================================================= >>>>>
-#       Neural Network Training
-# ======================================================================= >>>>>
-
-model = Sequential([
-    Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)),
-    MaxPooling2D(pool_size=(2, 2)),
-    Conv2D(64, kernel_size=(3, 3), activation='relu'),
-    MaxPooling2D(pool_size=(2, 2)),
-    # Converts the 2D feature map arrays into a 1D vector that can be fed into the 
-    # densely connected layers. This step is necessary to switch from convolutional 
-    # layers to fully connected layers.
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dense(10, activation='softmax')  # 10 classes for digits 0-9
-])
-
-model.compile(optimizer='adam',
-    loss='sparse_categorical_crossentropy',
-    metrics=['accuracy'])
-
-model.fit( X_tr_set, y_tr_set, epochs=10, batch_size=32, validation_split=0.2)
-
-
-time.sleep(5)
-
-# test_loss, test_accuracy = model.evaluate( X_ts_set, y_ts_set )
-test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
-print(f'Test accuracy: {test_accuracy:.4f}')
+print( samp_idx.shape )
+print( rem_idx.shape )
+print( samp_idx[ range(20) ] )
 
 # ======================================================================= <<<<<
+
+
+
+# # ======================================================================= >>>>>
+# #       Neural Network Training
+# # ======================================================================= >>>>>
+
+# model = Sequential([
+#     Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)),
+#     MaxPooling2D(pool_size=(2, 2)),
+#     Conv2D(64, kernel_size=(3, 3), activation='relu'),
+#     MaxPooling2D(pool_size=(2, 2)),
+#     Flatten(),
+#     Dense(128, activation='relu'),
+#     Dense(10, activation='softmax')  # 10 classes for digits 0-9
+# ])
+
+# model.compile(optimizer='adam',
+#     loss='sparse_categorical_crossentropy',
+#     metrics=['accuracy'])
+
+# model.fit( X_tr_set, y_tr_set, epochs=10, batch_size=32, validation_split=0.2)
+
+
+# time.sleep(5)
+
+# # test_loss, test_accuracy = model.evaluate( X_ts_set, y_ts_set )
+# test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
+# print(f'Test accuracy: {test_accuracy:.4f}')
+
+# # ======================================================================= <<<<<

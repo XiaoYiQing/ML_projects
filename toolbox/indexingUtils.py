@@ -11,14 +11,15 @@ def rand_samp( arr_len, samp_cnt ):
     No repeated indices by default.
     '''
 
-    if samp_cnt >= arr_len:
-        return range(arr_len)
+    if samp_cnt > arr_len:
+        return range(arr_len), np.zeros(0)
 
     rand_idx = rd.sample( range( 0, arr_len ), samp_cnt )
     rand_idx = np.array(rand_idx)
     rem_idx = [True]*arr_len
     rem_idx = np.array(rem_idx)
     rem_idx[rand_idx] = not rem_idx[rand_idx].all()
+    rem_idx = np.where(rem_idx)[0]
 
     return rand_idx, rem_idx
 

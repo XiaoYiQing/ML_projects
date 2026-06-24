@@ -22,9 +22,9 @@ def get_mnist_tr_ts_sets( tr_set_indiv_size ):
     tr_set_indiv_size (int): The amount of images representing each of the 
       0 to 9 digits to be designated as part of the traning set. Remaining
       images in each digit becomes part of the testing set. For example, if
-      tr_set_indiv_size = 100, then 100 randomly select images of 0, 1, ..., 9
-      will be part of the training set (training set total size = 1000) and all
-      remaining images become the testing set.
+      tr_set_indiv_size = 100, then 100 randomly select images from each of the
+      0, 1, ..., 9 digit's set will be part of the training set (training set 
+      total size = 1000) and all remaining images become the testing set.
 
       This number is automatically capped by the absolute smallest digit batch size.
 
