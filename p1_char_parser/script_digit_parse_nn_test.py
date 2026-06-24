@@ -95,42 +95,75 @@ for label_z in X_tr_arr:
     label_z_ts_img_cnt = len( X_ts_arr[label_z] )
     y_ts_set = np.concatenate( ( y_ts_set, label_z * np.ones( label_z_ts_img_cnt ) ), axis = 0 )
 
-# Generate a subset sampling set.
-samp_idx, rem_idx = rand_samp( len( X_tr_set ), len( X_tr_set ) )
+# Generate a shuffling index set.
+shuffle_idx, rem_idx = rand_samp( len( X_tr_set ), len( X_tr_set ) )
 
-print( samp_idx.shape )
-print( rem_idx.shape )
-print( samp_idx[ range(20) ] )
+# Shuffle the training data set to avoid training a label ordered set.
+X_tr_set = X_tr_set[ shuffle_idx, :, :, : ]
+y_tr_set = y_tr_set[ shuffle_idx ]
 
 # ======================================================================= <<<<<
 
 
 
-# # ======================================================================= >>>>>
-# #       Neural Network Training
-# # ======================================================================= >>>>>
+# ======================================================================= >>>>>
+#       Neural Network Training
+# ======================================================================= >>>>>
 
-# model = Sequential([
-#     Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)),
-#     MaxPooling2D(pool_size=(2, 2)),
-#     Conv2D(64, kernel_size=(3, 3), activation='relu'),
-#     MaxPooling2D(pool_size=(2, 2)),
-#     Flatten(),
-#     Dense(128, activation='relu'),
-#     Dense(10, activation='softmax')  # 10 classes for digits 0-9
-# ])
+model = Sequential([
+    Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)),
+    MaxPooling2D(pool_size=(2, 2)),
+    Conv2D(64, kernel_size=(3, 3), activation='relu'),
+    MaxPooling2D(pool_size=(2, 2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dense(10, activation='softmax')  # 10 classes for digits 0-9
+])
 
-# model.compile(optimizer='adam',
-#     loss='sparse_categorical_crossentropy',
-#     metrics=['accuracy'])
+model.compile(optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy'])
 
-# model.fit( X_tr_set, y_tr_set, epochs=10, batch_size=32, validation_split=0.2)
+model.fit( X_tr_set, y_tr_set, epochs=10, batch_size=32, validation_split=0.2)
 
 
-# time.sleep(5)
+time.sleep(5)
 
-# # test_loss, test_accuracy = model.evaluate( X_ts_set, y_ts_set )
-# test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
-# print(f'Test accuracy: {test_accuracy:.4f}')
+# test_loss, test_accuracy = model.evaluate( X_ts_set, y_ts_set )
+test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
+print(f'Test accuracy: {test_accuracy:.4f}')
 
-# # ======================================================================= <<<<<
+# ======================================================================= <<<<<
+
+
+
+# ======================================================================= >>>>>
+#       Extra Testing
+# ======================================================================= >>>>>
+
+# Define the directory in which the mnist figures are to be saved.
+img_dir = currentdir + '/char_img_data/mnist'
+
+twoDSizes = [ 28, 28 ]
+
+img_arr, Y = load_png_files_as_gs( img_dir, twoDSizes )
+
+img_arr_shape = img_arr.shape
+
+img_cnt = img_arr_shape[0]
+img_h = img_arr_shape[1]
+img_w = img_arr_shape[2]
+# For greyscale, its 1 channel only. For RGB, its 3. There are others configs too.
+img_channels_cnt = img_arr_shape[3]
+
+
+print( img_cnt )
+print( img_h )
+print( img_w )
+print( img_channels_cnt )
+
+img_z = img_arr[0]
+
+# ======================================================================= <<<<<
+
+

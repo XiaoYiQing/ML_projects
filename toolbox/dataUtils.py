@@ -164,6 +164,50 @@ def load_png_files_as_gs( folder, twoDSizes ):
     return np.array(img_arr).reshape(-1, twoDSizes[0],  twoDSizes[1], 1), np.array(label_arr)
 
 
+def load_png_as_gs_wt_num_labels( folder, twoDSizes ):
+   
+  '''
+  Extract the .png files from the target directory as grayscale files data and 
+  following labelling rule where the true label is the first string before the
+  first underscore or space. 
+  For example, image "1_12.png" is interpreted as having label value 1.
+  As well, image "89 (2)" is interpreted as having label value 89.
+
+  Args:
+    folder (String): The directory where all .png files will be parsed.
+  
+    twoDSizes (Size 2 int array): The pixel dimensions to be applied to all images
+      parsed from the target directory (height and width, in that order). The
+      returned image data will all be results of upscaling/downscaling into
+      the specified dimensions.
+
+  Returns:
+
+    Two np arrays:
+
+    - img_arr ( np.array of size [ # of img.s, twoDSizes[0], twoDSizes[1], 1 ] )
+      => The array of 2D greyscale image pixel data.
+
+    - label_arr ( np.array of 1 dimension of # of img.s in size )
+      => The array of labels of the associated images, which are just their original filename stems.
+  '''
+
+  img_arr = []
+  label_arr = []
+  for filename in os.listdir(folder):
+    if filename.endswith(".png"):  # Or other image extension
+      img_z = Image.open(os.path.join(folder, filename)).convert('L')  # Convert to grayscale
+      img_z = img_z.resize(( twoDSizes[0],  twoDSizes[1] ))  # Resize images
+      img_z_px_array = np.array(img_z) # Conversion into 2D pixel data array.
+      img_arr.append( img_z_px_array ) # Add current image 2D array to the array of image datas.
+      label_z_str = filename.split('.')[0]  # Extract filename stem.
+      label_z_str = label_z_str.split('_')[0]  # Extract string before first underscore.
+      label_z_str = label_z_str.split(' ')[0]  # Extract string before first space.
+      label_arr.append( int( label_z_str ) )
+
+  return np.array(img_arr).reshape(-1, twoDSizes[0],  twoDSizes[1], 1), np.array(label_arr)
+
+
 
 # X_norm, X_mu, X_sigma = zscore_normalize_features(X_train)
 def zscore_normalize_features(X):
