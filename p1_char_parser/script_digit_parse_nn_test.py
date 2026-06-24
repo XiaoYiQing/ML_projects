@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import time
 
+from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
@@ -36,7 +37,7 @@ from toolbox.indexingUtils import rand_samp
 # ======================================================================= >>>>>
 
 # The number of training images for each digit.
-indiv_tr_set_cnt = 2500
+indiv_tr_set_cnt = 3000
 
 X_tr_arr, X_ts_arr = get_mnist_tr_ts_sets( indiv_tr_set_cnt )
 
@@ -111,27 +112,40 @@ y_tr_set = y_tr_set[ shuffle_idx ]
 #       Neural Network Training
 # ======================================================================= >>>>>
 
-model = Sequential([
-    Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)),
-    MaxPooling2D(pool_size=(2, 2)),
-    Conv2D(64, kernel_size=(3, 3), activation='relu'),
-    MaxPooling2D(pool_size=(2, 2)),
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dense(10, activation='softmax')  # 10 classes for digits 0-9
-])
+load_from_save = True
+save_dir = currentdir + '/ML_model_deposit'
+model_fullfilename = save_dir + '/script_digit_parse_nn_test_model.keras'
 
-model.compile(optimizer='adam',
-    loss='sparse_categorical_crossentropy',
-    metrics=['accuracy'])
+if load_from_save:
 
-model.fit( X_tr_set, y_tr_set, epochs=10, batch_size=32, validation_split=0.2)
+    model = keras.models.load_model( model_fullfilename )
 
+else:
 
-test_loss, test_accuracy = model.evaluate( X_ts_set, y_ts_set )
-# test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
-print(f'Test accuracy: {test_accuracy:.4f}')
+    model = Sequential([
+        Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)),
+        MaxPooling2D(pool_size=(2, 2)),
+        Conv2D(64, kernel_size=(3, 3), activation='relu'),
+        MaxPooling2D(pool_size=(2, 2)),
+        Flatten(),
+        Dense(128, activation='relu'),
+        Dense(10, activation='softmax')  # 10 classes for digits 0-9
+    ])
 
+    model.compile(optimizer='adam',
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy'])
+
+    # model.fit( X_tr_set, y_tr_set, epochs=10, batch_size=32, validation_split=0.2 )
+    model.fit( X_tr_set, y_tr_set, epochs=10, batch_size=28, validation_split=0.2 )
+
+    test_loss, test_accuracy = model.evaluate( X_ts_set, y_ts_set )
+    # test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
+    print(f'Test accuracy: {test_accuracy:.4f}')
+
+    
+    model.save( model_fullfilename )
+    
 # ======================================================================= <<<<<
 
 
