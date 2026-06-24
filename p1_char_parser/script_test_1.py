@@ -40,30 +40,77 @@ from toolbox.dataUtils import get_mnist_tr_ts_sets
 #       load_png_files_as_gs test
 # ======================================================================= >>>>>
 
+# # Define image file source directory.
+# img_dir = currentdir + '/char_img_data/additional_0_to_9_digits'
+
+# twoDSizes = [ 28, 28 ]
+
+# img_arr, Y = load_png_files_as_gs( img_dir, twoDSizes )
+
+# img_arr_shape = img_arr.shape
+
+# img_cnt = img_arr_shape[0]
+# img_h = img_arr_shape[1]
+# img_w = img_arr_shape[2]
+# # For greyscale, its 1 channel only. For RGB, its 3. There are others configs too.
+# img_channels_cnt = img_arr_shape[3]
+
+
+# print( img_cnt )
+# print( img_h )
+# print( img_w )
+# print( img_channels_cnt )
+
+# print( Y )
+
+# ======================================================================= <<<<<
+
+
+# ======================================================================= >>>>>
+#       load_png_as_gs_wt_num_labels test
+# ======================================================================= >>>>>
+
 # Define image file source directory.
 img_dir = currentdir + '/char_img_data/additional_0_to_9_digits'
 
+# The matching image size to the mnist set.
 twoDSizes = [ 28, 28 ]
 
-img_arr, Y = load_png_as_gs_wt_num_labels( img_dir, twoDSizes )
-
-img_arr_shape = img_arr.shape
-
-img_cnt = img_arr_shape[0]
-img_h = img_arr_shape[1]
-img_w = img_arr_shape[2]
-# For greyscale, its 1 channel only. For RGB, its 3. There are others configs too.
-img_channels_cnt = img_arr_shape[3]
+# Obtain the extra test data from the target directory.
+X_ts_set2, y_ts_set2 = load_png_as_gs_wt_num_labels( img_dir, twoDSizes )
 
 
-print( img_cnt )
-print( img_h )
-print( img_w )
-print( img_channels_cnt )
 
-print( Y )
+digit_cnts = np.zeros( len( X_ts_set2 ) ) 
+save_dir = currentdir + '/char_img_data/tmp'
+
+for z in range( len( X_ts_set2 ) ):
+
+    # Obtain current image and its label.
+    image_z = X_ts_set2[z]
+    label_z = y_ts_set2[z]
+
+    img2d_z = image_z.squeeze()             # 28, 28
+    img_uint8_z = img2d_z.astype('uint8')
+
+    # Increment the count of the target number.
+    digit_cnts[label_z] += 1
+
+    # Set the name of the figure file to be saved.
+    img_z_filename = str( label_z ) + '_n' + str( int( digit_cnts[ label_z ] ) ) + '.png'
+
+    # Specify the full path where the image will be saved
+    file_path_z = os.path.join( save_dir, img_z_filename )
+
+    # Convert the image to PIL format
+    img_z = Image.fromarray( img_uint8_z )
+
+    # Save the image
+    img_z.save( file_path_z )
+
 
 # ======================================================================= <<<<<
+
 
 
 # ======================================================================= >>>>>

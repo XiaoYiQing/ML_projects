@@ -24,6 +24,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
 from toolbox import indexingUtils as idxUtils
 from toolbox.dataUtils import load_png_files_as_gs
+from toolbox.dataUtils import load_png_as_gs_wt_num_labels
 from toolbox.dataUtils import get_mnist_tr_ts_sets
 
 from toolbox.indexingUtils import rand_samp
@@ -35,7 +36,7 @@ from toolbox.indexingUtils import rand_samp
 # ======================================================================= >>>>>
 
 # The number of training images for each digit.
-indiv_tr_set_cnt = 3000
+indiv_tr_set_cnt = 2500
 
 X_tr_arr, X_ts_arr = get_mnist_tr_ts_sets( indiv_tr_set_cnt )
 
@@ -127,10 +128,8 @@ model.compile(optimizer='adam',
 model.fit( X_tr_set, y_tr_set, epochs=10, batch_size=32, validation_split=0.2)
 
 
-time.sleep(5)
-
-# test_loss, test_accuracy = model.evaluate( X_ts_set, y_ts_set )
-test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
+test_loss, test_accuracy = model.evaluate( X_ts_set, y_ts_set )
+# test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
 print(f'Test accuracy: {test_accuracy:.4f}')
 
 # ======================================================================= <<<<<
@@ -141,28 +140,22 @@ print(f'Test accuracy: {test_accuracy:.4f}')
 #       Extra Testing
 # ======================================================================= >>>>>
 
-# Define the directory in which the mnist figures are to be saved.
-img_dir = currentdir + '/char_img_data/mnist'
+# Define image file source directory.
+img_dir = currentdir + '/char_img_data/additional_0_to_9_digits'
 
+# The matching image size to the mnist set.
 twoDSizes = [ 28, 28 ]
 
-img_arr, Y = load_png_files_as_gs( img_dir, twoDSizes )
+# Obtain the extra test data from the target directory.
+X_ts_set2, y_ts_set2 = load_png_as_gs_wt_num_labels( img_dir, twoDSizes )
 
-img_arr_shape = img_arr.shape
-
-img_cnt = img_arr_shape[0]
-img_h = img_arr_shape[1]
-img_w = img_arr_shape[2]
-# For greyscale, its 1 channel only. For RGB, its 3. There are others configs too.
-img_channels_cnt = img_arr_shape[3]
+# Normalize the extra testing set.
+X_ts_set2 = X_ts_set2.astype('float32')/255.0
 
 
-print( img_cnt )
-print( img_h )
-print( img_w )
-print( img_channels_cnt )
-
-img_z = img_arr[0]
+test_loss, test_accuracy = model.evaluate( X_ts_set2, y_ts_set2 )
+# test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
+print(f'Extra test accuracy: {test_accuracy:.4f}')
 
 # ======================================================================= <<<<<
 

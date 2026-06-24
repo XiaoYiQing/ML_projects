@@ -42,7 +42,7 @@ digit_cnts = np.zeros(10)
 for z in range( 10 ):
 
     # Obtain current image and its label.
-    image_z = X_train[z]
+    imagez_z = X_train[z]
     label_z = y_train[z]
 
     # Increment the count of the target number.
