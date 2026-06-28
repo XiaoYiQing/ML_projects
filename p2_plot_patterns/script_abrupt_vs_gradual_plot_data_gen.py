@@ -34,6 +34,22 @@ def line_segment(x_start : int, y_start : int, x_end : int, y_end : int, num_poi
     return x, y
 
 
+
+class LinFuncConfig:
+
+    m = 0
+    b = 0
+
+    def __init__(self, x1 = 0, y1 = 0, x2 = 1, y2 = 1):
+        self.m = ( y2 - y1 )/( x2 - x1 )
+        self.b = y1 - self.m * x1
+
+def get_lin_plot_data( config : LinFuncConfig, x_arr ):
+
+    y_arr = config.m * x_arr + config.b
+
+    return y_arr
+
 class Lin3SegmConfig:
     '''
     Configuration for a simple three segments linear line plot.
@@ -51,21 +67,11 @@ class Lin3SegmConfig:
 
     data_pt_cnt = 100
 
-class LinFuncConfig:
-
-    m = 0
-    b = 0
-
-    def __init__(self, x1 = 0, y1 = 0, x2 = 1, y2 = 1):
-        self.m = ( y2 - y1 )/( x2 - x1 )
-        self.b = y1 - self.m * x1
-
-
-def get_lin_plot_data( config : LinFuncConfig, x_arr ):
-
-    y_arr = config.m * x_arr + config.b
-
-    return y_arr
+    def to_str(self):
+        ret_str = f"p1=({self.x1},{self.y1}), p2=({self.x2},{self.y2})"
+        ret_str += f", p3=({self.x3},{self.y3}), p4=({self.x4},{self.y4})"
+        ret_str += f", data_pt_cnt({self.data_pt_cnt})"
+        return ret_str
 
 def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
 
@@ -74,10 +80,15 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
     # Segment 1 configuration.
     l1_config = LinFuncConfig( config.x1, config.y1, config.x2, config.y2 )
     # Obtain the index of the value in x_arr immediately below x2.
-    x2_idx = np.searchsorted( x_arr, config.x2, side='right' ) - 1
+    x2_idx = np.searchsorted( x_arr, config.x2, side='right' )
+    if x_arr[x2_idx] >= config.x2:
+        x2_idx -= 1
     # Segment 1 data gen.
     l1_x_arr = x_arr[ 0 : x2_idx ]
     l1_y_arr = get_lin_plot_data( l1_config, l1_x_arr )
+
+    print( x2_idx, ': ', x_arr[x2_idx] )
+    print( config.x2 )
 
     # Segment 2 configuration.
     l2_config = LinFuncConfig( config.x2, config.y2, config.x3, config.y3 )
@@ -87,11 +98,15 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
     l2_x_arr = x_arr[ x2_idx : x3_idx ]
     l2_y_arr = get_lin_plot_data( l2_config, l2_x_arr )
 
+    print( l2_y_arr )
+
     # Segment 3 configuration.
     l3_config = LinFuncConfig( config.x3, config.y3, config.x4, config.y4 )
     # Segment 3 data gen.
     l3_x_arr = x_arr[ x3_idx : ]
     l3_y_arr = get_lin_plot_data( l3_config, l3_x_arr )
+
+    print( l3_y_arr )
 
     # Complete the y-axis data array.
     y_arr = np.concatenate( ( l1_y_arr, l2_y_arr, l3_y_arr ) )
@@ -107,12 +122,16 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
 # ======================================================================= >>>>>
 
 # myConfig = Lin3SegmConfig
+
+# myConfig.x1 = 0;        myConfig.y1 = 0.9
+# myConfig.x2 = 0.2;      myConfig.y2 = 0.85
+# myConfig.x3 = 0.4;      myConfig.y3 = 0.12
+# myConfig.x4 = 1;        myConfig.y4 = 0.1
+
 # myConfig.data_pt_cnt = 41
 
 # x_arr, y_arr = gen_Lin3SegmPlotData( myConfig )
 
-# # print( x_arr )
-# # print( y_arr )
 
 # plt.plot( x_arr, y_arr )
 # plt.xlabel("x")
@@ -131,7 +150,7 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
 class LogisticFuncConfig:
     '''
     Instead of low to high, this configuration goes from high to low.
-
+        
     y = y_min + (y_max - y_min) / (1.0 + np.exp(k * (x - x0)))
     '''
     y_min = 0   # Lower limit y value.
@@ -179,7 +198,7 @@ def fit_logistic_2_pts(x_a, y_a, x_b, y_b, y_min, y_max):
     return LogisticFuncConfig( y_min, y_max, k, x0 )
 
 
-def get_lin_plot_data( cfig : LogisticFuncConfig, x_arr ):
+def get_logistic_plot_data( cfig : LogisticFuncConfig, x_arr ):
 
     y_arr = cfig.y_min + ( cfig.y_max - cfig.y_min ) / (1.0 + np.exp( cfig.k * ( x_arr - cfig.x0 )))
 
@@ -193,22 +212,88 @@ def get_lin_plot_data( cfig : LogisticFuncConfig, x_arr ):
 #       Logistic Function Plot Tests
 # ======================================================================= >>>>>
 
-x_a = 0;        y_a = 2
-x_b = 3;        y_b = -1
-y_min = -1.2;   y_max = 2.2
+# x_a = 0.6;        y_a = 0.9
+# x_b = 0.7;        y_b = 0.1
+# y_min = 0;   y_max = 1
 
-myConfig = fit_logistic_2_pts(x_a, y_a, x_b, y_b, y_min, y_max)
+# myConfig = fit_logistic_2_pts(x_a, y_a, x_b, y_b, y_min, y_max)
 
+# x_arr = np.linspace( 0, 1, 100 )
 
-x_arr = np.linspace( -5, 8, 100 )
+# y_arr = get_lin_plot_data( myConfig, x_arr )
 
-y_arr = get_lin_plot_data( myConfig, x_arr )
-
-plt.plot( x_arr, y_arr )
-plt.xlabel("x")
-plt.ylabel("y")
-plt.title("y = x")
-plt.grid(True)
-plt.show()
+# plt.plot( x_arr, y_arr )
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("y = x")
+# plt.grid(True)
+# plt.show()
 
 # ======================================================================= <<<<<
+
+
+
+
+
+# ======================================================================= >>>>>
+#       Linear Function Data Set Gen
+# ======================================================================= >>>>>
+
+
+
+# The range of mid points allowed.
+drop_mid_pt_rng = ( 0.10, 0.90 )
+# The range of width the linear drop is allowed.
+drop_width_rng = ( 0.02, 0.10 )
+
+# The range of y starting value (highest point)
+y_max_rng = ( 0.90, 0.95 )
+# The range of y ending value (lowest point)
+y_min_rng = ( 0.05, 0.10 )
+
+# The slight dip in y from its highest point to the point where the main drop occurs.
+y_pre_drop_dip_rng = ( 0.01, 0.05 )
+# The slight dip in y from where the main drop ends to the lowest y value.
+y_post_drop_dip_rng = ( 0.01, 0.05 )
+
+# Define the number of random test cases.
+n = 10
+# Generate the randomized parameters for the three segments linear plot.
+drop_mid_pt_arr = np.random.uniform( drop_mid_pt_rng[0], drop_mid_pt_rng[1], size = n )
+drop_width_arr = np.random.uniform( drop_width_rng[0], drop_width_rng[1], size = n )
+y_max_arr = np.random.uniform( y_max_rng[0], y_max_rng[1], size = n )
+y_min_arr = np.random.uniform( y_min_rng[0], y_min_rng[1], size = n )
+y_pre_drop_dip_arr = np.random.uniform( y_pre_drop_dip_rng[0], y_pre_drop_dip_rng[1], size = n )
+y_post_drop_dip_arr = np.random.uniform( y_post_drop_dip_rng[0], y_post_drop_dip_rng[1], size = n )
+
+z = 0
+
+myConfig_z = Lin3SegmConfig()
+myConfig_z.x1 = 0
+myConfig_z.y1 = y_max_arr[z]
+myConfig_z.x2 = drop_mid_pt_arr[z] - drop_width_arr[z]/2
+myConfig_z.y2 = y_max_arr[z] - y_pre_drop_dip_arr[z]
+myConfig_z.x3 = drop_mid_pt_arr[z] + drop_width_arr[z]/2
+myConfig_z.y3 = y_min_arr[z] + y_post_drop_dip_arr[z]
+myConfig_z.x4 = 1
+myConfig_z.y4 = y_min_arr[z]
+myConfig_z.data_pt_cnt = 50
+
+print( myConfig_z.to_str() )
+
+x_arr_z, y_arr_z = gen_Lin3SegmPlotData( myConfig_z )
+
+# plt.plot( x_arr_z, y_arr_z )
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("y = x")
+# plt.grid(True)
+# plt.show()
+
+
+# ======================================================================= <<<<<
+
+
+
+# For the gradually steeper drop profile.
+# y_min + (y_max - y_min) * np.exp(-k * x)
