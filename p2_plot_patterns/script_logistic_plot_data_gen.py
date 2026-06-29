@@ -25,15 +25,13 @@ from plot_funcs import get_logistic_plot_data
 #       Logistic Function Data Set Gen
 # ======================================================================= >>>>>
 
-
-# x_a = 0.6;        y_a = 0.9
-# x_b = 0.7;        y_b = 0.1
-# y_min = 0;   y_max = 1
+# The absolute x limit to the drop's defining points.
+x_drop_rng_lim = ( 0.02, 0.98 )
 
 # The range of mid points allowed.
 drop_mid_pt_rng = ( 0.20, 0.80 )
 # The range of width the logistic drop is allowed.
-drop_width_rng = ( 0.05, 0.25 )
+drop_width_rng = ( 0.10, 0.40 )
 
 # The range of y starting value (highest point)
 y_max_rng = ( 0.95, 1.00 )
@@ -47,7 +45,7 @@ y_post_drop_dip_rng = ( 0.01, 0.05 )
 
 
 # Define the number of random test cases.
-n = 100
+n = 10
 # Generate the randomized parameters for the three segments linear plot.
 drop_mid_pt_arr = np.random.uniform( drop_mid_pt_rng[0], drop_mid_pt_rng[1], size = n )
 drop_width_arr = np.random.uniform( drop_width_rng[0], drop_width_rng[1], size = n )
@@ -68,8 +66,12 @@ for z in range(n):
     y_pre_drop_dip_z = y_pre_drop_dip_arr[z]
     y_post_drop_dip_z = y_post_drop_dip_arr[z]
 
+    print( drop_width_z )
+
     x_a = drop_mid_pt_z - drop_width_z/2.0
+    x_a = max( x_a, x_drop_rng_lim[0] )
     x_b = drop_mid_pt_z + drop_width_z/2.0
+    x_b = min( x_b, x_drop_rng_lim[1] )
     y_a = y_max_z - y_pre_drop_dip_z
     y_b = y_min_z + y_post_drop_dip_z
 
