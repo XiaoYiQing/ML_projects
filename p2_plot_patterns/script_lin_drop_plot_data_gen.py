@@ -27,7 +27,7 @@ from plot_funcs import gen_Lin3SegmPlotData
 # The range of mid points allowed.
 drop_mid_pt_rng = ( 0.10, 0.90 )
 # The range of width the linear drop is allowed.
-drop_width_rng = ( 0.02, 0.08 )
+drop_width_rng = ( 0.02, 0.12 )
 
 # The range of y starting value (highest point)
 y_max_rng = ( 0.90, 0.95 )
@@ -61,7 +61,7 @@ for z in range(n):
     myConfig_z.y3 = y_min_arr[z] + y_post_drop_dip_arr[z]
     myConfig_z.x4 = 1
     myConfig_z.y4 = y_min_arr[z]
-    myConfig_z.data_pt_cnt = 100
+    myConfig_z.data_pt_cnt = 101
 
     x_arr_z, y_arr_z = gen_Lin3SegmPlotData( myConfig_z )
 

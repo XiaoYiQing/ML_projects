@@ -94,14 +94,6 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
     l1_x_arr = x_arr[ 0 : post_x2_idx ]
     l1_y_arr = get_lin_plot_data( l1_config, l1_x_arr )
 
-    print( len( l1_x_arr ), ' ', len( l1_y_arr ) )
-
-    # print( 'pre_x2_idx: ', pre_x2_idx )
-    # print( 'pre_x2: ', x_arr[pre_x2_idx] )
-    # print( 'post_x2_idx: ', post_x2_idx )
-    # print( 'post_x2: ', x_arr[post_x2_idx] )
-    # print( 'x2', config.x2 )
-
     # Segment 2 configuration.
     l2_config = LinFuncConfig( config.x2, config.y2, config.x3, config.y3 )
     # Obtain the index of the value in x_arr immediately below x3.
@@ -117,21 +109,11 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
     l2_x_arr = x_arr[ post_x2_idx : post_x3_idx ]
     l2_y_arr = get_lin_plot_data( l2_config, l2_x_arr )
 
-    print( len( l2_x_arr ), ' ', len( l2_y_arr ) )
-
-    # print( 'pre_x3_idx: ', pre_x3_idx )
-    # print( 'pre_x3: ', x_arr[pre_x3_idx] )
-    # print( 'post_x3_idx: ', post_x3_idx )
-    # print( 'post_x3: ', x_arr[post_x3_idx] )
-    # print( 'x3', config.x3 )
-
     # Segment 3 configuration.
     l3_config = LinFuncConfig( config.x3, config.y3, config.x4, config.y4 )
     # Segment 3 data gen.
     l3_x_arr = x_arr[ post_x3_idx : ]
     l3_y_arr = get_lin_plot_data( l3_config, l3_x_arr )
-
-    print( len( l3_x_arr ), ' ', len( l3_y_arr ) )
 
     # Complete the y-axis data array.
     y_arr = np.concatenate( ( l1_y_arr, l2_y_arr, l3_y_arr ) )

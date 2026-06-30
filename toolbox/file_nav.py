@@ -6,6 +6,10 @@ from PIL import Image
 
 from pathlib import Path
 
+def file_exists(path_str):
+    """Return True if the given file path exists and is a file."""
+    return Path(path_str).is_file()
+
 def next_free_name(dir_path, base_name, ext=""):
     """
     Return a Path like 'base_name.ext', or 'base_name_1.ext',

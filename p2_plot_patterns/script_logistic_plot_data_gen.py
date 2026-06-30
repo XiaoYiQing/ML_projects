@@ -45,7 +45,7 @@ y_post_drop_dip_rng = ( 0.01, 0.05 )
 
 
 # Define the number of random test cases.
-n = 10
+n = 100
 # Generate the randomized parameters for the three segments linear plot.
 drop_mid_pt_arr = np.random.uniform( drop_mid_pt_rng[0], drop_mid_pt_rng[1], size = n )
 drop_width_arr = np.random.uniform( drop_width_rng[0], drop_width_rng[1], size = n )
@@ -54,7 +54,7 @@ y_min_arr = np.random.uniform( y_min_rng[0], y_min_rng[1], size = n )
 y_pre_drop_dip_arr = np.random.uniform( y_pre_drop_dip_rng[0], y_pre_drop_dip_rng[1], size = n )
 y_post_drop_dip_arr = np.random.uniform( y_post_drop_dip_rng[0], y_post_drop_dip_rng[1], size = n )
 
-data_pt_cnt = 100
+data_pt_cnt = 101
 x_arr = np.linspace( 0, 1, data_pt_cnt )
 
 for z in range(n):
@@ -65,8 +65,6 @@ for z in range(n):
     drop_width_z = drop_width_arr[z]
     y_pre_drop_dip_z = y_pre_drop_dip_arr[z]
     y_post_drop_dip_z = y_post_drop_dip_arr[z]
-
-    print( drop_width_z )
 
     x_a = drop_mid_pt_z - drop_width_z/2.0
     x_a = max( x_a, x_drop_rng_lim[0] )
