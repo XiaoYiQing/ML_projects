@@ -55,7 +55,12 @@ y_pre_drop_dip_arr = np.random.uniform( y_pre_drop_dip_rng[0], y_pre_drop_dip_rn
 y_post_drop_dip_arr = np.random.uniform( y_post_drop_dip_rng[0], y_post_drop_dip_rng[1], size = n )
 
 data_pt_cnt = 101
-x_arr = np.linspace( 0, 1, data_pt_cnt )
+# The expected x-axis array (normalize 0 to 1).
+x_arr = np.linspace( 0, 1, data_pt_cnt  )
+# The array to store the data.
+Y = np.zeros( ( n, data_pt_cnt ) )
+# The labels associated with the plots (all zeros because gradual drop).
+labels = np.zeros( n )
 
 for z in range(n):
 
@@ -77,9 +82,11 @@ for z in range(n):
 
     y_arr_z = get_logistic_plot_data( myConfig_z, x_arr )
 
+    Y[z,:] = y_arr_z[:]
+
+
+for y_arr_z in Y:
     plt.plot( x_arr, y_arr_z )
-
-
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("y = x")

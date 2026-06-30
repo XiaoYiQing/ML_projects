@@ -50,6 +50,14 @@ y_pre_drop_dip_arr = np.random.uniform( y_pre_drop_dip_rng[0], y_pre_drop_dip_rn
 y_post_drop_dip_arr = np.random.uniform( y_post_drop_dip_rng[0], y_post_drop_dip_rng[1], size = n )
 
 
+data_pt_cnt = 101
+# The expected x-axis array (normalize 0 to 1).
+x_arr = np.linspace( 0, 1, data_pt_cnt  )
+# The array to store the data.
+Y = np.zeros( ( n, data_pt_cnt ) )
+# The labels associated with the plots (all ones because abrupt linear like drop).
+labels = np.ones( n )
+
 for z in range(n):
 
     myConfig_z = Lin3SegmConfig()
@@ -61,13 +69,15 @@ for z in range(n):
     myConfig_z.y3 = y_min_arr[z] + y_post_drop_dip_arr[z]
     myConfig_z.x4 = 1
     myConfig_z.y4 = y_min_arr[z]
-    myConfig_z.data_pt_cnt = 101
+    myConfig_z.data_pt_cnt = data_pt_cnt
 
     x_arr_z, y_arr_z = gen_Lin3SegmPlotData( myConfig_z )
 
-    plt.plot( x_arr_z, y_arr_z )
-    
+    Y[z,:] = y_arr_z[:]
 
+
+for y_arr_z in Y:
+    plt.plot( x_arr, y_arr_z )
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("y = x")
