@@ -93,49 +93,62 @@ labels_logis_ts = labels_logis[ logis_ts_idx ]
 #       Model Generation
 # ======================================================================= >>>>>
 
+load_from_save = True
+save_dir = currentdir + '/ML_model_deposit'
+model_fullfilename = save_dir + '/script_lin_logis_data_train.keras'
+
 # Create a complete set of linear and logistic plot data for training.
 X_tr = np.concatenate( [ y_lin_tr, y_logis_tr ], axis=0 )
 y_tr = np.concatenate( [ labels_lin_tr, labels_logis_tr ], axis=0 )
-
-
 # shuffle
 idx = np.random.permutation( len(X_tr) )
 X_tr, y_tr = X_tr[idx], y_tr[idx]
-
 # add channel dimension (Initalize at one for greyscale).
 X_tr = X_tr[ ..., np.newaxis ]   # (N, L, 1)
 
-# --- simple 1D CNN classifier ---
-L = X_tr.shape[1]  # Number of data points in each training case.
-inputs = keras.Input( shape=(L, 1) )
+if load_from_save:
 
-x = layers.Conv1D(32, 5, activation="relu", padding="same")(inputs)
-x = layers.MaxPooling1D(2)(x)
-x = layers.Conv1D(64, 5, activation="relu", padding="same")(x)
-x = layers.GlobalAveragePooling1D()(x)
-x = layers.Dense(32, activation="relu")(x)
-outputs = layers.Dense(1, activation="sigmoid")(x)
+    model = keras.models.load_model( model_fullfilename )
 
-model = keras.Model(inputs, outputs)
-model.compile(optimizer="adam",
-              loss="binary_crossentropy",
-              metrics=["accuracy"])
+else:
 
-model.fit(X_tr, y_tr, batch_size=32, epochs=20, validation_split=0.2)
+    # --- simple 1D CNN classifier ---
+    L = X_tr.shape[1]  # Number of data points in each training case.
+    inputs = keras.Input( shape=(L, 1) )
+
+    x = layers.Conv1D(32, 5, activation="relu", padding="same")(inputs)
+    x = layers.MaxPooling1D(2)(x)
+    x = layers.Conv1D(64, 5, activation="relu", padding="same")(x)
+    x = layers.GlobalAveragePooling1D()(x)
+    x = layers.Dense(32, activation="relu")(x)
+    outputs = layers.Dense(1, activation="sigmoid")(x)
+
+    model = keras.Model(inputs, outputs)
+    model.compile(optimizer="adam",
+                loss="binary_crossentropy",
+                metrics=["accuracy"])
+
+    model.fit( X_tr, y_tr, batch_size=32, epochs=20, validation_split=0.2 )
+
+    model.save( model_fullfilename )
+
+# ======================================================================= <<<<<
 
 
-
+# ======================================================================= >>>>>
+#       Testing Set Test
+# ======================================================================= >>>>>
 
 # Create a complete set of linear and logistic plot data for testing.
 X_ts = np.concatenate( [ y_lin_ts, y_logis_ts ], axis=0 )
 y_ts = np.concatenate( [ labels_lin_ts, labels_logis_ts ], axis=0 )
 
-# add channel dimension (Initalize at one for greyscale).
+# add channel dimension (Initalize at one for grayscale).
 X_ts = X_ts[ ..., np.newaxis ]   # (N, L, 1)
 
 test_loss, test_accuracy = model.evaluate( X_ts, y_ts )
 # test_loss, test_accuracy = model.evaluate( X_tr_set, y_tr_set )
-print(f'Extra test accuracy: {test_accuracy:.4f}')
-print(f'Extra test loss: {test_loss:.4f}')
+print( f'Extra test accuracy: {test_accuracy:.4f}' )
+print( f'Extra test loss: {test_loss:.4f}' )
 
 # ======================================================================= <<<<<

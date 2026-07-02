@@ -188,6 +188,40 @@ def get_logistic_plot_data( cfig : LogisticFuncConfig, x_arr ):
 # ======================================================================= <<<<<
 
 
+# ======================================================================= >>>>>
+#       Exponential Decay Function Plot Tools
+# ======================================================================= >>>>>
+
+class PolyDropFuncConfig:
+    '''
+    Configuration for a polynomial function intended to be mapped over a restricted
+    x range [x0,x1] and y range [y0,y1] 
+    The curve starts decreasing slowly (smoothly) and ends up decreasing rapidly 
+    near the end of the specified range.
+    The curve must traverse points (x0,y0) and (x1,y1).
+
+    Args:
+        x0: The starting point x. Expected to be < x1
+        y0: The starting point y. Expected to be > y1
+        x1: The ending point x. Expected to be > x0
+        y1: The ending point y. Expected to be < y0
+        z: The exponential degree. Expected to be >= 2.
+            Controls how flat is the beginning portion and how steep is the ending portion.
+        u_start: fraction of the segment that is almost flat before dropping
+              [0 -> pure 1 - u^z]
+              [0.3 -> ~30% flat-ish, then drop]
+    '''
+
+    x0 = 0.0
+    y0 = 1.0
+    x1 = 1.0
+    x1 = 0.0
+    z = 2.0
+    u_start = 0
+    
+
+# ======================================================================= <<<<<
+
 
 # ======================================================================= >>>>>
 #       Linear Function Plot Tests

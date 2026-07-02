@@ -132,4 +132,5 @@ if plot_data:
 
 
 # For the gradually steeper drop profile.
-# y_min + (y_max - y_min) * np.exp(-k * x)
+# def exp_profile(x, y_max=1.0, y_min=0.0, k=0.3):
+#     return y_min + (y_max - y_min) * np.exp(-k * x)
