@@ -27,6 +27,9 @@ from toolbox.file_nav import file_exists
 #       Logistic Function Randomized Data Set Gen
 # ======================================================================= >>>>>
 
+# Define the number of random test cases.
+n = 2000
+
 # The absolute x limit to the drop's defining points.
 x_drop_rng_lim = ( 0.02, 0.98 )
 
@@ -46,8 +49,6 @@ y_pre_drop_dip_rng = ( 0.01, 0.05 )
 y_post_drop_dip_rng = ( 0.01, 0.05 )
 
 
-# Define the number of random test cases.
-n = 1000
 # Generate the randomized parameters for the three segments linear plot.
 drop_mid_pt_arr = np.random.uniform( drop_mid_pt_rng[0], drop_mid_pt_rng[1], size = n )
 drop_width_arr = np.random.uniform( drop_width_rng[0], drop_width_rng[1], size = n )

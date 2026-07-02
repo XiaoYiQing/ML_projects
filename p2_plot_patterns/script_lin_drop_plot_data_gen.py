@@ -25,6 +25,9 @@ from toolbox.file_nav import file_exists
 #       Linear Function Randomized Data Set Gen
 # ======================================================================= >>>>>
 
+# Define the number of random test cases.
+n = 2000
+
 # The range of mid points allowed.
 drop_mid_pt_rng = ( 0.10, 0.90 )
 # The range of width the linear drop is allowed.
@@ -40,8 +43,6 @@ y_pre_drop_dip_rng = ( 0.01, 0.05 )
 # The slight dip in y from where the main drop ends to the lowest y value.
 y_post_drop_dip_rng = ( 0.01, 0.05 )
 
-# Define the number of random test cases.
-n = 1000
 # Generate the randomized parameters for the three segments linear plot.
 drop_mid_pt_arr = np.random.uniform( drop_mid_pt_rng[0], drop_mid_pt_rng[1], size = n )
 drop_width_arr = np.random.uniform( drop_width_rng[0], drop_width_rng[1], size = n )
