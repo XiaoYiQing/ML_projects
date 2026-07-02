@@ -18,11 +18,13 @@ import matplotlib.pyplot as plt
 from plot_funcs import LogisticFuncConfig
 from plot_funcs import fit_logistic_2_pts
 from plot_funcs import get_logistic_plot_data
+from toolbox.file_nav import next_free_name
+from toolbox.file_nav import file_exists
 
 
 
 # ======================================================================= >>>>>
-#       Logistic Function Data Set Gen
+#       Logistic Function Randomized Data Set Gen
 # ======================================================================= >>>>>
 
 # The absolute x limit to the drop's defining points.
@@ -45,7 +47,7 @@ y_post_drop_dip_rng = ( 0.01, 0.05 )
 
 
 # Define the number of random test cases.
-n = 100
+n = 1000
 # Generate the randomized parameters for the three segments linear plot.
 drop_mid_pt_arr = np.random.uniform( drop_mid_pt_rng[0], drop_mid_pt_rng[1], size = n )
 drop_width_arr = np.random.uniform( drop_width_rng[0], drop_width_rng[1], size = n )
@@ -62,6 +64,7 @@ Y = np.zeros( ( n, data_pt_cnt ) )
 # The labels associated with the plots (all zeros because gradual drop).
 labels = np.zeros( n )
 
+# Create the logistic plot data given the specified randomization parameters.
 for z in range(n):
 
     y_min_z = y_min_arr[z]
@@ -84,13 +87,54 @@ for z in range(n):
 
     Y[z,:] = y_arr_z[:]
 
+# ======================================================================= <<<<<
 
-for y_arr_z in Y:
-    plt.plot( x_arr, y_arr_z )
-plt.xlabel("x")
-plt.ylabel("y")
-plt.title("y = x")
-plt.grid(True)
-plt.show()
+
+# ======================================================================= >>>>>
+#       Logistic Function Randomized Data Set Save
+# ======================================================================= >>>>>
+
+overwrite = True
+
+# Define the data save path and name.
+save_dir = currentdir + '/data/norm_plot_data'
+save_filestem = 'logistic_drop_data'
+save_fileext = '.npz'
+save_filename = save_filestem + save_fileext
+
+# If overwrite flag is off, make a separate save from existing data.
+if not overwrite:
+    save_fullFileName = str( next_free_name( save_dir, save_filestem, save_fileext ) )
+else:
+    save_fullFileName = save_dir + '/' + save_filename
+
+# Save the data at the designated data directory.
+np.savez( save_fullFileName, X=x_arr, Y=Y, labels=labels )
+
+# ======================================================================= <<<<<
+
+
+# ======================================================================= >>>>>
+#       Data Load And Plot Check
+# ======================================================================= >>>>>
+
+# Boolean flag for indicating whether to plot the saved data or not.
+plot_data = True
+if plot_data:
+    
+    # Load the data from the designated data directory.
+    data_tmp = np.load( save_fullFileName )
+    x_arr_load = data_tmp["X"]
+    Y_load = data_tmp["Y"]
+    labels_load = data_tmp["labels"]
+
+    # Print the data and check for error.
+    for y_arr_z in Y_load:
+        plt.plot( x_arr_load, y_arr_z )
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("y = x")
+    plt.grid(True)
+    plt.show()
 
 # ======================================================================= <<<<<
