@@ -215,10 +215,44 @@ class PolyDropFuncConfig:
     x0 = 0.0
     y0 = 1.0
     x1 = 1.0
-    x1 = 0.0
+    y1 = 0.0
     z = 2.0
     u_start = 0
     
+
+def poly_drop( cfig : PolyDropFuncConfig, x ):
+    """
+    Decreasing curve from (x0, y0) to (x1, y1) shaped like 1 - u^z,
+    but with control over where it starts to significantly decrease.
+
+    The configurations in the PolyDropFuncConfig arguments are as follow:
+
+    Args:
+        x0: The starting point x. Expected to be < x1
+        y0: The starting point y. Expected to be > y1
+        x1: The ending point x. Expected to be > x0
+        y1: The ending point y. Expected to be < y0
+        z: The exponential degree. Expected to be >= 2.
+            Controls how flat is the beginning portion and how steep is the ending portion.
+        u_start: fraction of the segment that is almost flat before dropping
+              [0 -> pure 1 - u^z]
+              [0.3 -> ~30% flat-ish, then drop]
+    """
+
+    x = np.asarray(x)
+    # normalize x to u in [0, 1]
+    u = (x - cfig.x0) / (cfig.x1 - cfig.x0)
+    
+    # u = np.clip(u, 0.0, 1.0)
+
+    # warp: keep [0, u_start] almost flat, map [u_start, 1] -> [0, 1]
+    v = np.maximum(0.0, (u - cfig.u_start) / (1.0 - cfig.u_start))
+
+    # shape function: starts near 1, then drops: 1 - v^z
+    g = 1.0 - v**cfig.z
+
+    # map g from [1 -> 0] to [y0 -> y1]
+    return cfig.y1 + (cfig.y0 - cfig.y1) * g
 
 # ======================================================================= <<<<<
 
@@ -270,6 +304,35 @@ class PolyDropFuncConfig:
 # plt.title("y = x")
 # plt.grid(True)
 # plt.show()
+
+# ======================================================================= <<<<<
+
+
+
+# ======================================================================= >>>>>
+#       Poly Drop Function Plot Tests
+# ======================================================================= >>>>>
+
+
+cfig = PolyDropFuncConfig()
+
+cfig.x0 = 0
+cfig.y0 = 1
+cfig.x1 = 1
+cfig.y1 = 0
+cfig.z = 10.0
+cfig.u_start = 0.1
+
+x_arr = np.linspace( 0, 1, 100 )
+
+y_arr = poly_drop( cfig, x_arr )
+
+plt.plot( x_arr, y_arr )
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("y = x")
+plt.grid(True)
+plt.show()
 
 # ======================================================================= <<<<<
 
