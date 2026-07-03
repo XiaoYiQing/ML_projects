@@ -47,6 +47,10 @@ class LinFuncConfig:
         self.m = ( y2 - y1 )/( x2 - x1 )
         self.b = y1 - self.m * x1
 
+    def calibrate( self, x1 = 0, y1 = 0, x2 = 1, y2 = 1 ):
+        self.m = ( y2 - y1 )/( x2 - x1 )
+        self.b = y1 - self.m * x1
+
 def get_lin_plot_data( config : LinFuncConfig, x_arr ):
 
     y_arr = config.m * x_arr + config.b
@@ -152,7 +156,7 @@ class PolyDropFuncConfig:
     u_start = 0
     
 
-def poly_drop( cfig : PolyDropFuncConfig, x ):
+def get_poly_drop_plot_data( cfig : PolyDropFuncConfig, x ):
     """
     Decreasing curve from (x0, y0) to (x1, y1) shaped like 1 - u^z,
     but with control over where it starts to significantly decrease.
@@ -271,7 +275,9 @@ def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig ):
     being overitten by corresponding points in "fourPts"
     '''
 
-    
+    seg1_lin = LinFuncConfig( fourPts[0][0], fourPts[0][1], fourPts[1][0], fourPts[1][1] )
+    seg2_poly = PolyDropFuncConfig(  )
+    seg3_lin = LinFuncConfig( fourPts[2][0], fourPts[2][1], fourPts[3][0], fourPts[3][1] )
 
     return 0
 
@@ -344,7 +350,7 @@ cfig.u_start = 0.1
 
 x_arr = np.linspace( 0, 1, 100 )
 
-y_arr = poly_drop( cfig, x_arr )
+y_arr = get_poly_drop_plot_data( cfig, x_arr )
 
 plt.plot( x_arr, y_arr )
 plt.xlabel("x")
