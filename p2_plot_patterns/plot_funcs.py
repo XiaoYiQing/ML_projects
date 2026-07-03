@@ -274,7 +274,7 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
     return x_arr, y_arr
 
 
-def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig ):
+def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig, data_pt_cnt = 101 ):
     '''
     Generate the data of a plot consisting of a linear, semi-polynomial, and linear
     segments.
@@ -283,11 +283,52 @@ def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig ):
     being overitten by corresponding points in "fourPts"
     '''
 
-    seg1_lin = LinFuncConfig( fourPts[0][0], fourPts[0][1], fourPts[1][0], fourPts[1][1] )
-    seg2_poly = PolyDropFuncConfig(  )
-    seg3_lin = LinFuncConfig( fourPts[2][0], fourPts[2][1], fourPts[3][0], fourPts[3][1] )
+    # Update the polynomial configuration with the present segment coordinates.
+    poly_cfig.x0 = fourPts[1][0]
+    poly_cfig.y0 = fourPts[1][1]
+    poly_cfig.x1 = fourPts[2][0]
+    poly_cfig.y1 = fourPts[2][1]
 
-    return 0
+    # Define the two linear segment configurations.
+    seg0_lin = LinFuncConfig( fourPts[0][0], fourPts[0][1], fourPts[1][0], fourPts[1][1] )
+    seg2_lin = LinFuncConfig( fourPts[2][0], fourPts[2][1], fourPts[3][0], fourPts[3][1] )
+
+    # Define the full x-axis point set of the plot.
+    x_arr = np.linspace( fourPts[0][0], fourPts[3][0], data_pt_cnt )
+
+    # Obtain the index of the value in x_arr immediately below x1.
+    pre_x1_idx = np.searchsorted( x_arr, fourPts[1][0], side='left' )
+    post_x1_idx = pre_x1_idx + 1
+    # In case the index fall squarely on x1, decrement both.
+    if x_arr[pre_x1_idx] >= fourPts[1][0]:
+        pre_x1_idx -= 1
+        post_x1_idx -= 1
+
+    # Obtain the index of the value in x_arr immediately below x2.
+    pre_x2_idx = np.searchsorted( x_arr, fourPts[2][0], side='left' )
+    post_x2_idx = pre_x2_idx + 1
+    # In case the index fall squarely on x2, decrement both.
+    if x_arr[pre_x2_idx] >= fourPts[2][0]:
+        pre_x2_idx -= 1
+        post_x2_idx -= 1
+
+    # Segment 0 data gen.
+    l0_x_arr = x_arr[ 0 : post_x1_idx ]
+    l0_y_arr = get_lin_plot_data( seg0_lin, l0_x_arr )
+
+    # Segment 1 data gen.
+    l1_x_arr = x_arr[ post_x1_idx : post_x2_idx ]
+    l1_y_arr = get_poly_drop_plot_data( poly_cfig, l1_x_arr )
+
+    # Segment 2 data gen.
+    l2_x_arr = x_arr[ post_x2_idx : ]
+    l2_y_arr = get_lin_plot_data( seg2_lin, l2_x_arr )
+
+    # Complete the y-axis data array.
+    y_arr = np.concatenate( ( l0_y_arr, l1_y_arr, l2_y_arr ) )
+
+
+    return x_arr, y_arr
 
 # ======================================================================= <<<<<
 
@@ -295,24 +336,28 @@ def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig ):
 #       Linear Function Plot Tests
 # ======================================================================= >>>>>
 
-# myConfig = Lin3SegmConfig()
+do_test = False
 
-# myConfig.x1 = 0;        myConfig.y1 = 0.9
-# myConfig.x2 = 0.2;      myConfig.y2 = 0.85
-# myConfig.x3 = 0.4;      myConfig.y3 = 0.12
-# myConfig.x4 = 1;        myConfig.y4 = 0.1
+if do_test:
 
-# myConfig.data_pt_cnt = 41
+    myConfig = Lin3SegmConfig()
 
-# x_arr, y_arr = gen_Lin3SegmPlotData( myConfig )
+    myConfig.x1 = 0;        myConfig.y1 = 0.9
+    myConfig.x2 = 0.2;      myConfig.y2 = 0.85
+    myConfig.x3 = 0.4;      myConfig.y3 = 0.12
+    myConfig.x4 = 1;        myConfig.y4 = 0.1
+
+    myConfig.data_pt_cnt = 41
+
+    x_arr, y_arr = gen_Lin3SegmPlotData( myConfig )
 
 
-# plt.plot( x_arr, y_arr )
-# plt.xlabel("x")
-# plt.ylabel("y")
-# plt.title("y = x")
-# plt.grid(True)
-# plt.show()
+    plt.plot( x_arr, y_arr )
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("y = x")
+    plt.grid(True)
+    plt.show()
 
 # ======================================================================= <<<<<
 
@@ -322,22 +367,26 @@ def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig ):
 #       Logistic Function Plot Tests
 # ======================================================================= >>>>>
 
-# x_a = 0.6;        y_a = 0.9
-# x_b = 0.7;        y_b = 0.1
-# y_min = 0;   y_max = 1
+do_test = False
 
-# myConfig = fit_logistic_2_pts(x_a, y_a, x_b, y_b, y_min, y_max)
+if do_test:
 
-# x_arr = np.linspace( 0, 1, 100 )
+    x_a = 0.6;        y_a = 0.9
+    x_b = 0.7;        y_b = 0.1
+    y_min = 0;   y_max = 1
 
-# y_arr = get_logistic_plot_data( myConfig, x_arr )
+    myConfig = fit_logistic_2_pts(x_a, y_a, x_b, y_b, y_min, y_max)
 
-# plt.plot( x_arr, y_arr )
-# plt.xlabel("x")
-# plt.ylabel("y")
-# plt.title("y = x")
-# plt.grid(True)
-# plt.show()
+    x_arr = np.linspace( 0, 1, 100 )
+
+    y_arr = get_logistic_plot_data( myConfig, x_arr )
+
+    plt.plot( x_arr, y_arr )
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Logistic Drop")
+    plt.grid(True)
+    plt.show()
 
 # ======================================================================= <<<<<
 
@@ -347,26 +396,65 @@ def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig ):
 #       Poly Drop Function Plot Tests
 # ======================================================================= >>>>>
 
-cfig = PolyDropFuncConfig()
+do_test = False
 
-cfig.x0 = 0
-cfig.y0 = 1
-cfig.x1 = 1
-cfig.y1 = 0
-cfig.z = 10.0
-cfig.u_start = 0.1
+if do_test:
 
-x_arr = np.linspace( 0, 1, 100 )
+    cfig = PolyDropFuncConfig()
 
-y_arr = get_poly_drop_plot_data( cfig, x_arr )
+    cfig.x0 = 0
+    cfig.y0 = 1
+    cfig.x1 = 1
+    cfig.y1 = 0
+    cfig.z = 10.0
+    cfig.u_start = 0.1
 
-plt.plot( x_arr, y_arr )
-plt.xlabel("x")
-plt.ylabel("y")
-plt.title("y = x")
-plt.grid(True)
-plt.show()
+    x_arr = np.linspace( 0, 1, 100 )
+
+    y_arr = get_poly_drop_plot_data( cfig, x_arr )
+
+    plt.plot( x_arr, y_arr )
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Semi-Polynomial Drop")
+    plt.grid(True)
+    plt.show()
 
 # ======================================================================= <<<<<
 
 
+
+# ======================================================================= >>>>>
+#       linPolyLin_plotData Plot Tests
+# ======================================================================= >>>>>
+
+do_test = True
+
+if do_test:
+
+    fourPts = np.zeros((4, 2))
+    fourPts[0][0] = 0.0;  fourPts[0][1] = 1.00
+    fourPts[1][0] = 0.2;  fourPts[1][1] = 0.98
+    fourPts[2][0] = 0.8;  fourPts[2][1] = 0.05
+    fourPts[3][0] = 1.0;  fourPts[3][1] = 0.02
+
+    poly_cfig = PolyDropFuncConfig
+    poly_cfig.z = 4.0
+    poly_cfig.u_start = 0.2
+
+    data_pt_cnt = 101
+
+    x_arr, y_arr = linPolyLin_plotData( fourPts, poly_cfig, data_pt_cnt )
+
+    plt.plot( x_arr, y_arr )
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Segmented Semi-Polynomial Drop")
+    plt.grid(True)
+    plt.show()
+
+
+
+
+
+# ======================================================================= <<<<<
