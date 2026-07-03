@@ -154,6 +154,14 @@ class PolyDropFuncConfig:
     y1 = 0.0
     z = 2.0
     u_start = 0
+
+    def __init__( self, x0 = 0.0, y0 = 1.0, x1 = 1.0, y1 = 0.0, z = 2.0, u_start = 0 ):
+        self.x0 = x0
+        self.y0 = y0
+        self.x1 = x1
+        self.y1 = y1
+        self.z = z
+        self.u_start = u_start
     
 
 def get_poly_drop_plot_data( cfig : PolyDropFuncConfig, x ):
