@@ -53,74 +53,6 @@ def get_lin_plot_data( config : LinFuncConfig, x_arr ):
 
     return y_arr
 
-class Lin3SegmConfig:
-    '''
-    Configuration for a simple three segments linear line plot.
-    '''
-
-    x1 = 0.0
-    x2 = 30.0
-    x3 = 70.0
-    x4 = 100.0
-
-    y1 = 10.0
-    y2 = 9.8
-    y3 = 1.2
-    y4 = 1
-
-    data_pt_cnt = 100
-
-    def to_str(self):
-        ret_str = f"p1=({self.x1},{self.y1}), p2=({self.x2},{self.y2})"
-        ret_str += f", p3=({self.x3},{self.y3}), p4=({self.x4},{self.y4})"
-        ret_str += f", data_pt_cnt({self.data_pt_cnt})"
-        return ret_str
-
-def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
-
-    x_arr = np.linspace( config.x1, config.x4, config.data_pt_cnt )
-
-    # Segment 1 configuration.
-    l1_config = LinFuncConfig( config.x1, config.y1, config.x2, config.y2 )
-    # Obtain the index of the value in x_arr immediately below and after x2.
-    pre_x2_idx = np.searchsorted( x_arr, config.x2, side='left' )
-    post_x2_idx = pre_x2_idx + 1
-    # In case the index fall squarely on x2, decrement both.
-    if x_arr[pre_x2_idx] >= config.x2:
-        pre_x2_idx -= 1
-        post_x2_idx -= 1
-
-    # Segment 1 data gen.
-    l1_x_arr = x_arr[ 0 : post_x2_idx ]
-    l1_y_arr = get_lin_plot_data( l1_config, l1_x_arr )
-
-    # Segment 2 configuration.
-    l2_config = LinFuncConfig( config.x2, config.y2, config.x3, config.y3 )
-    # Obtain the index of the value in x_arr immediately below x3.
-    pre_x3_idx = np.searchsorted( x_arr, config.x3, side='left' )
-    post_x3_idx = pre_x3_idx + 1
-    # In case the index fall squarely on x3, decrement both.
-    if x_arr[pre_x3_idx] >= config.x3:
-        pre_x3_idx -= 1
-        post_x3_idx -= 1
-    
-
-    # Segment 2 data gen.
-    l2_x_arr = x_arr[ post_x2_idx : post_x3_idx ]
-    l2_y_arr = get_lin_plot_data( l2_config, l2_x_arr )
-
-    # Segment 3 configuration.
-    l3_config = LinFuncConfig( config.x3, config.y3, config.x4, config.y4 )
-    # Segment 3 data gen.
-    l3_x_arr = x_arr[ post_x3_idx : ]
-    l3_y_arr = get_lin_plot_data( l3_config, l3_x_arr )
-
-    # Complete the y-axis data array.
-    y_arr = np.concatenate( ( l1_y_arr, l2_y_arr, l3_y_arr ) )
-
-
-    return x_arr, y_arr
-
 # ======================================================================= <<<<<
 
 
@@ -258,6 +190,94 @@ def poly_drop( cfig : PolyDropFuncConfig, x ):
 
 
 # ======================================================================= >>>>>
+#       Special Plot Sequence Generators
+# ======================================================================= >>>>>
+
+class Lin3SegmConfig:
+    '''
+    Configuration for a simple three segments linear line plot.
+    '''
+
+    x1 = 0.0
+    x2 = 30.0
+    x3 = 70.0
+    x4 = 100.0
+
+    y1 = 10.0
+    y2 = 9.8
+    y3 = 1.2
+    y4 = 1
+
+    data_pt_cnt = 100
+
+    def to_str(self):
+        ret_str = f"p1=({self.x1},{self.y1}), p2=({self.x2},{self.y2})"
+        ret_str += f", p3=({self.x3},{self.y3}), p4=({self.x4},{self.y4})"
+        ret_str += f", data_pt_cnt({self.data_pt_cnt})"
+        return ret_str
+
+def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
+
+    x_arr = np.linspace( config.x1, config.x4, config.data_pt_cnt )
+
+    # Segment 1 configuration.
+    l1_config = LinFuncConfig( config.x1, config.y1, config.x2, config.y2 )
+    # Obtain the index of the value in x_arr immediately below and after x2.
+    pre_x2_idx = np.searchsorted( x_arr, config.x2, side='left' )
+    post_x2_idx = pre_x2_idx + 1
+    # In case the index fall squarely on x2, decrement both.
+    if x_arr[pre_x2_idx] >= config.x2:
+        pre_x2_idx -= 1
+        post_x2_idx -= 1
+
+    # Segment 1 data gen.
+    l1_x_arr = x_arr[ 0 : post_x2_idx ]
+    l1_y_arr = get_lin_plot_data( l1_config, l1_x_arr )
+
+    # Segment 2 configuration.
+    l2_config = LinFuncConfig( config.x2, config.y2, config.x3, config.y3 )
+    # Obtain the index of the value in x_arr immediately below x3.
+    pre_x3_idx = np.searchsorted( x_arr, config.x3, side='left' )
+    post_x3_idx = pre_x3_idx + 1
+    # In case the index fall squarely on x3, decrement both.
+    if x_arr[pre_x3_idx] >= config.x3:
+        pre_x3_idx -= 1
+        post_x3_idx -= 1
+    
+
+    # Segment 2 data gen.
+    l2_x_arr = x_arr[ post_x2_idx : post_x3_idx ]
+    l2_y_arr = get_lin_plot_data( l2_config, l2_x_arr )
+
+    # Segment 3 configuration.
+    l3_config = LinFuncConfig( config.x3, config.y3, config.x4, config.y4 )
+    # Segment 3 data gen.
+    l3_x_arr = x_arr[ post_x3_idx : ]
+    l3_y_arr = get_lin_plot_data( l3_config, l3_x_arr )
+
+    # Complete the y-axis data array.
+    y_arr = np.concatenate( ( l1_y_arr, l2_y_arr, l3_y_arr ) )
+
+
+    return x_arr, y_arr
+
+
+def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig ):
+    '''
+    Generate the data of a plot consisting of a linear, semi-polynomial, and linear
+    segments.
+
+    Note that the polynomial config object "poly_cfig" will have its (x0,y0) and (x1,y1)
+    being overitten by corresponding points in "fourPts"
+    '''
+
+    
+
+    return 0
+
+# ======================================================================= <<<<<
+
+# ======================================================================= >>>>>
 #       Linear Function Plot Tests
 # ======================================================================= >>>>>
 
@@ -312,7 +332,6 @@ def poly_drop( cfig : PolyDropFuncConfig, x ):
 # ======================================================================= >>>>>
 #       Poly Drop Function Plot Tests
 # ======================================================================= >>>>>
-
 
 cfig = PolyDropFuncConfig()
 
