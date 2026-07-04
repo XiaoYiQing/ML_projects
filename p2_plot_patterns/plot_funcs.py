@@ -274,7 +274,7 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
     return x_arr, y_arr
 
 
-def linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig, data_pt_cnt = 101 ):
+def gen_linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig, data_pt_cnt = 101 ):
     '''
     Generate the data of a plot consisting of a linear, semi-polynomial, and linear
     segments.
@@ -426,10 +426,10 @@ if do_test:
 
 
 # ======================================================================= >>>>>
-#       linPolyLin_plotData Plot Tests
+#       gen_linPolyLin_plotData Plot Tests
 # ======================================================================= >>>>>
 
-do_test = True
+do_test = False
 
 if do_test:
 
@@ -439,13 +439,13 @@ if do_test:
     fourPts[2][0] = 0.8;  fourPts[2][1] = 0.05
     fourPts[3][0] = 1.0;  fourPts[3][1] = 0.02
 
-    poly_cfig = PolyDropFuncConfig
+    poly_cfig = PolyDropFuncConfig()
     poly_cfig.z = 4.0
     poly_cfig.u_start = 0.2
 
     data_pt_cnt = 101
 
-    x_arr, y_arr = linPolyLin_plotData( fourPts, poly_cfig, data_pt_cnt )
+    x_arr, y_arr = gen_linPolyLin_plotData( fourPts, poly_cfig, data_pt_cnt )
 
     plt.plot( x_arr, y_arr )
     plt.xlabel("x")
