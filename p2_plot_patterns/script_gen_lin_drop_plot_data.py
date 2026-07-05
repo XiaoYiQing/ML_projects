@@ -60,7 +60,7 @@ Y = np.zeros( ( n, data_pt_cnt ) )
 # The labels associated with the plots (all ones because abrupt linear like drop).
 labels_plotType = np.ones( n )
 # The labels associated with the plot's drop identifying points.
-labels_drop_idx = np.zeros( ( n, 2 ) )
+labels_dropPts = np.zeros( ( n, 2 ) )
 
 
 # Create the linear drop plot data given the specified randomization parameters.
@@ -81,8 +81,8 @@ for z in range(n):
 
     Y[z,:] = y_arr_z[:]
 
-    labels_drop_idx[z][0] = myConfig_z.x2
-    labels_drop_idx[z][1] = myConfig_z.x3
+    labels_dropPts[z][0] = myConfig_z.x2
+    labels_dropPts[z][1] = myConfig_z.x3
 
 # ======================================================================= <<<<<
 
@@ -107,7 +107,7 @@ else:
 
 # Save the data at the designated data directory.
 np.savez( save_fullFileName, X=x_arr, Y=Y, labels_plotType=labels_plotType, \
-         labels_drop_idx=labels_drop_idx )
+         labels_dropPts=labels_dropPts )
 
 # ======================================================================= <<<<<
 
@@ -125,7 +125,7 @@ if plot_data:
     x_arr_load = data_tmp["X"]
     Y_load = data_tmp["Y"]
     labels_load = data_tmp["labels_plotType"]
-    labels_drop_idx = data_tmp["labels_drop_idx"]
+    labels_dropPts = data_tmp["labels_dropPts"]
 
     # Print the data and check for error.
     for y_arr_z in Y_load:
