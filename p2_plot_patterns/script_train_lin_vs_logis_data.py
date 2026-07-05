@@ -1,8 +1,6 @@
 
 
 
-
-
 import os, sys
 # Make sure the directory above this current one is visible. This is to
 # provide access to some local libraries.
@@ -45,12 +43,12 @@ load_logis_FFN = load_dir + '/' + load_logis_filestem + load_fileext
 # Load the linear drop data from the designated data directory.
 data_tmp = np.load( load_lin_FFN )
 y_lin = data_tmp["Y"]
-labels_lin = data_tmp["labels"]
+labels_lin = data_tmp["labels_plotType"]
 
 # Load the logistic drop data from the designated data directory.
 data_tmp = np.load( load_logis_FFN )
 y_logis = data_tmp["Y"]
-labels_logis = data_tmp["labels"]
+labels_logis = data_tmp["labels_plotType"]
 
 # ======================================================================= <<<<<
 
@@ -93,7 +91,7 @@ labels_logis_ts = labels_logis[ logis_ts_idx ]
 #       Model Generation
 # ======================================================================= >>>>>
 
-load_from_save = True
+load_from_save = False
 save_dir = currentdir + '/ML_model_deposit'
 model_fullfilename = save_dir + '/script_lin_logis_data_train.keras'
 

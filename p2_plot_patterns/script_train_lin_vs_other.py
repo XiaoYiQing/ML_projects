@@ -44,17 +44,17 @@ load_LPL_FFN = load_dir + '/' + load_LPL_filestem + load_fileext
 # Load the linear drop data from the designated data directory.
 data_tmp = np.load( load_lin_FFN )
 y_lin = data_tmp["Y"]
-labels_lin = data_tmp["labels"]
+labels_lin = data_tmp["labels_plotType"]
 
 # Load the logistic drop data from the designated data directory.
 data_tmp = np.load( load_logis_FFN )
 y_logis = data_tmp["Y"]
-labels_logis = data_tmp["labels"]
+labels_logis = data_tmp["labels_plotType"]
 
 # Load the LinPolyLin drop data from the designated data directory.
 data_tmp = np.load( load_LPL_FFN )
 y_LPL = data_tmp["Y"]
-labels_LPL = data_tmp["labels"]
+labels_LPL = data_tmp["labels_plotType"]
 
 # ======================================================================= <<<<<
 
