@@ -58,8 +58,9 @@ x_arr = np.linspace( 0, 1, data_pt_cnt  )
 # The array to store the data.
 Y = np.zeros( ( n, data_pt_cnt ) )
 # The labels associated with the plots (all ones because abrupt linear like drop).
-labels = np.ones( n )
-
+labels_plotType = np.ones( n )
+# The labels associated with the plot's drop identifying points.
+labels_drop_idx = np.zeros( ( n, 2 ) )
 
 
 # Create the linear drop plot data given the specified randomization parameters.
@@ -79,6 +80,9 @@ for z in range(n):
     x_arr_z, y_arr_z = gen_Lin3SegmPlotData( myConfig_z )
 
     Y[z,:] = y_arr_z[:]
+
+    labels_drop_idx[z][0] = myConfig_z.x2
+    labels_drop_idx[z][1] = myConfig_z.x3
 
 # ======================================================================= <<<<<
 
@@ -102,7 +106,8 @@ else:
     save_fullFileName = save_dir + '/' + save_filename
 
 # Save the data at the designated data directory.
-np.savez( save_fullFileName, X=x_arr, Y=Y, labels_plotType=labels )
+np.savez( save_fullFileName, X=x_arr, Y=Y, labels_plotType=labels_plotType, \
+         labels_drop_idx=labels_drop_idx )
 
 # ======================================================================= <<<<<
 
@@ -120,6 +125,7 @@ if plot_data:
     x_arr_load = data_tmp["X"]
     Y_load = data_tmp["Y"]
     labels_load = data_tmp["labels_plotType"]
+    labels_drop_idx = data_tmp["labels_drop_idx"]
 
     # Print the data and check for error.
     for y_arr_z in Y_load:
