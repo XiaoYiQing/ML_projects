@@ -53,7 +53,7 @@ labels_dropPts = data_tmp["labels_dropPts"]
 
 # The ratio (out of 1) of data to be assigned as training set (remaining goes to 
 # testing).
-tr_ratio = 0.4
+tr_ratio = 0.6
 
 y_lin_cnt = len( y_lin )        # Total linear set data count.
 
@@ -61,7 +61,6 @@ y_lin_cnt = len( y_lin )        # Total linear set data count.
 lin_tr_len = math.floor( y_lin_cnt*tr_ratio )
 lin_ts_len = y_lin_cnt - lin_tr_len
 lin_tr_idx, lin_ts_idx = rand_samp( y_lin_cnt, lin_tr_len )
-
 
 # Training and testing sets creation (linear drop).
 y_lin_tr = y_lin[ lin_tr_idx ]
@@ -76,5 +75,85 @@ labels_lin_ts = labels_dropPts[ lin_ts_idx ]
 #       Model Generation and Testing (Lin Drop Identification)
 # ======================================================================= >>>>>
 
+# ------------------------------------------------------------------ >>>>>
+#       Model Data Prep
+# ------------------------------------------------------------------ >>>>>
+
+load_from_save = False
+save_dir = currentdir + '/ML_model_deposit'
+model_fullfilename = save_dir + '/script_lin_pts_id_data_train.keras'
+
+# Create a complete set of linear and logistic plot data for training.
+X_tr = y_lin_tr
+y_tr = labels_lin_tr
+# shuffle
+idx = np.random.permutation( len( X_tr ) )
+X_tr, y_tr = X_tr[idx], y_tr[idx]
+# add channel dimension (Initalize at one for greyscale).
+X_tr = X_tr[ ..., np.newaxis ]   # (N, L, 1)
+
+# ------------------------------------------------------------------ <<<<<
+
+
+# ------------------------------------------------------------------ >>>>>
+#       Model Training
+# ------------------------------------------------------------------ >>>>>
+
+if load_from_save:
+
+    model = keras.models.load_model( model_fullfilename )
+
+else:
+
+    # --- simple 1D CNN classifier ---
+    L = X_tr.shape[1]  # Number of data points in each training case.
+    inputs = keras.Input( shape=(L, 1) )
+
+    x = layers.Conv1D(32, 5, activation="relu", padding="same")(inputs)
+    x = layers.MaxPooling1D(2)(x)
+    x = layers.Conv1D(64, 5, activation="relu", padding="same")(x)
+    x = layers.GlobalAveragePooling1D()(x)
+    x = layers.Dense(64, activation="relu")(x)
+    outputs = layers.Dense(2, activation="sigmoid")(x)   # two keypoints
+
+    model = keras.Model(inputs, outputs)
+    model.compile(optimizer="adam", loss="mse")
+
+    model.fit(X_tr, y_tr, batch_size=32, epochs=25, validation_split=0.2)
+
+    model.save( model_fullfilename )
+
+# ------------------------------------------------------------------ <<<<<
+
+
+# ------------------------------------------------------------------ >>>>>
+#       Model Testing
+# ------------------------------------------------------------------ >>>>>
+
+# Create a complete set of linear and logistic plot data for testing.
+X_ts = y_lin_ts
+y_ts = labels_lin_ts
+
+# add channel dimension (Initalize at one for grayscale).
+X_ts = X_ts[ ..., np.newaxis ]   # (N, L, 1)
+
+test_loss = model.evaluate( X_ts, y_ts )
+print( f'Extra test loss: {test_loss:.7f}' )
+
+y_pred = model.predict( X_ts )
+per_sample_loss = np.mean( np.abs(y_pred - y_ts), axis=-1 )
+
+print( per_sample_loss.shape )
+
+ # Print the data and check for error.
+plt.plot( range( lin_ts_len ), per_sample_loss )
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Pt wise rms")
+plt.grid(True)
+plt.show()
+
+
+# ------------------------------------------------------------------ <<<<<
 
 # ======================================================================= <<<<<
