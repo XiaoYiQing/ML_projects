@@ -75,7 +75,6 @@ for z in range(n):
     myConfig_z.y3 = y_min_arr[z] + y_post_drop_dip_arr[z]
     myConfig_z.x4 = 1
     myConfig_z.y4 = y_min_arr[z]
-    myConfig_z.data_pt_cnt = data_pt_cnt
 
     y_arr_z = gen_Lin3SegmPlotData( myConfig_z, x_arr )
 

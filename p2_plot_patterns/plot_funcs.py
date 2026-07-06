@@ -220,12 +220,9 @@ class Lin3SegmConfig:
     y3 = 1.2
     y4 = 1
 
-    data_pt_cnt = 100
-
     def to_str(self):
         ret_str = f"p1=({self.x1},{self.y1}), p2=({self.x2},{self.y2})"
         ret_str += f", p3=({self.x3},{self.y3}), p4=({self.x4},{self.y4})"
-        ret_str += f", data_pt_cnt({self.data_pt_cnt})"
         return ret_str
 
 
