@@ -274,7 +274,7 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
     return x_arr, y_arr
 
 
-def gen_linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig, data_pt_cnt = 101 ):
+def gen_linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig, x_arr ):
     '''
     Generate the data of a plot consisting of a linear, semi-polynomial, and linear
     segments.
@@ -292,9 +292,6 @@ def gen_linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig, data_pt_cn
     # Define the two linear segment configurations.
     seg0_lin = LinFuncConfig( fourPts[0][0], fourPts[0][1], fourPts[1][0], fourPts[1][1] )
     seg2_lin = LinFuncConfig( fourPts[2][0], fourPts[2][1], fourPts[3][0], fourPts[3][1] )
-
-    # Define the full x-axis point set of the plot.
-    x_arr = np.linspace( fourPts[0][0], fourPts[3][0], data_pt_cnt )
 
     # Obtain the index of the value in x_arr immediately below x1.
     pre_x1_idx = np.searchsorted( x_arr, fourPts[1][0], side='left' )
@@ -328,7 +325,7 @@ def gen_linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig, data_pt_cn
     y_arr = np.concatenate( ( l0_y_arr, l1_y_arr, l2_y_arr ) )
 
 
-    return x_arr, y_arr
+    return y_arr
 
 # ======================================================================= <<<<<
 
@@ -445,7 +442,8 @@ if do_test:
 
     data_pt_cnt = 101
 
-    x_arr, y_arr = gen_linPolyLin_plotData( fourPts, poly_cfig, data_pt_cnt )
+    x_arr = np.linspace( fourPts[0][0], fourPts[3][0], data_pt_cnt )
+    y_arr = gen_linPolyLin_plotData( fourPts, poly_cfig, x_arr )
 
     plt.plot( x_arr, y_arr )
     plt.xlabel("x")
@@ -453,9 +451,5 @@ if do_test:
     plt.title("Segmented Semi-Polynomial Drop")
     plt.grid(True)
     plt.show()
-
-
-
-
 
 # ======================================================================= <<<<<

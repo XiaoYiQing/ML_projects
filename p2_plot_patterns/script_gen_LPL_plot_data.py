@@ -112,7 +112,7 @@ for i in range(n):
     poly_cfig.u_start = u_start_arr[i]
 
 
-    _, y_arr = gen_linPolyLin_plotData( fourPts, poly_cfig, data_pt_cnt )
+    y_arr = gen_linPolyLin_plotData( fourPts, poly_cfig, x_arr )
 
     Y[i,:] = y_arr[:]
 
