@@ -54,7 +54,7 @@ y_post_drop_dip_arr = np.random.uniform( y_post_drop_dip_rng[0], y_post_drop_dip
 
 data_pt_cnt = 101
 # The expected x-axis array (normalize 0 to 1).
-x_arr = np.linspace( 0, 1, data_pt_cnt  )
+x_arr = np.linspace( 0, 1, data_pt_cnt )
 # The array to store the data.
 Y = np.zeros( ( n, data_pt_cnt ) )
 # The labels associated with the plots (all ones because abrupt linear like drop).
@@ -77,7 +77,7 @@ for z in range(n):
     myConfig_z.y4 = y_min_arr[z]
     myConfig_z.data_pt_cnt = data_pt_cnt
 
-    x_arr_z, y_arr_z = gen_Lin3SegmPlotData( myConfig_z )
+    y_arr_z = gen_Lin3SegmPlotData( myConfig_z, x_arr )
 
     Y[z,:] = y_arr_z[:]
 

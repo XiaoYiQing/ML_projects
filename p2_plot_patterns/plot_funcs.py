@@ -228,9 +228,8 @@ class Lin3SegmConfig:
         ret_str += f", data_pt_cnt({self.data_pt_cnt})"
         return ret_str
 
-def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
 
-    x_arr = np.linspace( config.x1, config.x4, config.data_pt_cnt )
+def gen_Lin3SegmPlotData( config : Lin3SegmConfig, x_arr ):
 
     # Segment 1 configuration.
     l1_config = LinFuncConfig( config.x1, config.y1, config.x2, config.y2 )
@@ -271,7 +270,7 @@ def gen_Lin3SegmPlotData( config : Lin3SegmConfig ):
     y_arr = np.concatenate( ( l1_y_arr, l2_y_arr, l3_y_arr ) )
 
 
-    return x_arr, y_arr
+    return y_arr
 
 
 def gen_linPolyLin_plotData( fourPts, poly_cfig : PolyDropFuncConfig, x_arr ):
@@ -345,9 +344,9 @@ if do_test:
     myConfig.x3 = 0.4;      myConfig.y3 = 0.12
     myConfig.x4 = 1;        myConfig.y4 = 0.1
 
-    myConfig.data_pt_cnt = 41
-
-    x_arr, y_arr = gen_Lin3SegmPlotData( myConfig )
+    data_pt_cnt = 101
+    x_arr = np.linspace( myConfig.x1, myConfig.x4, data_pt_cnt )
+    y_arr = gen_Lin3SegmPlotData( myConfig, x_arr )
 
 
     plt.plot( x_arr, y_arr )
