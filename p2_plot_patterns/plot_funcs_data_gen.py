@@ -18,26 +18,10 @@ import matplotlib.pyplot as plt
 
 from plot_funcs import Lin3SegmConfig
 from plot_funcs import gen_Lin3SegmPlotData
+from plot_funcs import LogisticFuncConfig
+from plot_funcs import fit_logistic_2_pts
+from plot_funcs import get_logistic_plot_data
 
-
-'''
-
-# The range of mid points allowed.
-drop_mid_pt_rng = ( 0.10, 0.90 )
-# The range of width the linear drop is allowed.
-drop_width_rng = ( 0.02, 0.12 )
-
-# The range of y starting value (highest point)
-y_max_rng = ( 0.90, 0.95 )
-# The range of y ending value (lowest point)
-y_min_rng = ( 0.05, 0.10 )
-
-# The slight dip in y from its highest point to the point where the main drop occurs.
-y_pre_drop_dip_rng = ( 0.01, 0.05 )
-# The slight dip in y from where the main drop ends to the lowest y value.
-y_post_drop_dip_rng = ( 0.01, 0.05 )
-
-'''
 
 # ======================================================================= >>>>>
 #       General
@@ -124,6 +108,93 @@ class randDGen_Lin3Segm:
     # def to_str(self):
     #     return f"MyClass(name={self.name}, x={self.x}, y={self.y})"
 
+
+
+'''
+# The absolute x limit to the drop's defining points.
+x_drop_rng_lim = ( 0.02, 0.98 )
+
+# The range of mid points allowed.
+drop_mid_pt_rng = ( 0.20, 0.80 )
+# The range of width the logistic drop is allowed.
+drop_width_rng = ( 0.10, 0.40 )
+
+# The range of y starting value (highest point)
+y_max_rng = ( 0.95, 1.00 )
+# The range of y ending value (lowest point)
+y_min_rng = ( 0.00, 0.05 )
+
+# The slight dip in y from its highest point to the point where the main drop occurs.
+y_pre_drop_dip_rng = ( 0.01, 0.05 )
+# The slight dip in y from where the main drop ends to the lowest y value.
+y_post_drop_dip_rng = ( 0.01, 0.05 )
+'''
+
+class randDGen_logistic:
+
+    def __init__( self, x_drop_rng_lim = ( 0.02, 0.98 ), drop_mid_pt_rng = ( 0.20, 0.80 ), drop_width_rng = ( 0.10, 0.40 ), \
+        y_max_rng = ( 0.95, 1.00 ), y_min_rng = ( 0.00, 0.05 ), y_pre_drop_dip_rng = ( 0.01, 0.05 ), \
+        y_post_drop_dip_rng = ( 0.01, 0.05 ), x_arr = np.linspace(0,1,101) ):
+
+        # The absolute x limit to the drop's defining points (The x points where the drop starts/ends 
+        # cannot go over this range).
+        self.x_drop_rng_lim = x_drop_rng_lim
+        # The range of mid points allowed.
+        self.drop_mid_pt_rng = drop_mid_pt_rng
+        # The range of width the logistic drop is allowed (How wide is the drop, approximately).
+        self.drop_width_rng = drop_width_rng
+        # The range of y starting value (logistic function upper limit).
+        self.y_max_rng = y_max_rng
+        # The range of y ending value (logistic function lower limit).
+        self.y_min_rng = y_min_rng
+        # The slight dip in y from its highest point to the point where the main drop occurs.
+        self.y_pre_drop_dip_rng = y_pre_drop_dip_rng
+        # The slight dip in y from where the main drop ends to the lowest y value.
+        self.y_post_drop_dip_rng = y_post_drop_dip_rng
+        # The x array where the function is to be evaluated.
+        self.x_arr = x_arr
+
+    def gen_data( self, n : int ):
+
+        # Generate the randomized parameters for the three segments linear plot.
+        drop_mid_pt_arr = np.random.uniform( self.drop_mid_pt_rng[0], self.drop_mid_pt_rng[1], size = n )
+        drop_width_arr = np.random.uniform( self.drop_width_rng[0], self.drop_width_rng[1], size = n )
+        y_max_arr = np.random.uniform( self.y_max_rng[0], self.y_max_rng[1], size = n )
+        y_min_arr = np.random.uniform( self.y_min_rng[0], self.y_min_rng[1], size = n )
+        y_pre_drop_dip_arr = np.random.uniform( self.y_pre_drop_dip_rng[0], self.y_pre_drop_dip_rng[1], size = n )
+        y_post_drop_dip_arr = np.random.uniform( self.y_post_drop_dip_rng[0], self.y_post_drop_dip_rng[1], size = n )
+
+        data_pt_cnt = len( self.x_arr )
+        # The array to store the data.
+        Y = np.zeros( ( n, data_pt_cnt ) )
+        config_arr = [LogisticFuncConfig() for _ in range(n)]
+
+        # Create the logistic plot data given the specified randomization parameters.
+        for z in range(n):
+
+            y_min_z = y_min_arr[z]
+            y_max_z = y_max_arr[z]
+            drop_mid_pt_z = drop_mid_pt_arr[z]
+            drop_width_z = drop_width_arr[z]
+            y_pre_drop_dip_z = y_pre_drop_dip_arr[z]
+            y_post_drop_dip_z = y_post_drop_dip_arr[z]
+
+            x_a = drop_mid_pt_z - drop_width_z/2.0
+            x_a = max( x_a, self.x_drop_rng_lim[0] )
+            x_b = drop_mid_pt_z + drop_width_z/2.0
+            x_b = min( x_b, self.x_drop_rng_lim[1] )
+            y_a = y_max_z - y_pre_drop_dip_z
+            y_b = y_min_z + y_post_drop_dip_z
+
+            myConfig_z = fit_logistic_2_pts( x_a, y_a, x_b, y_b, y_min_z, y_max_z )
+
+            y_arr_z = get_logistic_plot_data( myConfig_z, self.x_arr )
+
+            Y[z,:] = y_arr_z[:]
+            config_arr[z] = myConfig_z
+
+
+        return Y, config_arr
 
 # ======================================================================= <<<<<
 
