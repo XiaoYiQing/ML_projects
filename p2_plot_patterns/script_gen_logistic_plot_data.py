@@ -56,15 +56,18 @@ x_arr = np.linspace( 0, 1, data_pt_cnt )
 dataGenObj = randDGen_logistic( x_drop_rng_lim, drop_mid_pt_rng, drop_width_rng, \
     y_max_rng, y_min_rng, y_pre_drop_dip_rng, y_post_drop_dip_rng, x_arr )
 
-Y, config_arr = dataGenObj.gen_data(n)
+Y, _, refPts_arr = dataGenObj.gen_data(n)
 
 # The labels associated with the plots (all zeros because gradual drop).
-labels = np.zeros( n )
+labels_plotType = np.zeros( n )
+# The labels associated with the plot's drop identifying points.
+labels_refXs = np.zeros( ( n, 2 ) )
 
 # Create the logistic plot data given the specified randomization parameters.
 for z in range(n):
 
-    lol = 0
+    labels_refXs[z][0] = refPts_arr[z][0]
+    labels_refXs[z][1] = refPts_arr[z][2]
 
 # ======================================================================= <<<<<
 
@@ -88,7 +91,7 @@ else:
     save_fullFileName = save_dir + '/' + save_filename
 
 # Save the data at the designated data directory.
-np.savez( save_fullFileName, X=x_arr, Y=Y, labels_plotType=labels )
+np.savez( save_fullFileName, X=x_arr, Y=Y, labels_plotType=labels_plotType, labels_refXs=labels_refXs )
 
 # ======================================================================= <<<<<
 

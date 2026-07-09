@@ -168,10 +168,12 @@ class randDGen_logistic:
         # The array to store the data.
         Y = np.zeros( ( n, data_pt_cnt ) )
         config_arr = [LogisticFuncConfig() for _ in range(n)]
+        refPts_arr = np.zeros( ( n, 4 ) )
 
         # Create the logistic plot data given the specified randomization parameters.
         for z in range(n):
 
+            # Obtain the current randomized control parameters.
             y_min_z = y_min_arr[z]
             y_max_z = y_max_arr[z]
             drop_mid_pt_z = drop_mid_pt_arr[z]
@@ -179,6 +181,7 @@ class randDGen_logistic:
             y_pre_drop_dip_z = y_pre_drop_dip_arr[z]
             y_post_drop_dip_z = y_post_drop_dip_arr[z]
 
+            # Compute the two reference points for constructing the logistic function.
             x_a = drop_mid_pt_z - drop_width_z/2.0
             x_a = max( x_a, self.x_drop_rng_lim[0] )
             x_b = drop_mid_pt_z + drop_width_z/2.0
@@ -186,15 +189,25 @@ class randDGen_logistic:
             y_a = y_max_z - y_pre_drop_dip_z
             y_b = y_min_z + y_post_drop_dip_z
 
+            # Compute the logistic function parameters achieving the reference points 
+            # intersect.
             myConfig_z = fit_logistic_2_pts( x_a, y_a, x_b, y_b, y_min_z, y_max_z )
 
+            # Obtain the plot data of the logistic function.
             y_arr_z = get_logistic_plot_data( myConfig_z, self.x_arr )
 
+            # Save the plot data.
             Y[z,:] = y_arr_z[:]
+            # Save the current instance of logistic function configuration.
             config_arr[z] = myConfig_z
+            # Save the current instance of reference points used.
+            refPts_arr[z][0] = x_a
+            refPts_arr[z][1] = y_a
+            refPts_arr[z][2] = x_b
+            refPts_arr[z][3] = y_b
 
 
-        return Y, config_arr
+        return Y, config_arr, refPts_arr
 
 # ======================================================================= <<<<<
 
