@@ -21,6 +21,17 @@ from plot_funcs import gen_Lin3SegmPlotData
 from toolbox.file_nav import next_free_name
 from toolbox.file_nav import file_exists
 
+
+'''
+n: number of random test cases.
+
+data_pt_cnt: The number of datapoints in each case.
+
+(x0,x1): x range
+(y0,y1): y range
+
+'''
+
 # ======================================================================= >>>>>
 #       Linear Function Randomized Data Set Gen
 # ======================================================================= >>>>>
