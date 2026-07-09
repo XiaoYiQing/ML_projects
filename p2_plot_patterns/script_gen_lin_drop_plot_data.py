@@ -46,42 +46,27 @@ y_pre_drop_dip_rng = ( 0.01, 0.05 )
 # The slight dip in y from where the main drop ends to the lowest y value.
 y_post_drop_dip_rng = ( 0.01, 0.05 )
 
-# Generate the randomized parameters for the three segments linear plot.
-drop_mid_pt_arr = np.random.uniform( drop_mid_pt_rng[0], drop_mid_pt_rng[1], size = n )
-drop_width_arr = np.random.uniform( drop_width_rng[0], drop_width_rng[1], size = n )
-y_max_arr = np.random.uniform( y_max_rng[0], y_max_rng[1], size = n )
-y_min_arr = np.random.uniform( y_min_rng[0], y_min_rng[1], size = n )
-y_pre_drop_dip_arr = np.random.uniform( y_pre_drop_dip_rng[0], y_pre_drop_dip_rng[1], size = n )
-y_post_drop_dip_arr = np.random.uniform( y_post_drop_dip_rng[0], y_post_drop_dip_rng[1], size = n )
-
 
 data_pt_cnt = 101
 # The expected x-axis array (normalize 0 to 1).
 x_arr = np.linspace( 0, 1, data_pt_cnt )
-# The array to store the data.
-Y = np.zeros( ( n, data_pt_cnt ) )
+
+# Create the data generation handler.
+dataGenObj = randDGen_Lin3Segm( (0,1), drop_mid_pt_rng, drop_width_rng, \
+    y_max_rng, y_min_rng, y_pre_drop_dip_rng, y_post_drop_dip_rng, x_arr )
+
+# Perform the randomized data generation.
+Y, config_arr = dataGenObj.gen_data( n )
+
 # The labels associated with the plots (all ones because abrupt linear like drop).
 labels_plotType = np.ones( n )
 # The labels associated with the plot's drop identifying points.
 labels_dropPts = np.zeros( ( n, 2 ) )
 
-
-# Create the linear drop plot data given the specified randomization parameters.
+# Fill the label objects,
 for z in range(n):
 
-    myConfig_z = Lin3SegmConfig()
-    myConfig_z.x1 = 0
-    myConfig_z.y1 = y_max_arr[z]
-    myConfig_z.x2 = drop_mid_pt_arr[z] - drop_width_arr[z]/2
-    myConfig_z.y2 = y_max_arr[z] - y_pre_drop_dip_arr[z]
-    myConfig_z.x3 = drop_mid_pt_arr[z] + drop_width_arr[z]/2
-    myConfig_z.y3 = y_min_arr[z] + y_post_drop_dip_arr[z]
-    myConfig_z.x4 = 1
-    myConfig_z.y4 = y_min_arr[z]
-
-    y_arr_z = gen_Lin3SegmPlotData( myConfig_z, x_arr )
-
-    Y[z,:] = y_arr_z[:]
+    myConfig_z = config_arr[z]
 
     labels_dropPts[z][0] = myConfig_z.x2
     labels_dropPts[z][1] = myConfig_z.x3
