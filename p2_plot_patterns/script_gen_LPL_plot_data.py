@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 
 from plot_funcs import gen_linPolyLin_plotData
 from plot_funcs import PolyDropFuncConfig
+from plot_funcs_data_gen import randDGen_LPL
 
 from toolbox.file_nav import next_free_name
 from toolbox.file_nav import file_exists
@@ -30,92 +31,37 @@ from toolbox.file_nav import file_exists
 # Define the number of random test cases.
 n = 2000
 
-fourPts = np.zeros((4, 2))
-fourPts[0][0] = 0.0;  fourPts[0][1] = 1.00
-fourPts[1][0] = 0.2;  fourPts[1][1] = 0.98
-fourPts[2][0] = 0.8;  fourPts[2][1] = 0.05
-fourPts[3][0] = 1.0;  fourPts[3][1] = 0.02
-
-poly_cfig = PolyDropFuncConfig
-poly_cfig.z = 4.0
-poly_cfig.u_start = 0.2
-
-# Plot starting point.
-x0 = 0;     y0 = 1
-# Poly drop start point range.
+# The two delimiting x values over the range this LPL function is defined.
+x_ref = ( 0, 1 )
+# Poly drop start point x range.
 x1_rng = ( 0.01, 0.50 )
-y1_rng = ( 0.95, 0.99 )
 # Poly drop end point range.
 x2_rng = ( 0.30, 0.80 )
-y2_rng = ( 0.20, 0.06 )
-# End y value range of the trailing linear segment.
-y3_rng = ( 0.01, 0.05 )
-# Plot final x.
-x3 = 1
+
+y_rngs = np.array([
+    [0.99, 1.00],   # Plot starting y range.
+    [0.95, 0.99],   # Poly drop start point y range.
+    [0.20, 0.06],   # Poly drop end point y range.
+    [0.01, 0.05]    # End y value range of the trailing linear segment.
+])
 
 # Polynomial degree range.
 z_rng = ( 1.5, 10 )
 # Range of percentage of poly drop portion forced being flat.
 u_start_rng = ( 0.05, 0.7 )
 
-
-# Generate the randomized parameters for the lin-poly-lin plot.
-x1_arr = np.random.uniform( x1_rng[0], x1_rng[1], size = n )
-y1_arr = np.random.uniform( y1_rng[0], y1_rng[1], size = n )
-x2_arr = np.random.uniform( x2_rng[0], x2_rng[1], size = n )
-y2_arr = np.random.uniform( y2_rng[0], y2_rng[1], size = n )
-y3_arr = np.random.uniform( y3_rng[0], y3_rng[1], size = n )
-z_arr = np.random.uniform( z_rng[0], z_rng[1], size = n )
-u_start_arr = np.random.uniform( u_start_rng[0], u_start_rng[1], size = n )
-
-
-# Rearrange x2 points ending up below corresponding x1 points.
-a = x2_rng[1] - x2_rng[0]
-for z in range(n):
-    if x1_arr[z] > x2_arr[z]:
-        b = x2_rng[1] - x1_arr[z]
-        c = x2_arr[z] - x2_rng[0]
-        d = c*b/a
-        x2_arr[z] = x1_arr[z] + d
-
-
 data_pt_cnt = 101
 # The expected x-axis array (normalize 0 to 1).
-x_arr = np.linspace( 0, 1, data_pt_cnt  )
-# The array to store the data.
-Y = np.zeros( ( n, data_pt_cnt ) )
+x_arr = np.linspace( 0, 1, data_pt_cnt )
+
+# Create the plot data generation object.
+dataGenObj = randDGen_LPL( x_ref, x1_rng, x2_rng, y_rngs, z_rng, u_start_rng )
+
+# Perform the randomized data generation.
+Y, polyCFig_arr = dataGenObj.gen_data( n, x_arr )
+
 # The labels associated with the plots.
 labels = 2*np.ones( n )
-
-
-fourPts = np.zeros((4, 2))
-fourPts[0][0] = x0;         fourPts[0][1] = y0
-fourPts[3][0] = x3
-poly_cfig = PolyDropFuncConfig()
-
-
-
-# Create the linear drop plot data given the specified randomization parameters.
-for i in range(n):
-
-    # Segment connection points coordinate update.
-    fourPts[1][0] = x1_arr[i];  fourPts[1][1] = y1_arr[i]
-    fourPts[2][0] = x2_arr[i];  fourPts[2][1] = y2_arr[i]
-    fourPts[3][1] = y3_arr[i]
-
-    # Polynomial drop segment settings update.
-    poly_cfig.x0 = x1_arr[i]
-    poly_cfig.y0 = y1_arr[i]
-    poly_cfig.x1 = x2_arr[i]
-    poly_cfig.y1 = y2_arr[i]
-    poly_cfig.z = z_arr[i]
-    poly_cfig.u_start = u_start_arr[i]
-
-
-    y_arr = gen_linPolyLin_plotData( fourPts, poly_cfig, x_arr )
-
-    Y[i,:] = y_arr[:]
-
 
 # ======================================================================= <<<<<
 

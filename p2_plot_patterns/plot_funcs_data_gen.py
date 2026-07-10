@@ -297,11 +297,12 @@ class randDGen_LPL:
 
         # The array to store the data.
         Y = np.zeros( ( n, data_pt_cnt ) )
+        # The array to store the polynomial configurations
+        polyCFig_arr = [PolyDropFuncConfig() for _ in range(n)]
 
         fourPts = np.zeros((4, 2))
         fourPts[0][0] = self.x_ref[0]
         fourPts[3][0] = self.x_ref[1]
-        poly_cfig = PolyDropFuncConfig()
 
         # Create the linear drop plot data given the specified randomization parameters.
         for i in range(n):
@@ -315,18 +316,18 @@ class randDGen_LPL:
             fourPts[3][1] = y3_arr[i]
 
             # Polynomial drop segment settings update.
-            poly_cfig.x0 = x1_arr[i]
-            poly_cfig.y0 = y1_arr[i]
-            poly_cfig.x1 = x2_arr[i]
-            poly_cfig.y1 = y2_arr[i]
-            poly_cfig.z = z_arr[i]
-            poly_cfig.u_start = u_start_arr[i]
+            polyCFig_arr[i].x0 = x1_arr[i]
+            polyCFig_arr[i].y0 = y1_arr[i]
+            polyCFig_arr[i].x1 = x2_arr[i]
+            polyCFig_arr[i].y1 = y2_arr[i]
+            polyCFig_arr[i].z = z_arr[i]
+            polyCFig_arr[i].u_start = u_start_arr[i]
 
-            y_arr = gen_linPolyLin_plotData( fourPts, poly_cfig, x_arr )
+            y_arr = gen_linPolyLin_plotData( fourPts, polyCFig_arr[i], x_arr )
 
             Y[i,:] = y_arr[:]
 
-        return 0
+        return Y, polyCFig_arr
 
 
 # ======================================================================= <<<<<
