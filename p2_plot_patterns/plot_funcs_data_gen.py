@@ -110,27 +110,45 @@ class randDGen_Lin3Segm:
 
 
 
-'''
-# The absolute x limit to the drop's defining points.
-x_drop_rng_lim = ( 0.02, 0.98 )
-
-# The range of mid points allowed.
-drop_mid_pt_rng = ( 0.20, 0.80 )
-# The range of width the logistic drop is allowed.
-drop_width_rng = ( 0.10, 0.40 )
-
-# The range of y starting value (highest point)
-y_max_rng = ( 0.95, 1.00 )
-# The range of y ending value (lowest point)
-y_min_rng = ( 0.00, 0.05 )
-
-# The slight dip in y from its highest point to the point where the main drop occurs.
-y_pre_drop_dip_rng = ( 0.01, 0.05 )
-# The slight dip in y from where the main drop ends to the lowest y value.
-y_post_drop_dip_rng = ( 0.01, 0.05 )
-'''
 
 class randDGen_logistic:
+    '''
+    A class that holds the range of possible control variables for a logistic 
+    function. This logistic function has a upper and lower limits that it approaches 
+    asymptomatically, but the area of interest is the portion where it transitions
+    from one asymptote to the other. The logistic function is designed to have a
+    descending profile, but does not prevent an ascending one, though some unexpected
+    behavior may occur.
+
+    Randomized data generation based on this logistic function will be under the range 
+    of control parameters within this class.
+
+    Attributes
+    ----------
+    x_drop_rng_lim : ( float, float )
+        The lower and upper bounds on the x-axis where the reference points used to define
+        the logistic function is allowed to be situated.
+    drop_mid_pt_rng : ( float, float )
+        The range of x-values where the mid-point of the transitional portion of the 
+        logistic function can be randomly located.
+    drop_width_rng : ( float, float )
+        The range of width of the transition portion of the function that can be randomly
+        selected.
+        NOTE: This is not the actual width of transition segment, but rather the locator
+        for the x-values of two reference points (x_a,y_a) and (x_b,y_b) located equal 
+        distance from the mid-point (one below and one above). These two reference points 
+        are what decides the true parameters of the logistic function.
+    y_max_rng : ( float, float )
+        The range of possible randomly selected upper y-asymptote.
+    y_max_rng : ( float, float )
+        The range of possible randomly selected lower y-asymptote.
+    y_pre_drop_dip_rng : ( float, float )
+        The range of values of y_max - y_a (The amount shaved from the upper limit to reach
+        the first reference point (x_a,y_a) ).
+    y_post_drop_dip_rng : ( float, float )
+        The range of values of y_b - y_min (The amount added to the lower limit to reach
+        the second reference point (x_b,y_b) ).
+    '''
 
     def __init__( self, x_drop_rng_lim = ( 0.02, 0.98 ), drop_mid_pt_rng = ( 0.20, 0.80 ), drop_width_rng = ( 0.10, 0.40 ), \
         y_max_rng = ( 0.95, 1.00 ), y_min_rng = ( 0.00, 0.05 ), y_pre_drop_dip_rng = ( 0.01, 0.05 ), \
