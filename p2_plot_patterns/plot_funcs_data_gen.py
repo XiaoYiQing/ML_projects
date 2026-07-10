@@ -93,7 +93,6 @@ class randDGen_Lin3Segm:
         # Create the linear drop plot data given the specified randomization parameters.
         for z in range(n):
 
-            config_arr[z] = Lin3SegmConfig()
             config_arr[z].x1 = self.ref_x[0]
             config_arr[z].y1 = y_max_arr[z]
             config_arr[z].x2 = drop_mid_pt_arr[z] - drop_width_arr[z]/2
@@ -233,28 +232,38 @@ class randDGen_logistic:
 
 
 
-
-'''
-# Plot starting point.
-x0 = 0;     y0 = 1
-# Poly drop start point range.
-x1_rng = ( 0.01, 0.50 )
-y1_rng = ( 0.95, 0.99 )
-# Poly drop end point range.
-x2_rng = ( 0.30, 0.80 )
-y2_rng = ( 0.20, 0.06 )
-# End y value range of the trailing linear segment.
-y3_rng = ( 0.01, 0.05 )
-# Plot final x.
-x3 = 1
-
-# Polynomial degree range.
-z_rng = ( 1.5, 10 )
-# Range of percentage of poly drop portion forced being flat.
-u_start_rng = ( 0.05, 0.7 )
-'''
-
 class randDGen_LPL:
+    '''
+    A class that holds the range of possible control variables for the specific
+    plot function LPL which consists of the continuous grouping of three function segments:
+        [1. Linear function]
+        [2. Polynomial function (Decreasing)]
+        [3. Linear function]
+
+    The class also holds a function that generate this function's plot data in
+    a randomized fashion according to the defined range of possible control 
+    variables.
+
+    Attributes
+    ----------
+    x_ref : ( float, float )
+        The start and end of the full function description over the x-axis. These
+        delimiters do not vary randomly.
+    x1_rng : ( float, float )
+        The random range of the x position where the first linear segment transitions
+        into the polynomial segment.
+    x2_rng : ( float, float )
+        The random range of the x position where the polynomial segment transitions
+        into the second linear segment.
+    y_rngs : 4 X 2 np.array
+        The array holding the random range of the y position of all four points 
+        (start, linear-to-poly, poly-to-linear, end).
+    z_rng : ( float, float )
+        The random range of the degree of the polynomial.
+    u_start_rng : ( float, float )
+        The random range of the portion (0.0 to 1.0) of the polynomial being forced to be 
+        flat before the descent into the last linear segment.
+    '''
 
     def __init__( self, x_ref = (0,1), x1_rng=(0.01,0.50), x2_rng=(0.30, 0.80), \
         y_rngs=np.array([[0.99, 1.00],[0.95, 0.99],[0.20, 0.06],[0.01, 0.05]]), \
