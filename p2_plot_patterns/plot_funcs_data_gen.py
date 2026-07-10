@@ -152,7 +152,7 @@ class randDGen_logistic:
 
     def __init__( self, x_drop_rng_lim = ( 0.02, 0.98 ), drop_mid_pt_rng = ( 0.20, 0.80 ), drop_width_rng = ( 0.10, 0.40 ), \
         y_max_rng = ( 0.95, 1.00 ), y_min_rng = ( 0.00, 0.05 ), y_pre_drop_dip_rng = ( 0.01, 0.05 ), \
-        y_post_drop_dip_rng = ( 0.01, 0.05 ), x_arr = np.linspace(0,1,101) ):
+        y_post_drop_dip_rng = ( 0.01, 0.05 ) ):
 
         # The absolute x limit to the drop's defining points (The x points where the drop starts/ends 
         # cannot go over this range).
@@ -169,10 +169,13 @@ class randDGen_logistic:
         self.y_pre_drop_dip_rng = y_pre_drop_dip_rng
         # The slight dip in y from where the main drop ends to the lowest y value.
         self.y_post_drop_dip_rng = y_post_drop_dip_rng
-        # The x array where the function is to be evaluated.
-        self.x_arr = x_arr
 
-    def gen_data( self, n : int ):
+
+    def gen_data( self, n : int, x_arr ):
+
+        data_pt_cnt = len( x_arr )
+        if data_pt_cnt == 0:
+            return False, False, False
 
         # Generate the randomized parameters for the three segments linear plot.
         drop_mid_pt_arr = np.random.uniform( self.drop_mid_pt_rng[0], self.drop_mid_pt_rng[1], size = n )
@@ -182,7 +185,6 @@ class randDGen_logistic:
         y_pre_drop_dip_arr = np.random.uniform( self.y_pre_drop_dip_rng[0], self.y_pre_drop_dip_rng[1], size = n )
         y_post_drop_dip_arr = np.random.uniform( self.y_post_drop_dip_rng[0], self.y_post_drop_dip_rng[1], size = n )
 
-        data_pt_cnt = len( self.x_arr )
         # The array to store the data.
         Y = np.zeros( ( n, data_pt_cnt ) )
         config_arr = [LogisticFuncConfig() for _ in range(n)]
@@ -212,7 +214,7 @@ class randDGen_logistic:
             myConfig_z = fit_logistic_2_pts( x_a, y_a, x_b, y_b, y_min_z, y_max_z )
 
             # Obtain the plot data of the logistic function.
-            y_arr_z = get_logistic_plot_data( myConfig_z, self.x_arr )
+            y_arr_z = get_logistic_plot_data( myConfig_z, x_arr )
 
             # Save the plot data.
             Y[z,:] = y_arr_z[:]

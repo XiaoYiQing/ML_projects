@@ -54,9 +54,9 @@ data_pt_cnt = 101
 x_arr = np.linspace( 0, 1, data_pt_cnt )
 
 dataGenObj = randDGen_logistic( x_drop_rng_lim, drop_mid_pt_rng, drop_width_rng, \
-    y_max_rng, y_min_rng, y_pre_drop_dip_rng, y_post_drop_dip_rng, x_arr )
+    y_max_rng, y_min_rng, y_pre_drop_dip_rng, y_post_drop_dip_rng )
 
-Y, _, refPts_arr = dataGenObj.gen_data(n)
+Y, _, refPts_arr = dataGenObj.gen_data( n, x_arr )
 
 # The labels associated with the plots (all zeros because gradual drop).
 labels_plotType = np.zeros( n )
