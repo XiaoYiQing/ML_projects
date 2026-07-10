@@ -29,7 +29,7 @@ from toolbox.file_nav import file_exists
 # ======================================================================= >>>>>
 
 # Define the number of random test cases.
-n = 2000
+n = 3000
 
 # The absolute x limit to the drop's defining points.
 x_drop_rng_lim = ( 0.02, 0.98 )
@@ -49,7 +49,7 @@ y_pre_drop_dip_rng = ( 0.01, 0.05 )
 # The slight dip in y from where the main drop ends to the lowest y value.
 y_post_drop_dip_rng = ( 0.01, 0.05 )
 
-data_pt_cnt = 101
+data_pt_cnt = 251
 # The expected x-axis array (normalize 0 to 1).
 x_arr = np.linspace( 0, 1, data_pt_cnt )
 

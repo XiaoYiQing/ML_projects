@@ -119,7 +119,7 @@ else:
     model = keras.Model(inputs, outputs)
     model.compile(optimizer="adam", loss="mse")
 
-    model.fit(X_tr, y_tr, batch_size=32, epochs=25, validation_split=0.2)
+    model.fit(X_tr, y_tr, batch_size=32, epochs=50, validation_split=0.2)
 
     model.save( model_fullfilename )
 

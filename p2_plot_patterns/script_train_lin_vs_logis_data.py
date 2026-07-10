@@ -126,7 +126,7 @@ else:
                 loss="binary_crossentropy",
                 metrics=["accuracy"])
 
-    model.fit( X_tr, y_tr, batch_size=32, epochs=20, validation_split=0.2 )
+    model.fit( X_tr, y_tr, batch_size=32, epochs=25, validation_split=0.2 )
 
     model.save( model_fullfilename )
 

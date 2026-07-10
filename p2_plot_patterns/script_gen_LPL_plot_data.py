@@ -29,7 +29,7 @@ from toolbox.file_nav import file_exists
 # ======================================================================= >>>>>
 
 # Define the number of random test cases.
-n = 2000
+n = 3000
 
 # The two delimiting x values over the range this LPL function is defined.
 x_ref = ( 0, 1 )
@@ -48,9 +48,9 @@ y_rngs = np.array([
 # Polynomial degree range.
 z_rng = ( 1.5, 10 )
 # Range of percentage of poly drop portion forced being flat.
-u_start_rng = ( 0.05, 0.7 )
+u_start_rng = ( 0.05, 0.50 )
 
-data_pt_cnt = 101
+data_pt_cnt = 251
 # The expected x-axis array (normalize 0 to 1).
 x_arr = np.linspace( 0, 1, data_pt_cnt )
 

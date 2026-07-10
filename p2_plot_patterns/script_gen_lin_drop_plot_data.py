@@ -29,7 +29,7 @@ from toolbox.file_nav import file_exists
 # ======================================================================= >>>>>
 
 # Define the number of random test cases.
-n = 2000
+n = 3000
 
 # The range of mid points allowed.
 drop_mid_pt_rng = ( 0.10, 0.90 )
@@ -47,7 +47,7 @@ y_pre_drop_dip_rng = ( 0.01, 0.05 )
 y_post_drop_dip_rng = ( 0.01, 0.05 )
 
 
-data_pt_cnt = 101
+data_pt_cnt = 251
 # The expected x-axis array (normalize 0 to 1).
 x_arr = np.linspace( 0, 1, data_pt_cnt )
 
