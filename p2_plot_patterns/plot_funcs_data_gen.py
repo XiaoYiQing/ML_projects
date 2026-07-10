@@ -93,20 +93,19 @@ class randDGen_Lin3Segm:
         # Create the linear drop plot data given the specified randomization parameters.
         for z in range(n):
 
-            myConfig_z = Lin3SegmConfig()
-            myConfig_z.x1 = self.ref_x[0]
-            myConfig_z.y1 = y_max_arr[z]
-            myConfig_z.x2 = drop_mid_pt_arr[z] - drop_width_arr[z]/2
-            myConfig_z.y2 = y_max_arr[z] - y_pre_drop_dip_arr[z]
-            myConfig_z.x3 = drop_mid_pt_arr[z] + drop_width_arr[z]/2
-            myConfig_z.y3 = y_min_arr[z] + y_post_drop_dip_arr[z]
-            myConfig_z.x4 = self.ref_x[1]
-            myConfig_z.y4 = y_min_arr[z]
+            config_arr[z] = Lin3SegmConfig()
+            config_arr[z].x1 = self.ref_x[0]
+            config_arr[z].y1 = y_max_arr[z]
+            config_arr[z].x2 = drop_mid_pt_arr[z] - drop_width_arr[z]/2
+            config_arr[z].y2 = y_max_arr[z] - y_pre_drop_dip_arr[z]
+            config_arr[z].x3 = drop_mid_pt_arr[z] + drop_width_arr[z]/2
+            config_arr[z].y3 = y_min_arr[z] + y_post_drop_dip_arr[z]
+            config_arr[z].x4 = self.ref_x[1]
+            config_arr[z].y4 = y_min_arr[z]
 
-            y_arr_z = gen_Lin3SegmPlotData( myConfig_z, x_arr )
+            y_arr_z = gen_Lin3SegmPlotData( config_arr[z], x_arr )
 
             Y[z,:] = y_arr_z[:]
-            config_arr[z] = myConfig_z
 
         return Y, config_arr
 
@@ -216,15 +215,13 @@ class randDGen_logistic:
 
             # Compute the logistic function parameters achieving the reference points 
             # intersect.
-            myConfig_z = fit_logistic_2_pts( x_a, y_a, x_b, y_b, y_min_z, y_max_z )
+            config_arr[z] = fit_logistic_2_pts( x_a, y_a, x_b, y_b, y_min_z, y_max_z )
 
             # Obtain the plot data of the logistic function.
-            y_arr_z = get_logistic_plot_data( myConfig_z, x_arr )
+            y_arr_z = get_logistic_plot_data( config_arr[z], x_arr )
 
             # Save the plot data.
             Y[z,:] = y_arr_z[:]
-            # Save the current instance of logistic function configuration.
-            config_arr[z] = myConfig_z
             # Save the current instance of reference points used.
             refPts_arr[z][0] = x_a
             refPts_arr[z][1] = y_a
