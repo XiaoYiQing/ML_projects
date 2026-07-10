@@ -53,10 +53,10 @@ x_arr = np.linspace( 0, 1, data_pt_cnt )
 
 # Create the data generation handler.
 dataGenObj = randDGen_Lin3Segm( (0,1), drop_mid_pt_rng, drop_width_rng, \
-    y_max_rng, y_min_rng, y_pre_drop_dip_rng, y_post_drop_dip_rng, x_arr )
+    y_max_rng, y_min_rng, y_pre_drop_dip_rng, y_post_drop_dip_rng )
 
 # Perform the randomized data generation.
-Y, config_arr = dataGenObj.gen_data( n )
+Y, config_arr = dataGenObj.gen_data( n, x_arr )
 
 # The labels associated with the plots (all ones because abrupt linear like drop).
 labels_plotType = np.ones( n )

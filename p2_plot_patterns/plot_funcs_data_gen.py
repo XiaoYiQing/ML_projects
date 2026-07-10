@@ -39,7 +39,10 @@ class randDGen_Lin3Segm:
     variables.
     '''
 
-    def __init__(self, ref_x = (0,1), drop_mid_pt_rng = ( 0.10, 0.90 ), drop_width_rng = ( 0.02, 0.12 ), y_max_rng = ( 0.90, 0.95 ), y_min_rng = ( 0.05, 0.10 ), y_pre_drop_dip_rng = ( 0.01, 0.05 ), y_post_drop_dip_rng = ( 0.01, 0.05 ), x_arr = np.linspace(0,1,101) ):
+    def __init__(self, ref_x = (0,1), drop_mid_pt_rng = ( 0.10, 0.90 ), \
+        drop_width_rng = ( 0.02, 0.12 ), y_max_rng = ( 0.90, 0.95 ), \
+        y_min_rng = ( 0.05, 0.10 ), y_pre_drop_dip_rng = ( 0.01, 0.05 ), \
+        y_post_drop_dip_rng = ( 0.01, 0.05 ) ):
         
         
         # The two reference x points. These are not x-limits, but just the x two points
@@ -59,11 +62,8 @@ class randDGen_Lin3Segm:
         # The slight dip in y from where the main drop ends to the lowest y value.
         self.y_post_drop_dip_rng = y_post_drop_dip_rng
 
-        # The x array where the function is to be evaluated.
-        self.x_arr = x_arr
-        
 
-    def gen_data( self, n : int ):
+    def gen_data( self, n : int, x_arr ):
         '''
         Generate randomized plot data sets according to the current class instance's
         specified allowed randomization ranges.
@@ -72,6 +72,10 @@ class randDGen_Lin3Segm:
             n: The number of random data set cases.
         '''
 
+        data_pt_cnt = len( x_arr )
+        if data_pt_cnt == 0:
+            return False, False, False
+        
         # Generate the randomized parameters for the three segments linear plot.
         drop_mid_pt_arr = np.random.uniform( self.drop_mid_pt_rng[0], self.drop_mid_pt_rng[1], size = n )
         drop_width_arr = np.random.uniform( self.drop_width_rng[0], self.drop_width_rng[1], size = n )
@@ -80,7 +84,6 @@ class randDGen_Lin3Segm:
         y_pre_drop_dip_arr = np.random.uniform( self.y_pre_drop_dip_rng[0], self.y_pre_drop_dip_rng[1], size = n )
         y_post_drop_dip_arr = np.random.uniform( self.y_post_drop_dip_rng[0], self.y_post_drop_dip_rng[1], size = n )
 
-        data_pt_cnt = len( self.x_arr )
         # The array to store the data.
         Y = np.zeros( ( n, data_pt_cnt ) )
         config_arr = [Lin3SegmConfig() for _ in range(n)]
@@ -98,7 +101,7 @@ class randDGen_Lin3Segm:
             myConfig_z.x4 = self.ref_x[1]
             myConfig_z.y4 = y_min_arr[z]
 
-            y_arr_z = gen_Lin3SegmPlotData( myConfig_z, self.x_arr )
+            y_arr_z = gen_Lin3SegmPlotData( myConfig_z, x_arr )
 
             Y[z,:] = y_arr_z[:]
             config_arr[z] = myConfig_z
