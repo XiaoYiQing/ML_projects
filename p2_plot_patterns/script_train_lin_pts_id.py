@@ -79,7 +79,7 @@ labels_lin_ts = labels_dropPts[ lin_ts_idx ]
 #       Model Data Prep
 # ------------------------------------------------------------------ >>>>>
 
-load_from_save = False
+load_from_save = True
 save_dir = currentdir + '/ML_model_deposit'
 model_fullfilename = save_dir + '/script_lin_pts_id_data_train.keras'
 
@@ -140,18 +140,49 @@ X_ts = X_ts[ ..., np.newaxis ]   # (N, L, 1)
 test_loss = model.evaluate( X_ts, y_ts )
 print( f'Extra test loss: {test_loss:.7f}' )
 
-y_pred = model.predict( X_ts )
-per_sample_loss = np.mean( np.abs(y_pred - y_ts), axis=-1 )
+y_ts_pred = model.predict( X_ts )
+y_ts_diff = np.abs( y_ts_pred - y_ts )
+y_ts_diff_mean = np.mean( y_ts_diff, axis=-1 )
 
-print( per_sample_loss.shape )
 
- # Print the data and check for error.
-plt.plot( range( lin_ts_len ), per_sample_loss )
+# print( y_ts_diff_mean.shape )
+
+#  # Print the data and check for error.
+# plt.plot( range( lin_ts_len ), y_ts_diff_mean )
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("Pt wise rms")
+# plt.grid(True)
+# plt.show()
+
+
+print( y_ts_pred.shape )
+plt.plot( range( lin_ts_len ), y_ts_diff[:,0], label="Y0 diff" )
+plt.plot( range( lin_ts_len ), y_ts_diff[:,1], label="Y1 diff" )
 plt.xlabel("x")
 plt.ylabel("y")
-plt.title("Pt wise rms")
+plt.legend()
+plt.title("Pt wise diff")
 plt.grid(True)
 plt.show()
+
+# print( y_ts_pred.shape )
+# plt.plot( range( lin_ts_len ), y_ts_pred[:,0] )
+# plt.plot( range( lin_ts_len ), y_ts[:,0] )
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("Y0 predicted vs true")
+# plt.grid(True)
+# plt.show()
+
+# print( y_ts_pred.shape )
+# plt.plot( range( lin_ts_len ), y_ts_pred[:,1] )
+# plt.plot( range( lin_ts_len ), y_ts[:,1] )
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("Y1 predicted vs true")
+# plt.grid(True)
+# plt.show()
 
 
 # ------------------------------------------------------------------ <<<<<
