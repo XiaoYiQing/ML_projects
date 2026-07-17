@@ -79,9 +79,8 @@ class PoleResSyst_SISO:
             r_cnt = random.choice( candidates )
 
         # Determine the number of complex conjugate pairs given real poles count is defined now.
-        cp_cj_pair_cnt = ( n - r_cnt )/2
+        cp_cj_pair_cnt = int( np.floor( ( n - r_cnt )/2 ) )
 
-        
         # Initialize the system.
         mySyst = PoleResSyst_SISO()
 
@@ -93,8 +92,9 @@ class PoleResSyst_SISO:
         res_r = random_in_range( res_re_rng[0], res_re_rng[1], r_cnt )
 
         # Define odd and even interleaving index arrays.
-        even_idx = range( 0, cp_cj_pair_cnt, 2 )
-        odd_idx = range( 1, cp_cj_pair_cnt, 2 ) 
+        even_idx = np.zeros( 2*cp_cj_pair_cnt, dtype=bool )
+        even_idx[::2] = True    # every other element, starting at 0
+        odd_idx = ~even_idx
 
         # System's complex poles and residuals random selection with explicit complex 
         # conjugacy.
@@ -105,17 +105,17 @@ class PoleResSyst_SISO:
         poles_cp_cj = np.conjugate( poles_cp_tmp )
         res_cp_cj = np.conjugate( res_cp_tmp )
         # Assemble the complex conjugate poles in pairs.
-        poles_cp = np.zeros( 2*cp_cj_pair_cnt )
+        poles_cp = np.zeros( 2*cp_cj_pair_cnt, dtype=complex )
         poles_cp[even_idx] = poles_cp_tmp
         poles_cp[odd_idx] = poles_cp_cj
         # Assemble the complex conjugate residues in pairs.
-        res_cp = np.zeros( 2*cp_cj_pair_cnt )
+        res_cp = np.zeros( 2*cp_cj_pair_cnt, dtype=complex )
         res_cp[even_idx] = res_cp_tmp
         res_cp[odd_idx] = res_cp_cj
 
         # Insert the complete sets of poles and residues into the system object.
-        mySyst.residues = np.concatenate( res_r, res_cp )
-        mySyst.poles = np.concatenate( poles_r, poles_cp )
-        
+        mySyst.residues = np.concatenate( ( res_r, res_cp ) )
+        mySyst.poles = np.concatenate( ( poles_r, poles_cp ) )
+
 
         return mySyst
