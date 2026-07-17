@@ -22,11 +22,11 @@ from func_depo import PoleResSyst_SISO
 
 
 # H(s) = d + r1/(s - p1) + r2/(s - p2)
-residues = [1+0j, 0.5-0.2j]
+residues = [ 1+0j, 0.5-0.2j ]
 poles    = [-1+2j, -3-1j]
 d        = 0.1
 
-sys = PoleResSyst_SISO(residues=residues, poles=poles, direct=d)
+sys = PoleResSyst_SISO( residues=residues, poles=poles, direct=d )
 
 w = np.linspace(0, 10, 500)
 Hjw = sys.freq_response(w)

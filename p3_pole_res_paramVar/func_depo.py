@@ -47,3 +47,11 @@ class PoleResSyst_SISO:
         w = np.asarray(w, dtype=float)
         s = 1j * w
         return self.H(s)
+    
+
+    @staticmethod
+    def gen_rand_syst( n : int ):
+        
+        
+
+        return 0

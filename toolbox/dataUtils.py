@@ -1,6 +1,7 @@
 
 
 import numpy as np
+import random
 import os
 
 from PIL import Image
@@ -10,6 +11,10 @@ from PIL import Image
 from keras.datasets import mnist
 
 from toolbox.indexingUtils import rand_samp
+
+
+def random_in_range(x0, x1, n):
+    return [random.uniform(x0, x1) for _ in range(n)]
 
 def get_mnist_tr_ts_sets( tr_set_indiv_size ):
   '''
