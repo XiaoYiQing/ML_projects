@@ -70,6 +70,7 @@ class PoleResSyst_SISO:
         poles_im_rng = ( -1, 1 )
         direct_rng = ( 0, 1 )
 
+        # Real pole count random selection.
         if n <= 1:
             r_cnt = n
         else:
@@ -77,19 +78,44 @@ class PoleResSyst_SISO:
             candidates = [ m for m in range(1, n) if (n - m) % 2 == 0 ]
             r_cnt = random.choice( candidates )
 
-        # Determine the number of complex conjugate pairs.
+        # Determine the number of complex conjugate pairs given real poles count is defined now.
         cp_cj_pair_cnt = ( n - r_cnt )/2
 
         
-
+        # Initialize the system.
         mySyst = PoleResSyst_SISO()
+
+        # System's direct term definition.
         mySyst.direct = random_in_range( direct_rng[0], direct_rng[1], 1 )
+
+        # System's real poles and residuals random selection.
         poles_r = random_in_range( poles_re_rng[0], poles_re_rng[1], r_cnt )
-        poles_cp = random_in_range( poles_re_rng[0], poles_re_rng[1], cp_cj_pair_cnt ) + \
+        res_r = random_in_range( res_re_rng[0], res_re_rng[1], r_cnt )
+
+        # Define odd and even interleaving index arrays.
+        even_idx = range( 0, cp_cj_pair_cnt, 2 )
+        odd_idx = range( 1, cp_cj_pair_cnt, 2 ) 
+
+        # System's complex poles and residuals random selection with explicit complex 
+        # conjugacy.
+        poles_cp_tmp = random_in_range( poles_re_rng[0], poles_re_rng[1], cp_cj_pair_cnt ) + \
             1j * random_in_range( poles_im_rng[0], poles_im_rng[1], cp_cj_pair_cnt )
-        poles_cp_cj = np.conjugate( poles_cp )
+        res_cp_tmp = random_in_range( res_re_rng[0], res_re_rng[1], cp_cj_pair_cnt ) + \
+            1j * random_in_range( res_im_rng[0], res_im_rng[1], cp_cj_pair_cnt )
+        poles_cp_cj = np.conjugate( poles_cp_tmp )
+        res_cp_cj = np.conjugate( res_cp_tmp )
+        # Assemble the complex conjugate poles in pairs.
+        poles_cp = np.zeros( 2*cp_cj_pair_cnt )
+        poles_cp[even_idx] = poles_cp_tmp
+        poles_cp[odd_idx] = poles_cp_cj
+        # Assemble the complex conjugate residues in pairs.
+        res_cp = np.zeros( 2*cp_cj_pair_cnt )
+        res_cp[even_idx] = res_cp_tmp
+        res_cp[odd_idx] = res_cp_cj
+
+        # Insert the complete sets of poles and residues into the system object.
+        mySyst.residues = np.concatenate( res_r, res_cp )
+        mySyst.poles = np.concatenate( poles_r, poles_cp )
         
 
-        mySyst.residues = random_in_range( -1, 1, n ) + 1j*random_in_range( -1, 1, n )
-
-        return 0
+        return mySyst
