@@ -9,10 +9,11 @@ src = '../'
 sys.path.append( os.path.abspath(os.path.join(currentdir, src)) )
 
 
-
+import numbers
 import numpy as np
 import pandas as pd
 import random
+from scipy import signal
 from toolbox.dataUtils import random_in_range
 
 
@@ -127,6 +128,19 @@ class PoleResSyst_SISO:
         variation with respect to 1 parameter generated in a semi-random fashion.
         '''
 
-        assert isinstance( tarSyst, PoleResSyst_SISO ), f"x must be PoleResSyst_SISO, got {type(tarSyst)}"
+        assert isinstance( tarSyst, PoleResSyst_SISO ), f"tarSyst must be PoleResSyst_SISO, got {type(tarSyst)}"
+        assert isinstance( p_rng, ( numbers.Number, numbers.Number ) ), f"p_rng must be (numbers.Number,numbers.Number), got {type(p_rng)}"
+
+
+        num_coeff_arr = [2, 1]
+        denum_coeff_arr = [1, 3, 2]
+
+
+        num_poly = np.poly1d( num_coeff_arr )
+        den_poly = np.poly1d( denum_coeff_arr )
+
+        rat_func = num_poly/den_poly
+
+        rat_func(5)
 
         return 0
