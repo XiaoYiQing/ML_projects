@@ -57,18 +57,18 @@ class PoleResSyst_SISO:
         residues (S-param system).
         The default range for poles is [ -1, -0.05 )
         The default range for residues is [ -1, 1 )
-        The default range for the direct term is [ 0, 1 )
+        The default range for the direct term is [ 0, 0.1 )
 
         Note that such a system generated in a semi-random manner may not make sense as
         a real circuit frequency response.
         '''
 
         # Define the range of real and image parts ranges.
-        res_re_rng = ( -1, 1 )
+        res_re_rng = ( -0.1, 0.1 )
         res_im_rng = ( -1, 1 )
-        poles_re_rng = ( -1, 0 )
-        poles_im_rng = ( -1, 1 )
-        direct_rng = ( 0, 1 )
+        poles_re_rng = ( -10, -1 )
+        poles_im_rng = ( -100, 100 )
+        direct_rng = ( 0, 0.1 )
 
         # Real pole count random selection.
         if n <= 1:

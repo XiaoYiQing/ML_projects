@@ -59,9 +59,9 @@ do_test = True
 
 if do_test:
 
-    mySyst = PoleResSyst_SISO.gen_rand_syst( 5 )
+    mySyst = PoleResSyst_SISO.gen_rand_syst( 14 )
 
-    x_arr = np.linspace( -10, 10, 200 )
+    x_arr = np.linspace( -100, 100, 400 )
     S_arr = mySyst.freq_response( x_arr )
 
 
