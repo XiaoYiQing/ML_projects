@@ -55,9 +55,9 @@ class PoleResSyst_SISO:
         '''
         Generate a SISO pole-residue system with randomized poles and
         residues (S-param system).
-        The default range for poles is [ -1, -0.05 )
-        The default range for residues is [ -1, 1 )
-        The default range for the direct term is [ 0, 0.1 )
+
+        Randomization is not pure, as range of allowed values are specified in
+        the function to give a flavor of somewhat realistic frequency response.
 
         Note that such a system generated in a semi-random manner may not make sense as
         a real circuit frequency response.
@@ -119,3 +119,14 @@ class PoleResSyst_SISO:
 
 
         return mySyst
+    
+    @staticmethod
+    def gen_rand_1param_var( tarSyst, p_rng ):
+        '''
+        Create a series of pole-residue systems that are reflective of parametric
+        variation with respect to 1 parameter generated in a semi-random fashion.
+        '''
+
+        assert isinstance( tarSyst, PoleResSyst_SISO ), f"x must be PoleResSyst_SISO, got {type(tarSyst)}"
+
+        return 0
