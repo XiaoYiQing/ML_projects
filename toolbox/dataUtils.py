@@ -16,19 +16,26 @@ from toolbox.indexingUtils import rand_samp
 def random_in_range(x0, x1, n):
   return np.random.uniform(x0, x1, size=n)
 
-def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 1 ) ):
+def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 1 ), re_r = False ):
   '''
   Generate a set of roots for a polynomial that is strictly real.
   The roots may be either real or complex conjugate pairs.
 
   Args:
-  rt_cnt (int): The number of roots to be created.
-  rt_re_rng ( (float, float) ): The range of real parts acceptable.
-  rt_im_rng ( (float, float) ): The range of imaginary parts acceptable.
+    rt_cnt (int): The number of roots to be created.
+    rt_re_rng ( (float, float) ): The range of root real parts allowed.
+    rt_im_rng ( (float, float) ): The range of root imaginary parts allowed.
+    re_r (bool): Flag indicating whether real roots are allowed. Number of real roots
+      is randomly selected. If false, rt_cnt MUST be even.
   '''
 
+  if re_r and ( rt_cnt % 2 != 0 ):
+      raise ValueError(f"No real root flag is raised, but number of roots requested is not even.")
+
   # Real root count random selection.
-  if rt_cnt <= 1:
+  if not re_r:
+      re_rt_cnt = 0
+  elif rt_cnt <= 1:
       re_rt_cnt = rt_cnt
   else:
       # Select a m that is less than n but ensures n-m is even.
@@ -38,16 +45,23 @@ def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 
   # Determine the number of complex conjugate pairs given real roots count is defined now.
   cp_cj_pair_cnt = int( np.floor( ( rt_cnt - re_rt_cnt )/2 ) )
 
+  # System's complex roots and residuals random selection with explicit complex 
+  # conjugacy.
+  roots_cp_tmp = random_in_range( rt_re_rng[0], rt_re_rng[1], cp_cj_pair_cnt ) + \
+      1j * random_in_range( rt_im_rng[0], rt_im_rng[1], cp_cj_pair_cnt )
+  
+  # Reroll the root if it has 0 imaginary part.
+  tol = 1e-12
+  for z in range( cp_cj_pair_cnt ):
+    while abs( roots_cp_tmp[z].imag ) < tol:
+      roots_cp_tmp[z].imag = random_in_range( rt_im_rng[0], rt_im_rng[1], 1 )[0]
+  
+  roots_cp_cj = np.conjugate( roots_cp_tmp )
 
   # Define odd and even interleaving index arrays.
   even_idx = np.zeros( 2*cp_cj_pair_cnt, dtype=bool )
   even_idx[::2] = True    # every other element, starting at 0
   odd_idx = ~even_idx
-  # System's complex roots and residuals random selection with explicit complex 
-  # conjugacy.
-  roots_cp_tmp = random_in_range( rt_re_rng[0], rt_re_rng[1], cp_cj_pair_cnt ) + \
-      1j * random_in_range( rt_im_rng[0], rt_im_rng[1], cp_cj_pair_cnt )
-  roots_cp_cj = np.conjugate( roots_cp_tmp )
   # Assemble the complex conjugate roots in pairs.
   roots_cp = np.zeros( 2*cp_cj_pair_cnt, dtype=complex )
   roots_cp[even_idx] = roots_cp_tmp

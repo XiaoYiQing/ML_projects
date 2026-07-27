@@ -20,6 +20,7 @@ import random
 
 from func_depo import PoleResSyst_SISO
 from toolbox.dataUtils import random_in_range
+from toolbox.dataUtils import random_re_poly_roots
 
 
 # ======================================================================= >>>>>
@@ -102,7 +103,6 @@ if do_test:
 
     # Obtain the roots of the denominator.
     roots = den_poly.r
-    print( roots )
 
     def rat_func(x):
         return num_poly(x)/den_poly(x)
@@ -120,51 +120,44 @@ if do_test:
 
 
 
-do_test = False
+do_test = True
 
 if do_test:
 
-    num_cnt = random.randint( 1, 10 )       # Number of numerator coefficients.
+    num_cnt = random.randint( 6, 10 )       # Number of numerator coefficients.
     num_rng = ( -1, 1 )                     # Numerator coefficient value range.
 
     # Randomly generate the set of numerical polynomial coefficients.
     num_coeff_arr =   random_in_range( num_rng[0], num_rng[1], num_cnt )
 
-    
-
     # Set the number of poles.
-    denom_cnt = num_cnt + 1
+    denom_cnt = num_cnt
 
-    # Real pole count random selection.
-    if denom_cnt <= 1:
-        r_cnt = denom_cnt
-    else:
-        # Select a m that is less than n but ensures n-m is even.
-        candidates = [ m for m in range(1, denom_cnt) if (denom_cnt - m) % 2 == 0 ]
-        r_cnt = random.choice( candidates )
+    # Define numerical ranges of poles.
+    poles_re_rng = ( -1, 1 )
+    poles_im_rng = ( -1, 1 )
 
-    # Determine the number of complex conjugate pairs given real poles count is defined now.
-    cp_cj_pair_cnt = int( np.floor( ( denom_cnt - r_cnt )/2 ) )
+    # Generate real polynomial roots (poles) set.
+    denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False )
 
-    # Range of poles.
-    poles_re_rng = ( -5, 5 )
-    poles_im_rng = ( -10, 10 )
+    num_poly = np.poly1d( num_coeff_arr )
+    denom_coeff_arr = np.poly( denom_roots )
+    denom_poly = np.poly1d( denom_coeff_arr )
 
-    # Define odd and even interleaving index arrays.
-    even_idx = np.zeros( 2*cp_cj_pair_cnt, dtype=bool )
-    even_idx[::2] = True    # every other element, starting at 0
-    odd_idx = ~even_idx
-    # System's complex poles and residuals random selection with explicit complex 
-    # conjugacy.
-    poles_cp_tmp = random_in_range( poles_re_rng[0], poles_re_rng[1], cp_cj_pair_cnt ) + \
-        1j * random_in_range( poles_im_rng[0], poles_im_rng[1], cp_cj_pair_cnt )
-    poles_cp_cj = np.conjugate( poles_cp_tmp )
-    # Assemble the complex conjugate poles in pairs.
-    poles_cp = np.zeros( 2*cp_cj_pair_cnt, dtype=complex )
-    poles_cp[even_idx] = poles_cp_tmp
-    poles_cp[odd_idx] = poles_cp_cj
+    print( denom_roots )
     
+    def rat_func(x):
+        return num_poly(x)/denom_poly(x)
 
+    x_arr = np.linspace( 0, 2, 200 )
+    y_arr = rat_func( x_arr )
+    
+    plt.plot( x_arr, y_arr )
+    plt.xlabel("x")
+    plt.ylabel("S_mag")
+    plt.title("S-param Magnitude")
+    plt.grid(True)
+    plt.show()
 
 # ======================================================================= <<<<<
 
