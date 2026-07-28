@@ -31,7 +31,7 @@ def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 
     tol: magnitude threshold of how small the imaginary part of complex roots can be.
   '''
 
-  if re_r and ( rt_cnt % 2 != 0 ):
+  if ( not re_r ) and ( rt_cnt % 2 != 0 ):
       raise ValueError(f"No real root flag is raised, but number of roots requested is not even.")
 
   # TODO: If tol is close to one limit, it might take too many rerolls to get valid entry.
@@ -80,6 +80,89 @@ def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 
   roots = np.concatenate( ( roots_r, roots_cp ) )
 
   return roots
+
+
+def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1), 
+  poles_re_rng=(-1,1), poles_im_rng=(-1,1), x_rng=(0,2), y_adj_amp=0.5 ):
+  '''
+  Specialized function which generates a lambda function that is based on the
+  quotient between two randomly generated polynomials.
+  
+  There are a few key points that differentiate this rational function generator from being
+  truly random:
+    - The rational function will be strictly real.
+    - The numerator polynomial is randomized based on coefficients, but the 
+      denominator polynomial is randomized based on roots (poles) in order
+      to control singularity points that may appear over the x-axis.
+    - The denominator polynomial will avoid having real poles at all cost over
+      the effective range (x_rng) of the function. It will thus always try to
+      create complex conjugate pair roots rather than purely real roots. This implies
+      that the number of coefficients in the denominator polynomial will be forcibly
+      changed into an even number (rounded up).
+    - The rational function will take an extra fitting step where it is forced to scale
+      with respect to the specified effective range (x_rng) over the y-range from 0 to y_adj_amp.
+      This "normalization" is only conducted based on the effective range ONLY, so the 
+      function most likely is not adjusted as intended outside this effective range.
+
+  Args:
+    num_cnt: Number of coefficients in the numerator polynomial (order = num_cnt - 1).
+    denom_cnt: Number of coefficients in the denominator polynomial (order = denom_cnt - 1).
+    num_rng: The range of allowed values in the numerator polynomial coefficients.
+    poles_re_rng: The range of allowed real parts in the denominator polynomial roots.
+    poles_im_rng: The range of allowed imaginary parts in the denominator polynomial roots.
+      Note that a threahold prevents any value too close to 0.
+    x_rng: The effective x-axis range, where the rational function is normalized w.r.t.
+    y_adj_amp: The normalization target limit. Normalization is applied so that y values
+      within the effective range x_rng are between [0, y_adj_amp] or [ y_adj_amp, 0 ] if
+      y_adj_amp is negative.
+  '''
+
+  if y_adj_amp == 0:
+    raise ValueError(f"y_adj_amp cannot be 0.")
+
+  # Force the denominator polynomial to have even number of roots.
+  if denom_cnt % 2 != 0:
+    denom_cnt += 1
+
+  # Randomly generate the set of numerical polynomial coefficients.
+  num_coeff_arr = random_in_range( num_rng[0], num_rng[1], num_cnt )
+  # Generate the corresponding numerator polynomial.
+  num_poly = np.poly1d( num_coeff_arr )
+
+  # Generate real polynomial roots (poles) set.
+  denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False, 1e-2 )
+  # Generate the corresponding denominator polynomial.
+  denom_coeff_arr = np.poly( denom_roots )
+  denom_poly = np.poly1d( denom_coeff_arr )
+
+  # Define the lambda representing the rational function inits raw state.
+  func_raw = lambda x: num_poly(x)/denom_poly(x)
+
+
+  '''
+  Adjustment to the generated rational function.
+  '''
+  
+  # The number of sample points.
+  samp_cnt = 400
+  # The sampling set.
+  x_arr = np.linspace( x_rng[0], x_rng[1], samp_cnt )
+  # The sample data.
+  y_raw_arr = func_raw( x_arr )
+
+  # Determine the function range over the effective range.
+  y_raw_rng = ( min( y_raw_arr ), max( y_raw_arr ) )
+  # The amplitude of the function over the effective range.
+  y_raw_amp = y_raw_rng[1] - y_raw_rng[0]
+
+  # Define the scaling factor for the rational function to reach the intended
+  # amplitude over the effective range.
+  y_scale_fact = y_adj_amp / y_raw_amp
+
+  # Define the adjusted parameter domain variation rational function.
+  func_adj = lambda x: ( func_raw(x) - y_raw_rng[0] ) * y_scale_fact
+
+  return func_adj
 
 def get_mnist_tr_ts_sets( tr_set_indiv_size ):
   '''

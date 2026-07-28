@@ -152,11 +152,14 @@ class PoleResSyst_SISO:
 
         # Set the number of poles.
         denom_cnt = num_cnt
+        if denom_cnt % 2 != 0:
+            denom_cnt += 1
+        
         # Define numerical ranges of poles.
         poles_re_rng = ( -1, 1 )
         poles_im_rng = ( -1, 1 )
         # Generate real polynomial roots (poles) set.
-        denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False, 1e-3 )
+        denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False, 1e-2 )
     
         num_poly = np.poly1d( num_coeff_arr )
         denom_coeff_arr = np.poly( denom_roots )
@@ -170,7 +173,7 @@ class PoleResSyst_SISO:
         '''
 
         # The number of sample points.
-        samp_cnt = 200
+        samp_cnt = 400
         # The effective range of the random rational function.
         p_rng = ( 0, 2 )
         # The sampling set.
@@ -189,11 +192,10 @@ class PoleResSyst_SISO:
         # amplitude over the effective range.
         y_scale_fact = y_adj_amp / y_raw_amp
 
-        
+        # Define the adjusted parameter domain variation rational function.
         func_adj = lambda x: ( func_raw(x) - y_raw_rng[0] ) * y_scale_fact
 
         y_adj_arr = func_adj( p_arr )
-
         plt.plot( p_arr, y_raw_arr )
         plt.plot( p_arr, y_adj_arr )
         plt.xlabel("p")
@@ -201,5 +203,7 @@ class PoleResSyst_SISO:
         plt.title("Rat. Func.")
         plt.grid(True)
         plt.show()
+
+        
 
         return 0
