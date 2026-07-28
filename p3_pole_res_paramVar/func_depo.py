@@ -156,7 +156,7 @@ class PoleResSyst_SISO:
         poles_re_rng = ( -1, 1 )
         poles_im_rng = ( -1, 1 )
         # Generate real polynomial roots (poles) set.
-        denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False )
+        denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False, 1e-3 )
     
         num_poly = np.poly1d( num_coeff_arr )
         denom_coeff_arr = np.poly( denom_roots )
@@ -183,11 +183,12 @@ class PoleResSyst_SISO:
         # The amplitude of the function over the effective range.
         y_raw_amp = y_raw_rng[1] - y_raw_rng[0]
 
-        # Define the adjusted amplitude.
+        # Define the adjusted function amplitude.
         y_adj_amp = 0.5
         # Define the scaling factor for the rational function to reach the intended
         # amplitude over the effective range.
         y_scale_fact = y_adj_amp / y_raw_amp
+
         
         func_adj = lambda x: ( func_raw(x) - y_raw_rng[0] ) * y_scale_fact
 

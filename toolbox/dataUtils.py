@@ -16,7 +16,8 @@ from toolbox.indexingUtils import rand_samp
 def random_in_range(x0, x1, n):
   return np.random.uniform(x0, x1, size=n)
 
-def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 1 ), re_r = False ):
+def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 1 ), \
+  re_r = False, tol = 1e-9 ):
   '''
   Generate a set of roots for a polynomial that is strictly real.
   The roots may be either real or complex conjugate pairs.
@@ -27,10 +28,15 @@ def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 
     rt_im_rng ( (float, float) ): The range of root imaginary parts allowed.
     re_r (bool): Flag indicating whether real roots are allowed. Number of real roots
       is randomly selected. If false, rt_cnt MUST be even.
+    tol: magnitude threshold of how small the imaginary part of complex roots can be.
   '''
 
   if re_r and ( rt_cnt % 2 != 0 ):
       raise ValueError(f"No real root flag is raised, but number of roots requested is not even.")
+
+  # TODO: If tol is close to one limit, it might take too many rerolls to get valid entry.
+  if tol > abs( rt_im_rng[0] ) or tol > abs( rt_im_rng[1] ):
+      raise ValueError( f"Root imaginary part magnitude threadhold higher than smallest imaginary value limit." )
 
   # Real root count random selection.
   if not re_r:
@@ -51,7 +57,6 @@ def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 
       1j * random_in_range( rt_im_rng[0], rt_im_rng[1], cp_cj_pair_cnt )
   
   # Reroll the root if it has 0 imaginary part.
-  tol = 1e-12
   for z in range( cp_cj_pair_cnt ):
     while abs( roots_cp_tmp[z].imag ) < tol:
       roots_cp_tmp[z].imag = random_in_range( rt_im_rng[0], rt_im_rng[1], 1 )[0]
