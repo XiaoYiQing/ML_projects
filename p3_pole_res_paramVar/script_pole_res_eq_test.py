@@ -58,6 +58,7 @@ if do_test:
 
 do_test = False
 
+# Simple random pole-residue system generation test.
 if do_test:
 
     mySyst = PoleResSyst_SISO.gen_rand_syst( 14 )
@@ -65,13 +66,23 @@ if do_test:
     x_arr = np.linspace( -100, 100, 400 )
     S_arr = mySyst.freq_response( x_arr )
 
-
     plt.plot( x_arr, abs( S_arr ) )
     plt.xlabel("x")
     plt.ylabel("S_mag")
     plt.title("S-param Magnitude")
     plt.grid(True)
     plt.show()
+
+
+
+do_test = True
+
+# Random parametrization test.
+if do_test:
+
+    mySyst = PoleResSyst_SISO.gen_rand_syst( 14 )
+
+    PoleResSyst_SISO.gen_rand_1param_var( mySyst )
 
 # ======================================================================= <<<<<
 
@@ -120,8 +131,9 @@ if do_test:
 
 
 
-do_test = True
+do_test = False
 
+# Rational function generation using randomized poles as starting point.
 if do_test:
 
     num_cnt = random.randint( 6, 10 )       # Number of numerator coefficients.
