@@ -179,11 +179,17 @@ class PoleResSyst_SISO:
         y_raw_arr = func_raw( p_arr )
 
         # Determine the function range over the effective range.
-        y_rng = ( min( y_raw_arr ), max( y_raw_arr ) )
+        y_raw_rng = ( min( y_raw_arr ), max( y_raw_arr ) )
         # The amplitude of the function over the effective range.
-        y_amp = y_rng[1] - y_rng[0]
+        y_raw_amp = y_raw_rng[1] - y_raw_rng[0]
+
+        # Define the adjusted amplitude.
+        y_adj_amp = 0.5
+        # Define the scaling factor for the rational function to reach the intended
+        # amplitude over the effective range.
+        y_scale_fact = y_adj_amp / y_raw_amp
         
-        func_adj = lambda x: ( func_raw(x) - y_rng[0] ) / y_amp
+        func_adj = lambda x: ( func_raw(x) - y_raw_rng[0] ) * y_scale_fact
 
         y_adj_arr = func_adj( p_arr )
 
