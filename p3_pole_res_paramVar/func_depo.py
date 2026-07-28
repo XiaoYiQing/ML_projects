@@ -21,6 +21,7 @@ import random
 from scipy import signal
 from toolbox.dataUtils import random_in_range
 from toolbox.dataUtils import random_re_poly_roots
+from toolbox.dataUtils import random_fitted_re_rat_func
 
 
 class PoleResSyst_SISO:

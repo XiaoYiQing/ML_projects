@@ -162,7 +162,7 @@ def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1),
   # Define the adjusted parameter domain variation rational function.
   func_adj = lambda x: ( func_raw(x) - y_raw_rng[0] ) * y_scale_fact
 
-  return func_adj
+  return func_adj, func_raw, num_poly, denom_poly
 
 def get_mnist_tr_ts_sets( tr_set_indiv_size ):
   '''
