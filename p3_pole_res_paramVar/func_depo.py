@@ -159,43 +159,25 @@ class PoleResSyst_SISO:
         # Define numerical ranges of poles.
         poles_re_rng = ( -1, 1 )
         poles_im_rng = ( -1, 1 )
-        # Generate real polynomial roots (poles) set.
-        denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False, 1e-2 )
     
-        num_poly = np.poly1d( num_coeff_arr )
-        denom_coeff_arr = np.poly( denom_roots )
-        denom_poly = np.poly1d( denom_coeff_arr )
-
-
-        func_raw = lambda x: num_poly(x)/denom_poly(x)
-
-        '''
-        Adjustment to the generated rational function.
-        '''
-
-        # The number of sample points.
-        samp_cnt = 400
         # The effective range of the random rational function.
         p_rng = ( 0, 2 )
+
+        # The allowed amplitude to the rational function.
+        y_adj_amp = 0.5
+
+        func_adj, numPoly, denomPoly = random_fitted_re_rat_func( num_cnt, denom_cnt, num_rng, poles_re_rng, \
+            poles_im_rng, p_rng, y_adj_amp )
+
+        # Define the number of samples.
+        samp_cnt = 400
         # The sampling set.
         p_arr = np.linspace( p_rng[0], p_rng[1], samp_cnt )
-        # The sample data.
+
+        # Re-define the raw rational function.
+        func_raw = lambda x: numPoly(x)/denomPoly(x)
+        
         y_raw_arr = func_raw( p_arr )
-
-        # Determine the function range over the effective range.
-        y_raw_rng = ( min( y_raw_arr ), max( y_raw_arr ) )
-        # The amplitude of the function over the effective range.
-        y_raw_amp = y_raw_rng[1] - y_raw_rng[0]
-
-        # Define the adjusted function amplitude.
-        y_adj_amp = 0.5
-        # Define the scaling factor for the rational function to reach the intended
-        # amplitude over the effective range.
-        y_scale_fact = y_adj_amp / y_raw_amp
-
-        # Define the adjusted parameter domain variation rational function.
-        func_adj = lambda x: ( func_raw(x) - y_raw_rng[0] ) * y_scale_fact
-
         y_adj_arr = func_adj( p_arr )
         plt.plot( p_arr, y_raw_arr )
         plt.plot( p_arr, y_adj_arr )
