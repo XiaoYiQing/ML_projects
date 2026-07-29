@@ -157,7 +157,7 @@ class PoleResSyst_SISO:
         variation profile.
         '''
 
-        num_cnt = random.randint( 6, 10 )       # Number of numerator coefficients.
+        num_cnt = random.randint( 8, 10 )       # Number of numerator coefficients.
         num_rng = ( -1, 1 )                     # Numerator coefficient value range.
         # Randomly generate the set of numerical polynomial coefficients.
         num_coeff_arr =   random_in_range( num_rng[0], num_rng[1], num_cnt )
@@ -172,7 +172,7 @@ class PoleResSyst_SISO:
         poles_im_rng = ( -1, 1 )
     
         # The effective range of the random rational function.
-        p_rng = ( 0, 2 )
+        p_rng = ( 0, 1 )
 
         # Define variation factor (percentage of allowed change in decimal).
         var_fact = 0.1
@@ -187,7 +187,8 @@ class PoleResSyst_SISO:
 
         print( "System pole/res count: ", syst_pole_cnt )
         print( "System base poles: \n", tarSyst.poles )
-        print( "System base residues: \n", tarSyst.residues )
+        fig1, ax1 = plt.subplots()
+        fig2, ax2 = plt.subplots()
 
         cplx_conj_iter = False
         for z in range( syst_pole_cnt ):
@@ -204,17 +205,19 @@ class PoleResSyst_SISO:
             # detected a complex conjugate pair.
             cplx_conj_iter = abs( base_pole_z.imag ) > tol
 
-            # Obtain the allowed change in poles.
-            y_pole_adj_amp_z = abs( base_pole_z )*var_fact
+            # Obtain the allowed change in poles real part.
+            y_pole_re_adj_amp_z = abs( base_pole_z.real )*var_fact
             # Obtain variation function for the real parts of the pole.
             pole_re_mod_func_z, _, _ = random_fitted_re_rat_func( num_cnt, denom_cnt, num_rng, \
-                poles_re_rng, poles_im_rng, p_rng, y_pole_adj_amp_z )
+                poles_re_rng, poles_im_rng, p_rng, y_pole_re_adj_amp_z )
 
             if cplx_conj_iter:
 
+                # Obtain the allowed change in poles imaginary.
+                y_pole_im_adj_amp_z = abs( base_pole_z.imag )*var_fact
                 # Obtain variation function for the imaginary parts of the pole.
                 pole_im_mod_func_z, _, _ = random_fitted_re_rat_func( num_cnt, denom_cnt, num_rng, \
-                    poles_re_rng, poles_im_rng, p_rng, y_pole_adj_amp_z )
+                    poles_re_rng, poles_im_rng, p_rng, y_pole_im_adj_amp_z )
 
                 # Add the current modified pole set.
                 pole_arr_z = base_pole_z + ( pole_re_mod_func_z( p_arr ) + 1j*pole_im_mod_func_z( p_arr ) )
@@ -229,15 +232,85 @@ class PoleResSyst_SISO:
                 pole_arr_z = base_pole_z + pole_re_mod_func_z( p_arr )
                 pole_arr[:,z] = pole_arr_z[:]
 
-            plt.plot( p_arr, abs( pole_arr_z ) )
-            plt.xlabel("p")
-            plt.ylabel("y")
-            plt.legend( [ "Poles", "Residues" ] )
-            plt.title("Rat. Func.")
-            plt.grid(True)
-            plt.show()
+            ax1.plot( p_arr, pole_arr_z.real )
+            ax2.plot( p_arr, pole_arr_z.imag )
+            
+        ax1.set_title("Pole Real Part")
+        ax1.set_xlabel("p")
+        ax1.set_ylabel("pole real part")
+        ax1.legend( ["pole re"] )
+        ax1.grid( True, 'both' )
+        ax2.set_title("Pole Imag Part")
+        ax2.set_xlabel("p")
+        ax2.set_ylabel("pole imag part")
+        ax2.legend( ["pole im"] )
+        ax2.grid( True, 'both' )
+        plt.show()
+    
 
         # Define the array housing all the residues.
         res_arr = np.zeros( ( p_cnt, syst_pole_cnt ), dtype=np.complex128 )
-            
+
+        print( "System pole/res count: ", syst_pole_cnt )
+        print( "System base residues: \n", tarSyst.residues )
+        fig1, ax1 = plt.subplots()
+        fig2, ax2 = plt.subplots()
+
+        cplx_conj_iter = False
+        for z in range( syst_pole_cnt ):
+
+            # If complex conjugate case detected previously, skip current iteration.
+            if cplx_conj_iter:
+                cplx_conj_iter = False
+                continue
+
+            # Obtain the current residues.
+            base_res_z = tarSyst.residues[z]
+
+            # Verify if current residue imaginary part is present, in which case we have 
+            # detected a complex conjugate pair.
+            cplx_conj_iter = abs( base_res_z.imag ) > tol
+
+            # Obtain the allowed change in residues real part.
+            y_res_re_adj_amp_z = abs( base_res_z.real )*var_fact
+            # Obtain variation function for the real parts of the res.
+            res_re_mod_func_z, _, _ = random_fitted_re_rat_func( num_cnt, denom_cnt, num_rng, \
+                poles_re_rng, poles_im_rng, p_rng, y_res_re_adj_amp_z )            
+
+            if cplx_conj_iter:
+
+                # Obtain the allowed change in res imaginary.
+                y_res_im_adj_amp_z = abs( base_res_z.imag )*var_fact
+                # Obtain variation function for the imaginary parts of the res.
+                res_im_mod_func_z, _, _ = random_fitted_re_rat_func( num_cnt, denom_cnt, num_rng, \
+                    poles_re_rng, poles_im_rng, p_rng, y_res_im_adj_amp_z )
+
+                # Add the current modified res set.
+                res_arr_z = base_res_z + ( res_re_mod_func_z( p_arr ) + 1j*res_im_mod_func_z( p_arr ) )
+                res_arr[:,z] = res_arr_z[:]
+                # Add the complex conjugate modified res set.
+                res_arr_z = base_res_z + ( res_re_mod_func_z( p_arr ) - 1j*res_im_mod_func_z( p_arr ) )
+                res_arr[:,z+1] = res_arr_z[:]
+
+            else:
+
+                # Add the current modified res set.
+                res_arr_z = base_res_z + res_re_mod_func_z( p_arr )
+                res_arr[:,z] = res_arr_z[:]
+
+            ax1.plot( p_arr, res_arr_z.real )
+            ax2.plot( p_arr, res_arr_z.imag )
+
+        ax1.set_title("Res Real Part")
+        ax1.set_xlabel("p")
+        ax1.set_ylabel("res real part")
+        ax1.legend( ["res re"] )
+        ax1.grid( True, 'both' )
+        ax2.set_title("Res Imag Part")
+        ax2.set_xlabel("p")
+        ax2.set_ylabel("res imag part")
+        ax2.legend( ["res im"] )
+        ax2.grid( True, 'both' )
+        plt.show()
+
         return 0
