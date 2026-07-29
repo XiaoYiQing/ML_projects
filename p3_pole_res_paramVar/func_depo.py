@@ -185,10 +185,10 @@ class PoleResSyst_SISO:
         pole_arr = np.zeros( ( p_cnt, syst_pole_cnt ), dtype=np.complex128 )
         
 
-        print( "System pole/res count: ", syst_pole_cnt )
-        print( "System base poles: \n", tarSyst.poles )
-        fig1, ax1 = plt.subplots()
-        fig2, ax2 = plt.subplots()
+        # print( "System pole/res count: ", syst_pole_cnt )
+        # print( "System base poles: \n", tarSyst.poles )
+        # fig1, ax1 = plt.subplots()
+        # fig2, ax2 = plt.subplots()
 
         cplx_conj_iter = False
         for z in range( syst_pole_cnt ):
@@ -232,29 +232,29 @@ class PoleResSyst_SISO:
                 pole_arr_z = base_pole_z + pole_re_mod_func_z( p_arr )
                 pole_arr[:,z] = pole_arr_z[:]
 
-            ax1.plot( p_arr, pole_arr_z.real )
-            ax2.plot( p_arr, pole_arr_z.imag )
+            # ax1.plot( p_arr, pole_arr_z.real )
+            # ax2.plot( p_arr, pole_arr_z.imag )
             
-        ax1.set_title("Pole Real Part")
-        ax1.set_xlabel("p")
-        ax1.set_ylabel("pole real part")
-        ax1.legend( ["pole re"] )
-        ax1.grid( True, 'both' )
-        ax2.set_title("Pole Imag Part")
-        ax2.set_xlabel("p")
-        ax2.set_ylabel("pole imag part")
-        ax2.legend( ["pole im"] )
-        ax2.grid( True, 'both' )
-        plt.show()
+        # ax1.set_title("Pole Real Part")
+        # ax1.set_xlabel("p")
+        # ax1.set_ylabel("pole real part")
+        # ax1.legend( ["pole re"] )
+        # ax1.grid( True, 'both' )
+        # ax2.set_title("Pole Imag Part")
+        # ax2.set_xlabel("p")
+        # ax2.set_ylabel("pole imag part")
+        # ax2.legend( ["pole im"] )
+        # ax2.grid( True, 'both' )
+        # plt.show()
     
 
         # Define the array housing all the residues.
         res_arr = np.zeros( ( p_cnt, syst_pole_cnt ), dtype=np.complex128 )
 
-        print( "System pole/res count: ", syst_pole_cnt )
-        print( "System base residues: \n", tarSyst.residues )
-        fig1, ax1 = plt.subplots()
-        fig2, ax2 = plt.subplots()
+        # print( "System pole/res count: ", syst_pole_cnt )
+        # print( "System base residues: \n", tarSyst.residues )
+        # fig1, ax1 = plt.subplots()
+        # fig2, ax2 = plt.subplots()
 
         cplx_conj_iter = False
         for z in range( syst_pole_cnt ):
@@ -298,19 +298,19 @@ class PoleResSyst_SISO:
                 res_arr_z = base_res_z + res_re_mod_func_z( p_arr )
                 res_arr[:,z] = res_arr_z[:]
 
-            ax1.plot( p_arr, res_arr_z.real )
-            ax2.plot( p_arr, res_arr_z.imag )
+            # ax1.plot( p_arr, res_arr_z.real )
+            # ax2.plot( p_arr, res_arr_z.imag )
 
-        ax1.set_title("Res Real Part")
-        ax1.set_xlabel("p")
-        ax1.set_ylabel("res real part")
-        ax1.legend( ["res re"] )
-        ax1.grid( True, 'both' )
-        ax2.set_title("Res Imag Part")
-        ax2.set_xlabel("p")
-        ax2.set_ylabel("res imag part")
-        ax2.legend( ["res im"] )
-        ax2.grid( True, 'both' )
-        plt.show()
+        # ax1.set_title("Res Real Part")
+        # ax1.set_xlabel("p")
+        # ax1.set_ylabel("res real part")
+        # ax1.legend( ["res re"] )
+        # ax1.grid( True, 'both' )
+        # ax2.set_title("Res Imag Part")
+        # ax2.set_xlabel("p")
+        # ax2.set_ylabel("res imag part")
+        # ax2.legend( ["res im"] )
+        # ax2.grid( True, 'both' )
+        # plt.show()
 
-        return 0
+        return pole_arr, res_arr

@@ -82,7 +82,10 @@ if do_test:
 
     mySyst = PoleResSyst_SISO.gen_rand_syst( 6 )
 
-    PoleResSyst_SISO.gen_rand_1param_var( mySyst )
+    pole_arr, res_arr = PoleResSyst_SISO.gen_rand_1param_var( mySyst )
+
+    print( pole_arr.shape )
+    print( res_arr.shape )
 
 # ======================================================================= <<<<<
 
