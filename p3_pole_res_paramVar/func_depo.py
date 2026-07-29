@@ -194,7 +194,6 @@ class PoleResSyst_SISO:
 
             # If complex conjugate case detected previously, skip current iteration.
             if cplx_conj_iter:
-                print("HOHO")
                 cplx_conj_iter = False
                 continue
             
@@ -230,14 +229,13 @@ class PoleResSyst_SISO:
                 pole_arr_z = base_pole_z + pole_re_mod_func_z( p_arr )
                 pole_arr[:,z] = pole_arr_z[:]
 
-            # plt.plot( p_arr, abs( pole_arr_z ) )
-            # plt.plot( p_arr, abs( res_arr_z ) )
-            # plt.xlabel("p")
-            # plt.ylabel("y")
-            # plt.legend( [ "Poles", "Residues" ] )
-            # plt.title("Rat. Func.")
-            # plt.grid(True)
-            # plt.show()
+            plt.plot( p_arr, abs( pole_arr_z ) )
+            plt.xlabel("p")
+            plt.ylabel("y")
+            plt.legend( [ "Poles", "Residues" ] )
+            plt.title("Rat. Func.")
+            plt.grid(True)
+            plt.show()
 
         # Define the array housing all the residues.
         res_arr = np.zeros( ( p_cnt, syst_pole_cnt ), dtype=np.complex128 )

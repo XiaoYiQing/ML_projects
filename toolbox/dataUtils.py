@@ -83,7 +83,7 @@ def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 
 
 
 def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1), 
-  poles_re_rng=(-1,1), poles_im_rng=(-1,1), x_rng=(0,2), y_adj_amp=0.5 ):
+  poles_re_rng=(-1,1), poles_im_rng=(-1,1), x_rng=(0,2), y_adj_amp=1 ):
   '''
   Specialized function which generates a lambda function that is based on the
   quotient between two randomly generated polynomials.
@@ -130,7 +130,7 @@ def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1),
   num_poly = np.poly1d( num_coeff_arr )
 
   # Generate real polynomial roots (poles) set.
-  denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False, 1e-2 )
+  denom_roots = random_re_poly_roots( denom_cnt, poles_re_rng, poles_im_rng, False, 1e-1 )
   # Generate the corresponding denominator polynomial.
   denom_coeff_arr = np.poly( denom_roots )
   denom_poly = np.poly1d( denom_coeff_arr )
