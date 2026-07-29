@@ -59,7 +59,7 @@ def random_re_poly_roots( rt_cnt = 10, rt_re_rng = ( -1, 1 ), rt_im_rng = ( -1, 
   # Reroll the root if it has 0 imaginary part.
   for z in range( cp_cj_pair_cnt ):
     while abs( roots_cp_tmp[z].imag ) < tol:
-      roots_cp_tmp[z].imag = random_in_range( rt_im_rng[0], rt_im_rng[1], 1 )[0]
+      roots_cp_tmp[z] = complex( roots_cp_tmp[z].real, random_in_range( rt_im_rng[0], rt_im_rng[1], 1 )[0] )
   
   roots_cp_cj = np.conjugate( roots_cp_tmp )
 
@@ -138,7 +138,7 @@ def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1),
   # Define the lambda representing the rational function inits raw state.
   func_raw = lambda x: num_poly(x)/denom_poly(x)
 
-  
+
 
   '''
   Adjustment to the generated rational function.

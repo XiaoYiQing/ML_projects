@@ -80,7 +80,7 @@ do_test = True
 # Random parametrization test.
 if do_test:
 
-    mySyst = PoleResSyst_SISO.gen_rand_syst( 14 )
+    mySyst = PoleResSyst_SISO.gen_rand_syst( 6 )
 
     PoleResSyst_SISO.gen_rand_1param_var( mySyst )
 

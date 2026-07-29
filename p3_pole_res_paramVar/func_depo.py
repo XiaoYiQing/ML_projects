@@ -136,10 +136,21 @@ class PoleResSyst_SISO:
         '''
         Create a series of pole-residue systems that are reflective of parametric
         variation with respect to 1 parameter generated in a semi-random fashion.
+
+        The input poles-res system is assumed to be strictly real, which means its
+        residues and poles all come either in real values or complex conjugate pairs.
         '''
+
+        
 
         assert isinstance( tarSyst, PoleResSyst_SISO ), f"tarSyst must be PoleResSyst_SISO, got {type(tarSyst)}"
         # assert isinstance( p_rng, ( numbers.Number, numbers.Number ) ), f"p_rng must be (numbers.Number,numbers.Number), got {type(p_rng)}"
+
+        tol = 1e-12
+
+        syst_pole_cnt = len( tarSyst.poles )
+        tarSyst.residues
+        tarSyst.direct
 
         '''
         Generate core randomized rational function that serves as the basis of parametric
@@ -163,30 +174,72 @@ class PoleResSyst_SISO:
         # The effective range of the random rational function.
         p_rng = ( 0, 2 )
 
-        # The allowed amplitude to the rational function.
-        y_adj_amp = 0.5
+        # Define variation factor (percentage of allowed change in decimal).
+        var_fact = 0.1
+        # Define the number of parameter points to sample.
+        p_cnt = 200
+        # Define the parameter sampling set.
+        p_arr = np.linspace( p_rng[0], p_rng[1], p_cnt )
 
-        func_adj, numPoly, denomPoly = random_fitted_re_rat_func( num_cnt, denom_cnt, num_rng, poles_re_rng, \
-            poles_im_rng, p_rng, y_adj_amp )
-
-        # Define the number of samples.
-        samp_cnt = 400
-        # The sampling set.
-        p_arr = np.linspace( p_rng[0], p_rng[1], samp_cnt )
-
-        # Re-define the raw rational function.
-        func_raw = lambda x: numPoly(x)/denomPoly(x)
-        
-        y_raw_arr = func_raw( p_arr )
-        y_adj_arr = func_adj( p_arr )
-        plt.plot( p_arr, y_raw_arr )
-        plt.plot( p_arr, y_adj_arr )
-        plt.xlabel("p")
-        plt.ylabel("y")
-        plt.title("Rat. Func.")
-        plt.grid(True)
-        plt.show()
-
+        # Define the array housing all the poles.
+        pole_arr = np.zeros( ( p_cnt, syst_pole_cnt ), dtype=np.complex128 )
         
 
+        print( "System pole/res count: ", syst_pole_cnt )
+        print( "System base poles: \n", tarSyst.poles )
+        print( "System base residues: \n", tarSyst.residues )
+
+        cplx_conj_iter = False
+        for z in range( syst_pole_cnt ):
+
+            # If complex conjugate case detected previously, skip current iteration.
+            if cplx_conj_iter:
+                print("HOHO")
+                cplx_conj_iter = False
+                continue
+            
+            # Obtain the current pole.
+            base_pole_z = tarSyst.poles[z]
+
+            # Verify if current pole imaginary part is present, in which case we have 
+            # detected a complex conjugate pair.
+            cplx_conj_iter = abs( base_pole_z.imag ) > tol
+
+            # Obtain the allowed change in poles.
+            y_pole_adj_amp_z = abs( base_pole_z )*var_fact
+            # Obtain variation function for the real parts of the pole.
+            pole_re_mod_func_z, _, _ = random_fitted_re_rat_func( num_cnt, denom_cnt, num_rng, \
+                poles_re_rng, poles_im_rng, p_rng, y_pole_adj_amp_z )
+
+            if cplx_conj_iter:
+
+                # Obtain variation function for the imaginary parts of the pole.
+                pole_im_mod_func_z, _, _ = random_fitted_re_rat_func( num_cnt, denom_cnt, num_rng, \
+                    poles_re_rng, poles_im_rng, p_rng, y_pole_adj_amp_z )
+
+                # Add the current modified pole set.
+                pole_arr_z = base_pole_z + ( pole_re_mod_func_z( p_arr ) + 1j*pole_im_mod_func_z( p_arr ) )
+                pole_arr[:,z] = pole_arr_z[:]
+                # Add the complex conjugate modified pole set.
+                pole_arr_z = base_pole_z + ( pole_re_mod_func_z( p_arr ) - 1j*pole_im_mod_func_z( p_arr ) )
+                pole_arr[:,z+1] = pole_arr_z[:]
+
+            else:
+
+                # Add the current modified pole set.
+                pole_arr_z = base_pole_z + pole_re_mod_func_z( p_arr )
+                pole_arr[:,z] = pole_arr_z[:]
+
+            # plt.plot( p_arr, abs( pole_arr_z ) )
+            # plt.plot( p_arr, abs( res_arr_z ) )
+            # plt.xlabel("p")
+            # plt.ylabel("y")
+            # plt.legend( [ "Poles", "Residues" ] )
+            # plt.title("Rat. Func.")
+            # plt.grid(True)
+            # plt.show()
+
+        # Define the array housing all the residues.
+        res_arr = np.zeros( ( p_cnt, syst_pole_cnt ), dtype=np.complex128 )
+            
         return 0
