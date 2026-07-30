@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 import random
 
 from func_depo import PoleResSyst_SISO
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (needed for 3D)
 from toolbox.dataUtils import random_in_range
 from toolbox.dataUtils import random_re_poly_roots
 
@@ -80,43 +81,126 @@ do_test = True
 # Random parametrization test.
 if do_test:
 
+    # Define the umber of system poles.
+    syst_pole_cnt = 8
+
     # Generate the reference poles-res system.
-    mySyst = PoleResSyst_SISO.gen_rand_syst( 8 )
+    mySyst = PoleResSyst_SISO.gen_rand_syst( syst_pole_cnt )
 
     # Use the reference system to create a full set of randomly generated pole-res 
     # systems created based on the reference system which has its poles and residues varying 
     # over a single abstract parameter using randomly generated rational functions.
     pole_arr, res_arr = PoleResSyst_SISO.gen_rand_1param_var( mySyst )
 
-
+    # Obtain the number of sample abstract parameter points.
     p_cnt = pole_arr.shape[0]
-    syst_pole_cnt = pole_arr.shape[1]
-    
+
+    # Define a generic normalized parameter array.
     p_arr = np.linspace( 0, 1, p_cnt )
 
-    print( "System pole/res count: ", syst_pole_cnt )
-    print( "System poles at p=0: " )
-    print( pole_arr[0,:] )
-    print( pole_arr[10,:] )
-    fig1, ax1 = plt.subplots()
-    fig2, ax2 = plt.subplots()
+    do_plots = False
+    # Poles and residues real and imaginary part plots.
+    if do_plots:
 
-    for z in range( syst_pole_cnt ):
-        pole_arr_z = pole_arr[:,z]
-        ax1.plot( p_arr, pole_arr_z.real )
-        ax2.plot( p_arr, pole_arr_z.imag )
+        print( "System pole/res count: ", syst_pole_cnt )
+        print( "System poles at p=0: " )
+        print( pole_arr[0,:] )
+        print( pole_arr[10,:] )
+        fig1, ax1 = plt.subplots()
+        fig2, ax2 = plt.subplots()
+        fig3, ax3 = plt.subplots()
+        fig4, ax4 = plt.subplots()
 
-    ax1.set_title("Pole Real Part")
-    ax1.set_xlabel("p")
-    ax1.set_ylabel("pole real part")
-    ax1.legend( ["pole re"] )
-    ax1.grid( True, 'both' )
-    ax2.set_title("Pole Imag Part")
-    ax2.set_xlabel("p")
-    ax2.set_ylabel("pole imag part")
-    ax2.legend( ["pole im"] )
-    ax2.grid( True, 'both' )
-    plt.show()
+        for z in range( syst_pole_cnt ):
+            pole_arr_z = pole_arr[:,z]
+            res_arr_z = res_arr[:,z]
+            ax1.plot( p_arr, pole_arr_z.real )
+            ax2.plot( p_arr, pole_arr_z.imag )
+            ax3.plot( p_arr, res_arr_z.real )
+            ax4.plot( p_arr, res_arr_z.imag )
+            
+        # Pole real part plot.
+        ax1.set_title("Pole Real Part")
+        ax1.set_xlabel("p")
+        ax1.set_ylabel("pole real part")
+        ax1.legend( ["pole re"] )
+        ax1.grid( True, 'both' )
+        # Pole Imaginary part plot.
+        ax2.set_title("Pole Imag Part")
+        ax2.set_xlabel("p")
+        ax2.set_ylabel("pole imag part")
+        ax2.legend( ["pole im"] )
+        ax2.grid( True, 'both' )
+        # Residues real part plot.
+        ax3.set_title("Residues Real Part")
+        ax3.set_xlabel("p")
+        ax3.set_ylabel("res real part")
+        ax3.legend( ["res re"] )
+        ax3.grid( True, 'both' )
+        # Residues imag part plot.
+        ax4.set_title("Residues Imag Part")
+        ax4.set_xlabel("p")
+        ax4.set_ylabel("res imag part")
+        ax4.legend( ["res im"] )
+        ax4.grid( True, 'both' )
+
+        plt.show()
+
+
+
+    # Initialize an array of SISO pole-residue systems.
+    syst_arr = [ PoleResSyst_SISO() for _ in range(p_cnt) ]
+
+    x_cnt = 500
+    x_arr = np.linspace( 0, 100, x_cnt )
+    
+    S_arr = np.zeros( (p_cnt, x_cnt), dtype=complex )
+
+    for z in range( p_cnt ):
+
+        # Obtain the current poles and residues.
+        pole_arr_z = pole_arr[z,:]
+        res_arr_z = res_arr[z,:]
+        # Assign the current poles and residues to their system.
+        syst_arr[z].poles = pole_arr_z
+        syst_arr[z].residues = res_arr_z
+
+        S_arr[z,:] = syst_arr[z].freq_response( x_arr )
+
+    do_plots = True
+    # 2D system magnitude plot.
+    if do_plots:
+
+        fig1, ax1 = plt.subplots()
+        for z in range( p_cnt ):
+            ax1.plot( x_arr, abs( S_arr[z,:] ) )
+
+        # Pole real part plot.
+        ax1.set_title("S-man Plot")
+        ax1.set_xlabel("x")
+        ax1.set_ylabel("S-mag")
+        ax1.grid( True, 'both' )
+
+        plt.show()
+
+    do_plots = False
+    # 3D System magnitude and phase plots.
+    if do_plots:
+        P, X = np.meshgrid(x_arr, p_arr, indexing='xy')  # match S_arr shape
+        print( P.shape )
+        print( X.shape )
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        ax.plot_surface(P, X, abs( S_arr ), cmap='viridis')
+
+        ax.set_xlabel('x')
+        ax.set_ylabel('p')
+        ax.set_zlabel('S')
+
+        plt.show()
+
 
 # ======================================================================= <<<<<
 
