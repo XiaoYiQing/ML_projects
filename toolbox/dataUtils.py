@@ -167,7 +167,7 @@ def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1),
 
 
 
-def convert_ccon_to_ReIm_format( tar_vec ):
+def convert_cconj_to_ReIm_format( tar_vec ):
   '''
   Convert the target complex conjugate vector set to the real-imaginary format.
   

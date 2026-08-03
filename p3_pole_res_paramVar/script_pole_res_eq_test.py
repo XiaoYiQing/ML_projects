@@ -20,8 +20,10 @@ import random
 
 from func_depo import PoleResSyst_SISO
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (needed for 3D)
+from toolbox.dataUtils import convert_cconj_to_ReIm_format
 from toolbox.dataUtils import random_in_range
 from toolbox.dataUtils import random_re_poly_roots
+
 
 
 # ======================================================================= >>>>>
@@ -223,49 +225,14 @@ if do_test:
     # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
     # complex values.
     for i in range( p_cnt ):
-        for j in range( poleRes_cnt ):
+        
+        pole_mag_i, pole_cconj_map_i = convert_cconj_to_ReIm_format( pole_arr[i,:] )
+        pole_mag_arr[i,:] = pole_mag_i
+        pole_cconj_map[i,:] = pole_cconj_map_i
 
-            # Skip current term if it is part of previous complex conjugate pair.
-            if cconj_flag:
-                cconj_flag = False
-                continue
-
-            # Current pole and residues.
-            pole_z = pole_arr[i][j]
-            res_z = pole_arr[i][j]
-            # Save real part.
-            pole_mag_arr[i][j] = pole_z.real
-            res_mag_arr[i][j] = res_z.real
-
-            # Complex conjugate pole case.
-            if( abs( pole_z.imag ) > tol ):
-
-                # Save imaginary part.
-                pole_mag_arr[i][j+1] = pole_z.imag
-                # Pole complex conjugacy map update.
-                pole_cconj_map[i][j] = True
-                pole_cconj_map[i][j+1] = True
-                
-                cconj_flag = True
-
-            # Complex conjugate residue case.
-            if( abs( res_z.imag ) > tol ):
-
-                if not cconj_flag:
-                    raise RuntimeError("Real pole detected yet corresponding residue is complex!")
-                
-                # Save imaginary part.
-                res_mag_arr[i][j+1] = res_z.imag
-                # Pole complex conjugacy map update.
-                res_cconj_map[i][j] = True
-                res_cconj_map[i][j+1] = True
-                
-                cconj_flag = True
-
-            else:
-
-                if cconj_flag:
-                    raise RuntimeError("Complex residue detected yet corresponding pole is real!")
+        res_mag_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_arr[i,:] )
+        res_mag_arr[i,:] = res_mag_i
+        res_cconj_map[i,:] = res_cconj_map_i
             
     
     # Compute the column wise maximum magnitude.
