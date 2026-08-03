@@ -18,6 +18,10 @@ matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import random
 
+from tensorflow import keras
+from tensorflow.keras import layers
+from sklearn.model_selection import train_test_split
+
 from func_depo import PoleResSyst_SISO
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (needed for 3D)
 from toolbox.dataUtils import convert_cconj_to_ReIm_format
@@ -213,15 +217,13 @@ if do_test:
         plt.show()
 
 
-    # Define poles and residues arrays with just real and imaginary part magnitudes.
+    # Define poles and residues arrays under real and imaginary part format.
     pole_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
     res_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
     # Define boolean map keeping track whether a value is complex conjugate or not.
     pole_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
     res_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
 
-    # Flag for complex conjugate case signaling and loop skipping.
-    cconj_flag = False
     # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
     # complex values.
     for i in range( p_cnt ):
@@ -233,7 +235,7 @@ if do_test:
         res_mag_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_arr[i,:] )
         res_mag_arr[i,:] = res_mag_i
         res_cconj_map[i,:] = res_cconj_map_i
-            
+
     
     # Compute the column wise maximum magnitude.
     scale_p = np.max( np.abs( pole_mag_arr ), axis = 0 )
@@ -242,11 +244,36 @@ if do_test:
     scale_p[ scale_p == 0 ] = 1.0
     scale_r[ scale_r == 0 ] = 1.0
 
+
     # normalize (broadcast over rows).
     pole_mag_norm = pole_mag_arr / scale_p[np.newaxis, :]
     res_mag_norm = res_mag_arr / scale_r[np.newaxis, :]
 
+    print( pole_mag_arr[15,:] )
+    print( pole_mag_norm[15,:] )
+    print( res_mag_arr[20,:] )
+    print( res_mag_norm[20,:] )
 
+    do_train = True
+    if do_train:
+
+        # Arrange the parameter data into intended shape.
+        X = p_arr.reshape(-1,1)
+        # Add the residues data to the poles data as an extention along the rows.
+        T = np.hstack( [ pole_mag_norm, res_mag_norm ] )
+
+        # Subdivide the initial data into a training set and a testing set.
+        Xtr, Xval, Ttr, Tval = train_test_split(X, T, test_size=0.5, random_state=0)
+
+        # Define the NN model structure.
+        model = keras.Sequential([
+            layers.Input(shape=(1,)),
+            layers.Dense(64, activation='relu'),
+            layers.Dense(64, activation='relu'),
+            layers.Dense(T.shape[1], activation='linear')
+        ])
+        model.compile(optimizer='adam', loss='mse')
+        model.fit(Xtr, Ttr, validation_data=(Xval, Tval), epochs=200, batch_size=32, verbose=1)
 
     # To undo normalization later:
     # pole_arr_recovered = pole_mag_norm * scale_p[np.newaxis, :]

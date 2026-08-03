@@ -178,7 +178,7 @@ class PoleResSyst_SISO:
         # TODO: consider putting this variable as an argument to this function for better control.
         var_fact = 0.3
         # Define the number of parameter points to sample.
-        p_cnt = 200
+        p_cnt = 500
         # Define the parameter sampling set.
         p_arr = np.linspace( p_rng[0], p_rng[1], p_cnt )
 
