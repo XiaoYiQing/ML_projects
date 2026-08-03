@@ -81,11 +81,14 @@ do_test = True
 # Random single parameter parametrization test.
 if do_test:
 
+    # Define current test's numerical floor.
+    tol = 1e-12
+
     # Define the umber of system poles.
-    syst_pole_cnt = 8
+    poleRes_cnt = 8
 
     # Generate the reference poles-res system.
-    mySyst = PoleResSyst_SISO.gen_rand_syst( syst_pole_cnt )
+    mySyst = PoleResSyst_SISO.gen_rand_syst( poleRes_cnt )
 
     # Use the reference system to create a full set of randomly generated pole-res 
     # systems created based on the reference system which has its poles and residues varying 
@@ -102,7 +105,7 @@ if do_test:
     # Poles and residues real and imaginary part plots.
     if do_plots:
 
-        print( "System pole/res count: ", syst_pole_cnt )
+        print( "System pole/res count: ", poleRes_cnt )
         print( "System poles at p=0: " )
         print( pole_arr[0,:] )
         print( pole_arr[10,:] )
@@ -111,7 +114,7 @@ if do_test:
         fig3, ax3 = plt.subplots()
         fig4, ax4 = plt.subplots()
 
-        for z in range( syst_pole_cnt ):
+        for z in range( poleRes_cnt ):
             pole_arr_z = pole_arr[:,z]
             res_arr_z = res_arr[:,z]
             ax1.plot( p_arr, pole_arr_z.real )
@@ -151,12 +154,6 @@ if do_test:
     # Initialize an array of SISO pole-residue systems.
     syst_arr = [ PoleResSyst_SISO() for _ in range(p_cnt) ]
 
-    # Define the frequency sampling array.
-    f_cnt = 500
-    f_arr = np.linspace( 0, 100, f_cnt )
-    # Define the array of sampled transfer function.
-    S_arr = np.zeros( (p_cnt, f_cnt), dtype=complex )
-
     # Assign each system with their intended poles and residues sets and compute
     # and store the system's transfer function over the sampling frequency range.
     for z in range( p_cnt ):
@@ -167,14 +164,22 @@ if do_test:
         # Assign the current poles and residues to their system.
         syst_arr[z].poles = pole_arr_z
         syst_arr[z].residues = res_arr_z
-        # Obtain current system frequency data.
-        S_arr[z,:] = syst_arr[z].freq_response( f_arr )
+        
 
 
     do_plots = True
     # 2D system magnitude plot.
     if do_plots:
 
+        # Define the frequency sampling array.
+        f_cnt = 500
+        f_arr = np.linspace( 0, 100, f_cnt )
+        # Define the array of sampled transfer function.
+        S_arr = np.zeros( (p_cnt, f_cnt), dtype=complex )
+        for z in range( p_cnt ):
+            # Obtain current system frequency data.
+            S_arr[z,:] = syst_arr[z].freq_response( f_arr )
+        
         fig1, ax1 = plt.subplots()
         for z in range( p_cnt ):
             ax1.plot( f_arr, abs( S_arr[z,:] ) )
@@ -206,6 +211,63 @@ if do_test:
         plt.show()
 
 
+    # Define poles and residues arrays with just real and imaginary part magnitudes.
+    pole_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
+    res_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
+    # Define boolean map keeping track whether a value is complex conjugate or not.
+    pole_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
+    res_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
+
+    # Flag for complex conjugate case signaling and loop skipping.
+    cconj_flag = False
+    # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
+    # complex values.
+    for i in range( p_cnt ):
+        for j in range( poleRes_cnt ):
+
+            # Skip current term if it is part of previous complex conjugate pair.
+            if cconj_flag:
+                cconj_flag = False
+                continue
+
+            # Current pole and residues.
+            pole_z = pole_arr[i][j]
+            res_z = pole_arr[i][j]
+            # Save real part.
+            pole_mag_arr[i][j] = pole_z.real
+            res_mag_arr[i][j] = res_z.real
+
+            # Complex conjugate pole case.
+            if( abs( pole_z.imag ) > tol ):
+
+                # Save imaginary part.
+                pole_mag_arr[i][j+1] = pole_z.imag
+                # Pole complex conjugacy map update.
+                pole_cconj_map[i][j] = True
+                pole_cconj_map[i][j+1] = True
+                
+                cconj_flag = True
+
+            # Complex conjugate residue case.
+            if( abs( res_z.imag ) > tol ):
+
+                if not cconj_flag:
+                    raise RuntimeError("Real pole detected yet corresponding residue is complex!")
+                
+                # Save imaginary part.
+                res_mag_arr[i][j+1] = res_z.imag
+                # Pole complex conjugacy map update.
+                res_cconj_map[i][j] = True
+                res_cconj_map[i][j+1] = True
+                
+                cconj_flag = True
+
+            else:
+
+                if cconj_flag:
+                    raise RuntimeError("Complex residue detected yet corresponding pole is real!")
+            
+    
     # Compute the column wise maximum magnitude.
     scale_p = np.max( np.abs( pole_arr ), axis = 0 )
     scale_r = np.max( np.abs( res_arr ), axis = 0 )
@@ -216,6 +278,7 @@ if do_test:
     # normalize (broadcast over rows).
     pole_norm = pole_arr / scale_p[np.newaxis, :]
     res_norm = res_arr / scale_r[np.newaxis, :]
+
 
 
     # To undo normalization later:
