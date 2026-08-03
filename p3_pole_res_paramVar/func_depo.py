@@ -175,7 +175,7 @@ class PoleResSyst_SISO:
         p_rng = ( 0, 1 )
 
         # Define variation factor (percentage of allowed change in decimal).
-        var_fact = 0.1
+        var_fact = 0.3
         # Define the number of parameter points to sample.
         p_cnt = 200
         # Define the parameter sampling set.

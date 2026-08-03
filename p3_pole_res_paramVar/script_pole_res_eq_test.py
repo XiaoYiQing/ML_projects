@@ -78,7 +78,7 @@ if do_test:
 
 do_test = True
 
-# Random parametrization test.
+# Random single parameter parametrization test.
 if do_test:
 
     # Define the umber of system poles.
@@ -151,11 +151,14 @@ if do_test:
     # Initialize an array of SISO pole-residue systems.
     syst_arr = [ PoleResSyst_SISO() for _ in range(p_cnt) ]
 
-    x_cnt = 500
-    x_arr = np.linspace( 0, 100, x_cnt )
-    
-    S_arr = np.zeros( (p_cnt, x_cnt), dtype=complex )
+    # Define the frequency sampling array.
+    f_cnt = 500
+    f_arr = np.linspace( 0, 100, f_cnt )
+    # Define the array of sampled transfer function.
+    S_arr = np.zeros( (p_cnt, f_cnt), dtype=complex )
 
+    # Assign each system with their intended poles and residues sets and compute
+    # and store the system's transfer function over the sampling frequency range.
     for z in range( p_cnt ):
 
         # Obtain the current poles and residues.
@@ -164,8 +167,9 @@ if do_test:
         # Assign the current poles and residues to their system.
         syst_arr[z].poles = pole_arr_z
         syst_arr[z].residues = res_arr_z
+        # Obtain current system frequency data.
+        S_arr[z,:] = syst_arr[z].freq_response( f_arr )
 
-        S_arr[z,:] = syst_arr[z].freq_response( x_arr )
 
     do_plots = True
     # 2D system magnitude plot.
@@ -173,7 +177,7 @@ if do_test:
 
         fig1, ax1 = plt.subplots()
         for z in range( p_cnt ):
-            ax1.plot( x_arr, abs( S_arr[z,:] ) )
+            ax1.plot( f_arr, abs( S_arr[z,:] ) )
 
         # Pole real part plot.
         ax1.set_title("S-man Plot")
@@ -186,7 +190,7 @@ if do_test:
     do_plots = False
     # 3D System magnitude and phase plots.
     if do_plots:
-        P, X = np.meshgrid(x_arr, p_arr, indexing='xy')  # match S_arr shape
+        P, X = np.meshgrid(f_arr, p_arr, indexing='xy')  # match S_arr shape
         print( P.shape )
         print( X.shape )
 
@@ -200,6 +204,23 @@ if do_test:
         ax.set_zlabel('S')
 
         plt.show()
+
+
+    # Compute the column wise maximum magnitude.
+    scale_p = np.max( np.abs( pole_arr ), axis = 0 )
+    scale_r = np.max( np.abs( res_arr ), axis = 0 )
+    # For columns having 0 max magnitude, force the scaling factor to 1
+    scale_p[ scale_p == 0 ] = 1.0
+    scale_r[ scale_r == 0 ] = 1.0
+
+    # normalize (broadcast over rows).
+    pole_norm = pole_arr / scale_p[np.newaxis, :]
+    res_norm = res_arr / scale_r[np.newaxis, :]
+
+
+    # To undo normalization later:
+    # pole_arr_recovered = pole_norm * scale_p[np.newaxis, :]
+    # res_arr_recovered  = res_norm  * scale_r[np.newaxis, :]
 
 
 # ======================================================================= <<<<<
