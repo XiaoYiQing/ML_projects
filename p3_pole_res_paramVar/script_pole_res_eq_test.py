@@ -269,21 +269,21 @@ if do_test:
             
     
     # Compute the column wise maximum magnitude.
-    scale_p = np.max( np.abs( pole_arr ), axis = 0 )
-    scale_r = np.max( np.abs( res_arr ), axis = 0 )
+    scale_p = np.max( np.abs( pole_mag_arr ), axis = 0 )
+    scale_r = np.max( np.abs( res_mag_arr ), axis = 0 )
     # For columns having 0 max magnitude, force the scaling factor to 1
     scale_p[ scale_p == 0 ] = 1.0
     scale_r[ scale_r == 0 ] = 1.0
 
     # normalize (broadcast over rows).
-    pole_norm = pole_arr / scale_p[np.newaxis, :]
-    res_norm = res_arr / scale_r[np.newaxis, :]
+    pole_mag_norm = pole_mag_arr / scale_p[np.newaxis, :]
+    res_mag_norm = res_mag_arr / scale_r[np.newaxis, :]
 
 
 
     # To undo normalization later:
-    # pole_arr_recovered = pole_norm * scale_p[np.newaxis, :]
-    # res_arr_recovered  = res_norm  * scale_r[np.newaxis, :]
+    # pole_arr_recovered = pole_mag_norm * scale_p[np.newaxis, :]
+    # res_arr_recovered  = res_mag_norm  * scale_r[np.newaxis, :]
 
 
 # ======================================================================= <<<<<

@@ -167,6 +167,62 @@ def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1),
 
 
 
+def convert_ccon_to_ReIm_format( tar_vec ):
+  '''
+  Convert the target complex conjugate vector set to the real-imaginary format.
+  
+  Args:
+    tar_vec:
+    - Contains either purely real values or complex conjugate pairs. 
+    - Complex conjugate pairs MUST be placed one after each other.
+    - The first item of a complex conjugate pair is the one whose real and 
+      imaginary parts will be saved to represent the both of them.
+  
+  Return:
+
+
+  '''
+
+  # Define numerical floor.
+  tol = 1e-12
+
+  # Obtain length of the vector.
+  vec_len = len( tar_vec )
+
+  # Define array with just real and imaginary part magnitudes.
+  pole_mag_arr = np.zeros( vec_len, dtype=float )
+  # Define array to keep track which entries are part of a complex conjugate pair.
+  pole_cconj_map = np.zeros( vec_len, dtype=bool )
+
+  # Define flag indicating previous encounter with complex value.
+  cconj_flag = False
+  for z in range( vec_len ):
+
+    # Skip current term if it is part of previous complex conjugate pair.
+    if cconj_flag:
+      cconj_flag = False
+      continue
+
+    # Current value.
+    val_z = tar_vec[z]
+
+    # Save real part.
+    pole_mag_arr[z] = val_z.real
+
+    # Complex conjugate values case.
+    if( abs( val_z.imag ) > tol ):
+
+      # Save imaginary part.
+      pole_mag_arr[z+1] = val_z.imag
+      # Pole complex conjugacy map update.
+      pole_cconj_map[z] = True
+      pole_cconj_map[z+1] = True
+
+      cconj_flag = True
+
+  return pole_mag_arr, pole_cconj_map
+
+
 def get_mnist_tr_ts_sets( tr_set_indiv_size ):
   '''
   Generate a training and a testing data sets from the mnist data set.
