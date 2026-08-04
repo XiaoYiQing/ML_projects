@@ -166,6 +166,59 @@ def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1),
   return func_adj, num_poly, denom_poly
 
 
+def convert_ReIm_to_cconj_format( tar_mag_vec, vec_cconj_map ):
+  '''
+  Convert the target real-imaginary format vector to complex conjugate format vector.
+  
+  Args:
+    tar_mag_vec:
+    - Contains either real values of either purely real entries or real and imaginary pairs
+      of complex conjugate entries. 
+    - Complex conjugate pair's real and imaginary parts MUST be placed one after each other.
+
+    vec_cconj_map:
+    boolean vector of equal length as tar_vec indicating whether the entry is part of complex
+    conjugate pair.
+  
+  Return:
+
+  '''
+  # Define numerical floor.
+  tol = 1e-12
+
+  # Obtain length of the vector.
+  vec_len = len( tar_mag_vec )
+
+  # Define array with just real and imaginary part magnitudes.
+  vec = np.zeros( vec_len, dtype=complex )
+  
+  # Define flag indicating previous encounter with complex value.
+  cconj_flag = False
+  for z in range( vec_len ):
+
+    # Skip current term if it is part of previous complex conjugate pair.
+    if cconj_flag:
+      cconj_flag = False
+      continue
+
+    # Current value real part.
+    val_real_z = tar_mag_vec[z]
+    vec[z].real = val_real_z
+
+    # Current value imaginary part if cconj.
+    if vec_cconj_map[z]:
+
+      val_imag_z = tar_mag_vec[z+1]
+      vec[z].imag = val_imag_z
+      vec[z+1].real = val_real_z
+      vec[z+1].imag = -val_imag_z
+
+      cconj_flag = True
+
+  return vec
+
+
+
 
 def convert_cconj_to_ReIm_format( tar_vec ):
   '''
@@ -180,7 +233,6 @@ def convert_cconj_to_ReIm_format( tar_vec ):
   
   Return:
 
-
   '''
 
   # Define numerical floor.
@@ -190,9 +242,9 @@ def convert_cconj_to_ReIm_format( tar_vec ):
   vec_len = len( tar_vec )
 
   # Define array with just real and imaginary part magnitudes.
-  pole_mag_arr = np.zeros( vec_len, dtype=float )
+  vec_mag_arr = np.zeros( vec_len, dtype=float )
   # Define array to keep track which entries are part of a complex conjugate pair.
-  pole_cconj_map = np.zeros( vec_len, dtype=bool )
+  vec_cconj_map = np.zeros( vec_len, dtype=bool )
 
   # Define flag indicating previous encounter with complex value.
   cconj_flag = False
@@ -207,20 +259,20 @@ def convert_cconj_to_ReIm_format( tar_vec ):
     val_z = tar_vec[z]
 
     # Save real part.
-    pole_mag_arr[z] = val_z.real
+    vec_mag_arr[z] = val_z.real
 
     # Complex conjugate values case.
     if( abs( val_z.imag ) > tol ):
 
       # Save imaginary part.
-      pole_mag_arr[z+1] = val_z.imag
+      vec_mag_arr[z+1] = val_z.imag
       # Pole complex conjugacy map update.
-      pole_cconj_map[z] = True
-      pole_cconj_map[z+1] = True
+      vec_cconj_map[z] = True
+      vec_cconj_map[z+1] = True
 
       cconj_flag = True
 
-  return pole_mag_arr, pole_cconj_map
+  return vec_mag_arr, vec_cconj_map
 
 
 def get_mnist_tr_ts_sets( tr_set_indiv_size ):

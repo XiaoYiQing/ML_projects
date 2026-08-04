@@ -249,10 +249,16 @@ if do_test:
     pole_mag_norm = pole_mag_arr / scale_p[np.newaxis, :]
     res_mag_norm = res_mag_arr / scale_r[np.newaxis, :]
 
-    print( pole_mag_arr[15,:] )
-    print( pole_mag_norm[15,:] )
-    print( res_mag_arr[20,:] )
-    print( res_mag_norm[20,:] )
+# ------------------------------------------------------------------ >>>>>
+#       Model Training
+# ------------------------------------------------------------------ >>>>>
+
+    load_from_save = False
+    save_dir = currentdir + '/ML_model_deposit'
+    model_fullfilename = save_dir + '/script_pole_res_eq_test.keras'
+
+    # if load_from_save:
+    #     model = keras.models.load_model( model_fullfilename )
 
     do_train = True
     if do_train:
@@ -263,7 +269,7 @@ if do_test:
         T = np.hstack( [ pole_mag_norm, res_mag_norm ] )
 
         # Subdivide the initial data into a training set and a testing set.
-        Xtr, Xval, Ttr, Tval = train_test_split(X, T, test_size=0.5, random_state=0)
+        Xtr, Xval, Ttr, Tval = train_test_split(X, T, test_size=0.4, random_state=0)
 
         # Define the NN model structure.
         model = keras.Sequential([
@@ -273,11 +279,26 @@ if do_test:
             layers.Dense(T.shape[1], activation='linear')
         ])
         model.compile(optimizer='adam', loss='mse')
-        model.fit(Xtr, Ttr, validation_data=(Xval, Tval), epochs=200, batch_size=32, verbose=1)
+        model.fit(Xtr, Ttr, validation_data=(Xval, Tval), epochs=100, batch_size=32, verbose=1)
 
-    # To undo normalization later:
-    # pole_arr_recovered = pole_mag_norm * scale_p[np.newaxis, :]
-    # res_arr_recovered  = res_mag_norm  * scale_r[np.newaxis, :]
+# ------------------------------------------------------------------ <<<<<
+
+
+# ------------------------------------------------------------------ >>>>>
+#       Model Evaluation (Through Plots)
+# ------------------------------------------------------------------ >>>>>
+
+        T_eval = model.predict( X )
+
+        pole_mag_norm_appr = T_eval[:,0:poleRes_cnt]
+        res_mag_norm_appr = T_eval[:,poleRes_cnt:]
+
+
+        # Normalization reversion.
+        pole_mag_appr = pole_mag_norm_appr * scale_p[np.newaxis, :]
+        res_mag_appr  = res_mag_norm_appr  * scale_r[np.newaxis, :]
+
+# ------------------------------------------------------------------ <<<<<
 
 
 # ======================================================================= <<<<<
