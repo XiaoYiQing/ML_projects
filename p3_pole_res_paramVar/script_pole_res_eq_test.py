@@ -297,10 +297,13 @@ if do_test:
             layers.Dense(T.shape[1], activation='linear')
         ])
         model.compile(optimizer='adam', loss='mse')
-        model.fit(Xtr, Ttr, validation_data=(Xval, Tval), epochs=100, batch_size=32, verbose=1)
+        model.fit(Xtr, Ttr, validation_data=(Xval, Tval), epochs=200, batch_size=32, verbose=1)
 
 # ------------------------------------------------------------------ <<<<<
 
+        T_eval = model.predict( Xval )
+        print( Tval[10,:] )
+        print( T_eval[10,:] )
 
 # ------------------------------------------------------------------ >>>>>
 #       Model Evaluation (Through Plots)
@@ -309,24 +312,36 @@ if do_test:
         T_eval = model.predict( X )
         p_eval_cnt = T_eval.shape[0]
 
-        pole_mag_norm_appr = T_eval[:,0:poleRes_cnt]
-        res_mag_norm_appr = T_eval[:,poleRes_cnt:]
+        print( T[10,:] )
+        print( T_eval[10,:] )
+        
+        # pole_mag_norm_appr = T_eval[:,0:poleRes_cnt]
+        # res_mag_norm_appr = T_eval[:,poleRes_cnt:]
 
-        # Normalization reversion.
-        pole_mag_appr = pole_mag_norm_appr * scale_p[np.newaxis, :]
-        res_mag_appr  = res_mag_norm_appr  * scale_r[np.newaxis, :]
+        # print( pole_mag_norm_appr[10,:] )
+        # print( pole_mag_norm[10,:] )
 
-        pole_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
-        res_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
-        # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
-        # complex values.
-        for i in range( p_cnt ):
+        # # Normalization reversion.
+        # pole_mag_appr = pole_mag_norm_appr * scale_p[np.newaxis, :]
+        # res_mag_appr  = res_mag_norm_appr  * scale_r[np.newaxis, :]
+
+        # pole_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
+        # res_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
+        # # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
+        # # complex values.
+        # for i in range( p_cnt ):
             
-            pole_i = convert_ReIm_to_cconj_format( pole_mag_appr[i,:], pole_cconj_map[0,:] )
-            pole_appr[i,:] = pole_i
+        #     pole_i = convert_ReIm_to_cconj_format( pole_mag_appr[i,:], pole_cconj_map[0,:] )
+        #     pole_appr[i,:] = pole_i
     
-            res_i = convert_ReIm_to_cconj_format( res_mag_appr[i,:], res_cconj_map[0,:] )
-            res_appr[i,:] = res_i
+        #     res_i = convert_ReIm_to_cconj_format( res_mag_appr[i,:], res_cconj_map[0,:] )
+        #     res_appr[i,:] = res_i
+
+        
+
+        # print( pole_appr[10,:] )
+        # print( pole_arr[10,:] )
+
 
 # ------------------------------------------------------------------ <<<<<
 
