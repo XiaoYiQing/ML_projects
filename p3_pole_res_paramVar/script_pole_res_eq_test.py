@@ -25,6 +25,7 @@ from sklearn.model_selection import train_test_split
 from func_depo import PoleResSyst_SISO
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (needed for 3D)
 from toolbox.dataUtils import convert_cconj_to_ReIm_format
+from toolbox.dataUtils import convert_ReIm_to_cconj_format
 from toolbox.dataUtils import random_in_range
 from toolbox.dataUtils import random_re_poly_roots
 
@@ -87,6 +88,10 @@ do_test = True
 # Random single parameter parametrization test.
 if do_test:
 
+# ------------------------------------------------------------------ >>>>>
+#       Initialization (Data and Control Variables)
+# ------------------------------------------------------------------ >>>>>
+
     # Define current test's numerical floor.
     tol = 1e-12
 
@@ -106,6 +111,13 @@ if do_test:
 
     # Define a generic normalized parameter array.
     p_arr = np.linspace( 0, 1, p_cnt )
+
+# ------------------------------------------------------------------ <<<<<
+
+
+# ------------------------------------------------------------------ >>>>>
+#       Initial Data Plot Assessment
+# ------------------------------------------------------------------ >>>>>
 
     do_plots = False
     # Poles and residues real and imaginary part plots.
@@ -155,11 +167,8 @@ if do_test:
 
         plt.show()
 
-
-
     # Initialize an array of SISO pole-residue systems.
     syst_arr = [ PoleResSyst_SISO() for _ in range(p_cnt) ]
-
     # Assign each system with their intended poles and residues sets and compute
     # and store the system's transfer function over the sampling frequency range.
     for z in range( p_cnt ):
@@ -170,10 +179,8 @@ if do_test:
         # Assign the current poles and residues to their system.
         syst_arr[z].poles = pole_arr_z
         syst_arr[z].residues = res_arr_z
-        
 
-
-    do_plots = True
+    do_plots = False
     # 2D system magnitude plot.
     if do_plots:
 
@@ -198,9 +205,11 @@ if do_test:
 
         plt.show()
 
-    do_plots = False
+
+    do_plot = False
     # 3D System magnitude and phase plots.
-    if do_plots:
+    if do_plot:
+        
         P, X = np.meshgrid(f_arr, p_arr, indexing='xy')  # match S_arr shape
         print( P.shape )
         print( X.shape )
@@ -214,8 +223,14 @@ if do_test:
         ax.set_ylabel('p')
         ax.set_zlabel('S')
 
-        plt.show()
+        plt.show()        
+        
+# ------------------------------------------------------------------ <<<<<
 
+
+# ------------------------------------------------------------------ >>>>>
+#       Data Reformatting for ML Training
+# ------------------------------------------------------------------ >>>>>
 
     # Define poles and residues arrays under real and imaginary part format.
     pole_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
@@ -244,10 +259,13 @@ if do_test:
     scale_p[ scale_p == 0 ] = 1.0
     scale_r[ scale_r == 0 ] = 1.0
 
-
     # normalize (broadcast over rows).
     pole_mag_norm = pole_mag_arr / scale_p[np.newaxis, :]
     res_mag_norm = res_mag_arr / scale_r[np.newaxis, :]
+
+
+# ------------------------------------------------------------------ <<<<<
+
 
 # ------------------------------------------------------------------ >>>>>
 #       Model Training
@@ -289,14 +307,26 @@ if do_test:
 # ------------------------------------------------------------------ >>>>>
 
         T_eval = model.predict( X )
+        p_eval_cnt = T_eval.shape[0]
 
         pole_mag_norm_appr = T_eval[:,0:poleRes_cnt]
         res_mag_norm_appr = T_eval[:,poleRes_cnt:]
 
-
         # Normalization reversion.
         pole_mag_appr = pole_mag_norm_appr * scale_p[np.newaxis, :]
         res_mag_appr  = res_mag_norm_appr  * scale_r[np.newaxis, :]
+
+        pole_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
+        res_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
+        # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
+        # complex values.
+        for i in range( p_cnt ):
+            
+            pole_i = convert_ReIm_to_cconj_format( pole_mag_appr[i,:], pole_cconj_map[0,:] )
+            pole_appr[i,:] = pole_i
+    
+            res_i = convert_ReIm_to_cconj_format( res_mag_appr[i,:], res_cconj_map[0,:] )
+            res_appr[i,:] = res_i
 
 # ------------------------------------------------------------------ <<<<<
 

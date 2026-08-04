@@ -171,14 +171,11 @@ def convert_ReIm_to_cconj_format( tar_mag_vec, vec_cconj_map ):
   Convert the target real-imaginary format vector to complex conjugate format vector.
   
   Args:
-    tar_mag_vec:
-    - Contains either real values of either purely real entries or real and imaginary pairs
-      of complex conjugate entries. 
-    - Complex conjugate pair's real and imaginary parts MUST be placed one after each other.
-
-    vec_cconj_map:
-    boolean vector of equal length as tar_vec indicating whether the entry is part of complex
-    conjugate pair.
+    tar_mag_vec: 
+      Contains either real values of either purely real entries or real and imaginary pairs of complex conjugate entries. 
+      Complex conjugate pair's real and imaginary parts MUST be placed one after each other.
+    vec_cconj_map: 
+      boolean vector of equal length as tar_vec indicating whether the entry is part of complex conjugate pair.
   
   Return:
 
@@ -203,17 +200,20 @@ def convert_ReIm_to_cconj_format( tar_mag_vec, vec_cconj_map ):
 
     # Current value real part.
     val_real_z = tar_mag_vec[z]
-    vec[z].real = val_real_z
 
     # Current value imaginary part if cconj.
     if vec_cconj_map[z]:
 
       val_imag_z = tar_mag_vec[z+1]
-      vec[z].imag = val_imag_z
-      vec[z+1].real = val_real_z
-      vec[z+1].imag = -val_imag_z
+      vec[z] = val_real_z + val_imag_z * 1j
+      vec[z+1] = val_real_z - val_imag_z * 1j
 
       cconj_flag = True
+
+    else:
+       
+      vec[z] = val_real_z + 0j
+
 
   return vec
 
