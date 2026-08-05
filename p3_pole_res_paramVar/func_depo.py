@@ -132,13 +132,18 @@ class PoleResSyst_SISO:
         return mySyst
     
     @staticmethod
-    def gen_rand_1param_var( tarSyst ):
+    def gen_rand_1param_var( tarSyst, var_fact = 0.2, p_cnt=500 ):
         '''
         Create a series of pole-residue systems that are reflective of parametric
         variation with respect to 1 parameter generated in a semi-random fashion.
 
         The input poles-res system is assumed to be strictly real, which means its
         residues and poles all come either in real values or complex conjugate pairs.
+
+        Args:
+            tarSyst: Target SISO pole-res system.
+            p_cnt: The number of parameter points (linear distribution).
+            var_fact: variation factor (percentage of allowed change in decimal).
         '''
 
         
@@ -174,11 +179,6 @@ class PoleResSyst_SISO:
         # The effective range of the random rational function.
         p_rng = ( 0, 1 )
 
-        # Define variation factor (percentage of allowed change in decimal).
-        # TODO: consider putting this variable as an argument to this function for better control.
-        var_fact = 0.3
-        # Define the number of parameter points to sample.
-        p_cnt = 500
         # Define the parameter sampling set.
         p_arr = np.linspace( p_rng[0], p_rng[1], p_cnt )
 

@@ -50,13 +50,14 @@ if do_test:
     # Generate the reference poles-res system.
     mySyst = PoleResSyst_SISO.gen_rand_syst( poleRes_cnt )
 
+    # Obtain the number of sample abstract parameter points.
+    p_cnt = 1000
+    var_fact = 0.2
+
     # Use the reference system to create a full set of randomly generated pole-res 
     # systems created based on the reference system which has its poles and residues varying 
     # over a single abstract parameter using randomly generated rational functions.
-    pole_arr, res_arr = PoleResSyst_SISO.gen_rand_1param_var( mySyst )
-
-    # Obtain the number of sample abstract parameter points.
-    p_cnt = pole_arr.shape[0]
+    pole_arr, res_arr = PoleResSyst_SISO.gen_rand_1param_var( mySyst, var_fact, p_cnt )
 
     # Define a generic normalized parameter array.
     p_arr = np.linspace( 0, 1, p_cnt )
@@ -146,8 +147,6 @@ if do_test:
     pole_mag_norm = pole_mag_arr / scale_p[np.newaxis, :]
     res_mag_norm = res_mag_arr / scale_r[np.newaxis, :]
 
-    
-
 # ------------------------------------------------------------------ <<<<<
 
 
@@ -173,8 +172,8 @@ if do_test:
         # Subdivide the initial data into a training set and a testing set.
         Xtr, Xval, Ttr, Tval = train_test_split(X, T, test_size=0.4, random_state=0)
 
-        alpha = 100.0
-        def smooth_max_vector(abs_err, alpha=alpha):
+        alpha = 50.0
+        def smooth_max_vector(abs_err, alpha=100):
             '''
             Function creates a smoothed average over each row if alpha is small or
             approaches the true max of each row as alpha increases.
@@ -201,12 +200,14 @@ if do_test:
             '''
 
             # Revert the normalization.
-            y_true = y_true_norm * scale_tf
-            y_pred = y_pred_norm * scale_tf
+            # y_true = y_true_norm * scale_tf
+            # y_pred = y_pred_norm * scale_tf
+            y_true = y_true_norm
+            y_pred = y_pred_norm
             # Compute error magnitude table.
-            abs_err = tf.abs( y_true - y_pred )                     # (batch, m)
+            abs_err = tf.abs( y_true - y_pred )                         # (batch, m)
             # Compute smoothed out max/average of each case of the batch.
-            per_sample_smax = smooth_max_vector( abs_err, alpha )     # (batch,)
+            per_sample_smax = smooth_max_vector( abs_err, alpha )       # (batch,)
             # Compute the average over the entire batch.
             return tf.reduce_mean(per_sample_smax)                  # scalar
 
