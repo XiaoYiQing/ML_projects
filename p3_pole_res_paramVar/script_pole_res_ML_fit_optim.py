@@ -172,7 +172,7 @@ if do_test:
         # Subdivide the initial data into a training set and a testing set.
         Xtr, Xval, Ttr, Tval = train_test_split(X, T, test_size=0.4, random_state=0)
 
-        alpha = 50.0
+        alpha = 100.0
         def smooth_max_vector(abs_err, alpha=100):
             '''
             Function creates a smoothed average over each row if alpha is small or
