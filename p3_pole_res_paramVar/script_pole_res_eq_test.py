@@ -119,14 +119,12 @@ if do_test:
 #       Initial Data Plot Assessment
 # ------------------------------------------------------------------ >>>>>
 
-    do_plots = False
+    do_plots = True
     # Poles and residues real and imaginary part plots.
     if do_plots:
 
         print( "System pole/res count: ", poleRes_cnt )
         print( "System poles at p=0: " )
-        print( pole_arr[0,:] )
-        print( pole_arr[10,:] )
         fig1, ax1 = plt.subplots()
         fig2, ax2 = plt.subplots()
         fig3, ax3 = plt.subplots()
