@@ -115,8 +115,8 @@ if do_test:
 # ------------------------------------------------------------------ >>>>>
 
     # Define poles and residues arrays under real and imaginary part format.
-    pole_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
-    res_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
+    pole_ReIm_orig = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
+    res_ReIm_orig = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
     # Define boolean map keeping track whether a value is complex conjugate or not.
     pole_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
     res_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
@@ -125,18 +125,18 @@ if do_test:
     # complex values.
     for i in range( p_cnt ):
         
-        pole_mag_i, pole_cconj_map_i = convert_cconj_to_ReIm_format( pole_arr[i,:] )
-        pole_mag_arr[i,:] = pole_mag_i
+        pole_ReIm_i, pole_cconj_map_i = convert_cconj_to_ReIm_format( pole_arr[i,:] )
+        pole_ReIm_orig[i,:] = pole_ReIm_i
         pole_cconj_map[i,:] = pole_cconj_map_i
 
-        res_mag_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_arr[i,:] )
-        res_mag_arr[i,:] = res_mag_i
+        res_ReIm_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_arr[i,:] )
+        res_ReIm_orig[i,:] = res_ReIm_i
         res_cconj_map[i,:] = res_cconj_map_i
 
     
     # Compute the column wise maximum magnitude.
-    scale_p = np.max( np.abs( pole_mag_arr ), axis = 0 )
-    scale_r = np.max( np.abs( res_mag_arr ), axis = 0 )
+    scale_p = np.max( np.abs( pole_ReIm_orig ), axis = 0 )
+    scale_r = np.max( np.abs( res_ReIm_orig ), axis = 0 )
     # For columns having 0 max magnitude, force the scaling factor to 1
     scale_p[ scale_p == 0 ] = 1.0
     scale_r[ scale_r == 0 ] = 1.0
@@ -144,8 +144,8 @@ if do_test:
     scale_tf = np.concatenate(( scale_p, scale_r ))
     
     # normalize (broadcast over rows).
-    pole_mag_norm = pole_mag_arr / scale_p[np.newaxis, :]
-    res_mag_norm = res_mag_arr / scale_r[np.newaxis, :]
+    pole_ReIm_norm_orig = pole_ReIm_orig / scale_p[np.newaxis, :]
+    res_ReIm_norm_orig = res_ReIm_orig / scale_r[np.newaxis, :]
 
 # ------------------------------------------------------------------ <<<<<
 
@@ -167,7 +167,7 @@ if do_test:
         # Arrange the parameter data into intended shape.
         X = p_arr.reshape(-1,1)
         # Add the residues data to the poles data as an extention along the rows.
-        T = np.hstack( [ pole_mag_norm, res_mag_norm ] )
+        T = np.hstack( [ pole_ReIm_norm_orig, res_ReIm_norm_orig ] )
 
         # Define specific number of entries for the training set.
         N_train = int(round(0.4 * p_cnt))   
@@ -228,8 +228,8 @@ if do_test:
         # Define the NN model structure.
         model = keras.Sequential([
             layers.Input(shape=(1,)),
-            layers.Dense(64, activation='relu'),
-            layers.Dense(64, activation='relu'),
+            layers.Dense(128, activation='relu'),
+            layers.Dense(128, activation='relu'),
             layers.Dense(T.shape[1], activation='linear')
         ])
         model.compile(optimizer='adam', loss=smooth_max_loss_phys)
@@ -244,9 +244,6 @@ if do_test:
 
         T_eval = model.predict( X )
 
-        # Separate the original poles and residues.
-        pole_ReIm_norm_orig = T[:,0:poleRes_cnt]
-        res_ReIm_norm_orig = T[:,poleRes_cnt:]
         # Separate the approximated poles and residues.
         pole_ReIm_norm_appr = T_eval[:,0:poleRes_cnt]
         res_ReIm_norm_appr = T_eval[:,poleRes_cnt:]
@@ -255,9 +252,14 @@ if do_test:
         pole_ReIm_norm_err = pole_ReIm_norm_orig - pole_ReIm_norm_appr
         res_ReIm_norm_err = res_ReIm_norm_orig - res_ReIm_norm_appr
 
+        # column-wise RMS (real or complex-safe)
+        pole_ReIm_norm_RMS_err = np.sqrt( np.mean( np.abs( pole_ReIm_norm_err )**2, axis=0 ) )
+        res_ReIm_norm_RMS_err = np.sqrt( np.mean( np.abs( res_ReIm_norm_err )**2, axis=0 ) )
 
+        print( "Normalized poles RMS error: \n", pole_ReIm_norm_RMS_err )
+        print( "Normalized residues RMS error: \n", res_ReIm_norm_RMS_err )
 
-        do_plot = True
+        do_plot = False
         if do_plot:
 
             fig1, ax1 = plt.subplots()
@@ -267,15 +269,15 @@ if do_test:
                 ax2.plot( p_arr, abs( res_ReIm_norm_err[:,z] ) )
 
             # Poles Error Magnitudes.
-            ax1.set_title("Normalize Poles Error Magnitudes")
+            ax1.set_title("Normalized Poles Error Magnitudes")
             ax1.set_xlabel("p")
-            ax1.set_ylabel("Pole Err Mag")
+            ax1.set_ylabel("Norm Pole Err Mag")
             ax1.grid( True, 'both' )
 
             # Poles Error Magnitudes.
-            ax2.set_title("Normalize Residues Error Magnitudes")
+            ax2.set_title("Normalized Residues Error Magnitudes")
             ax2.set_xlabel("p")
-            ax2.set_ylabel("Res Err Mag")
+            ax2.set_ylabel("Norm Res Err Mag")
             ax2.grid( True, 'both' )
 
             plt.show()   
@@ -284,19 +286,63 @@ if do_test:
 
 
 # ------------------------------------------------------------------ >>>>>
+#       Model Evaluation (Original Format)
+# ------------------------------------------------------------------ >>>>>
+
+        # Normalization reversion.
+        pole_ReIm_appr = pole_ReIm_norm_appr * scale_p[np.newaxis, :]
+        res_ReIm_appr  = res_ReIm_norm_appr  * scale_r[np.newaxis, :]
+
+        # Compute the error.
+        pole_ReIm_err = pole_ReIm_orig - pole_ReIm_appr
+        res_ReIm_err = res_ReIm_orig - res_ReIm_appr
+
+        # column-wise RMS (real or complex-safe)
+        pole_ReIm_RMS_err = np.sqrt( np.mean( np.abs( pole_ReIm_err )**2, axis=0 ) )
+        res_ReIm_RMS_err = np.sqrt( np.mean( np.abs( res_ReIm_err )**2, axis=0 ) )
+
+        print( "Poles RMS error: \n", pole_ReIm_RMS_err )
+        print( "Residues RMS error: \n", res_ReIm_RMS_err )
+
+        do_plot = True
+        if do_plot:
+
+            fig1, ax1 = plt.subplots()
+            fig2, ax2 = plt.subplots()
+            for z in range( poleRes_cnt ):
+                ax1.plot( p_arr, abs( pole_ReIm_err[:,z] ) )
+                ax2.plot( p_arr, abs( res_ReIm_err[:,z] ) )
+
+            # Poles Error Magnitudes.
+            ax1.set_title("Poles Error Magnitudes")
+            ax1.set_xlabel("p")
+            ax1.set_ylabel("Pole Err Mag")
+            ax1.grid( True, 'both' )
+
+            # Poles Error Magnitudes.
+            ax2.set_title("Residues Error Magnitudes")
+            ax2.set_xlabel("p")
+            ax2.set_ylabel("Res Err Mag")
+            ax2.grid( True, 'both' )
+
+            plt.show() 
+            
+# ------------------------------------------------------------------ <<<<<
+
+# ------------------------------------------------------------------ >>>>>
 #       Model Evaluation (Through Plots)
 # ------------------------------------------------------------------ >>>>>
 
         # T_eval = model.predict( X )
         # p_eval_cnt = T_eval.shape[0]
 
-        # pole_mag_norm_appr = T_eval[:,0:poleRes_cnt]
-        # res_mag_norm_appr = T_eval[:,poleRes_cnt:]
+        # pole_ReIm_norm_appr = T_eval[:,0:poleRes_cnt]
+        # res_ReIm_norm_appr = T_eval[:,poleRes_cnt:]
 
 
         # # Normalization reversion.
-        # pole_mag_appr = pole_mag_norm_appr * scale_p[np.newaxis, :]
-        # res_mag_appr  = res_mag_norm_appr  * scale_r[np.newaxis, :]
+        # pole_ReIm_appr = pole_ReIm_norm_appr * scale_p[np.newaxis, :]
+        # res_ReIm_appr  = res_ReIm_norm_appr  * scale_r[np.newaxis, :]
 
         # pole_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
         # res_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
@@ -304,10 +350,10 @@ if do_test:
         # # complex values.
         # for i in range( p_cnt ):
             
-        #     pole_i = convert_ReIm_to_cconj_format( pole_mag_appr[i,:], pole_cconj_map[0,:] )
+        #     pole_i = convert_ReIm_to_cconj_format( pole_ReIm_appr[i,:], pole_cconj_map[0,:] )
         #     pole_appr[i,:] = pole_i
     
-        #     res_i = convert_ReIm_to_cconj_format( res_mag_appr[i,:], res_cconj_map[0,:] )
+        #     res_i = convert_ReIm_to_cconj_format( res_ReIm_appr[i,:], res_cconj_map[0,:] )
         #     res_appr[i,:] = res_i
 
         
