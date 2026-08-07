@@ -82,7 +82,7 @@ if do_test:
         syst_arr[z].poles = pole_arr_z
         syst_arr[z].residues = res_arr_z
 
-    do_plots = True
+    do_plots = False
     # 2D system magnitude plot.
     if do_plots:
 
@@ -169,8 +169,26 @@ if do_test:
         # Add the residues data to the poles data as an extention along the rows.
         T = np.hstack( [ pole_mag_norm, res_mag_norm ] )
 
-        # Subdivide the initial data into a training set and a testing set.
-        Xtr, Xval, Ttr, Tval = train_test_split(X, T, test_size=0.4, random_state=0)
+        # Define specific number of entries for the training set.
+        N_train = int(round(0.4 * p_cnt))   
+        if N_train < 2:
+            raise ValueError("Need at least 2 training points (endpoints).")
+
+        # Create linear indexing array for the training set with guarantee 
+        # inclusion of end points.
+        train_idx = np.unique(
+            np.concatenate((
+                [0, p_cnt - 1],
+                np.round(np.linspace(1, p_cnt - 2, max(0, N_train - 2))).astype(int)
+            ))
+        )
+        # Obtain the index array for the validation set, which is all that remains
+        # from the starting set after taking out the training set.
+        val_idx = np.setdiff1d(np.arange(p_cnt), train_idx)
+
+        # Define the official training and validation sets.
+        Xtr, Ttr = X[train_idx], T[train_idx]
+        Xval, Tval = X[val_idx], T[val_idx]
 
         alpha = 100.0
         def smooth_max_vector(abs_err, alpha=100):
@@ -199,17 +217,12 @@ if do_test:
             of each case as the guiding metric during the gradient descent.
             '''
 
-            # Revert the normalization.
-            # y_true = y_true_norm * scale_tf
-            # y_pred = y_pred_norm * scale_tf
-            y_true = y_true_norm
-            y_pred = y_pred_norm
             # Compute error magnitude table.
-            abs_err = tf.abs( y_true - y_pred )                         # (batch, m)
+            abs_err = tf.abs( y_true_norm - y_pred_norm )                   # (batch, m)
             # Compute smoothed out max/average of each case of the batch.
-            per_sample_smax = smooth_max_vector( abs_err, alpha )       # (batch,)
+            per_sample_smax = smooth_max_vector( abs_err, alpha )           # (batch,)
             # Compute the average over the entire batch.
-            return tf.reduce_mean(per_sample_smax)                  # scalar
+            return tf.reduce_mean(per_sample_smax)                          # scalar
 
 
         # Define the NN model structure.
@@ -224,22 +237,62 @@ if do_test:
 
 # ------------------------------------------------------------------ <<<<<
 
-        T_eval = model.predict( Xval )
-        print( Tval[10,:] - T_eval[10,:] )
-        print( Tval[15,:] - T_eval[15,:] )
-        print( Tval[50,:] - T_eval[50,:] )
+
+# ------------------------------------------------------------------ >>>>>
+#       Model Evaluation (Normalized)
+# ------------------------------------------------------------------ >>>>>
+
+        T_eval = model.predict( X )
+
+        # Separate the original poles and residues.
+        pole_ReIm_norm_orig = T[:,0:poleRes_cnt]
+        res_ReIm_norm_orig = T[:,poleRes_cnt:]
+        # Separate the approximated poles and residues.
+        pole_ReIm_norm_appr = T_eval[:,0:poleRes_cnt]
+        res_ReIm_norm_appr = T_eval[:,poleRes_cnt:]
+        
+        # Compute the normalized error.
+        pole_ReIm_norm_err = pole_ReIm_norm_orig - pole_ReIm_norm_appr
+        res_ReIm_norm_err = res_ReIm_norm_orig - res_ReIm_norm_appr
+
+
+
+        do_plot = True
+        if do_plot:
+
+            fig1, ax1 = plt.subplots()
+            fig2, ax2 = plt.subplots()
+            for z in range( poleRes_cnt ):
+                ax1.plot( p_arr, abs( pole_ReIm_norm_err[:,z] ) )
+                ax2.plot( p_arr, abs( res_ReIm_norm_err[:,z] ) )
+
+            # Poles Error Magnitudes.
+            ax1.set_title("Normalize Poles Error Magnitudes")
+            ax1.set_xlabel("p")
+            ax1.set_ylabel("Pole Err Mag")
+            ax1.grid( True, 'both' )
+
+            # Poles Error Magnitudes.
+            ax2.set_title("Normalize Residues Error Magnitudes")
+            ax2.set_xlabel("p")
+            ax2.set_ylabel("Res Err Mag")
+            ax2.grid( True, 'both' )
+
+            plt.show()   
+
+# ------------------------------------------------------------------ <<<<<
+
 
 # ------------------------------------------------------------------ >>>>>
 #       Model Evaluation (Through Plots)
 # ------------------------------------------------------------------ >>>>>
 
+        # T_eval = model.predict( X )
         # p_eval_cnt = T_eval.shape[0]
 
         # pole_mag_norm_appr = T_eval[:,0:poleRes_cnt]
         # res_mag_norm_appr = T_eval[:,poleRes_cnt:]
 
-        # print( pole_mag_norm_appr[10,:] )
-        # print( pole_mag_norm[10,:] )
 
         # # Normalization reversion.
         # pole_mag_appr = pole_mag_norm_appr * scale_p[np.newaxis, :]
