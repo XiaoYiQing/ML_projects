@@ -57,7 +57,7 @@ if do_test:
     # Use the reference system to create a full set of randomly generated pole-res 
     # systems created based on the reference system which has its poles and residues varying 
     # over a single abstract parameter using randomly generated rational functions.
-    pole_arr, res_arr = PoleResSyst_SISO.gen_rand_1param_var( mySyst, var_fact, p_cnt )
+    pole_orig, res_orig = PoleResSyst_SISO.gen_rand_1param_var( mySyst, var_fact, p_cnt )
 
     # Define a generic normalized parameter array.
     p_arr = np.linspace( 0, 1, p_cnt )
@@ -76,8 +76,8 @@ if do_test:
     for z in range( p_cnt ):
 
         # Obtain the current poles and residues.
-        pole_arr_z = pole_arr[z,:]
-        res_arr_z = res_arr[z,:]
+        pole_arr_z = pole_orig[z,:]
+        res_arr_z = res_orig[z,:]
         # Assign the current poles and residues to their system.
         syst_arr[z].poles = pole_arr_z
         syst_arr[z].residues = res_arr_z
@@ -125,11 +125,11 @@ if do_test:
     # complex values.
     for i in range( p_cnt ):
         
-        pole_ReIm_i, pole_cconj_map_i = convert_cconj_to_ReIm_format( pole_arr[i,:] )
+        pole_ReIm_i, pole_cconj_map_i = convert_cconj_to_ReIm_format( pole_orig[i,:] )
         pole_ReIm_orig[i,:] = pole_ReIm_i
         pole_cconj_map[i,:] = pole_cconj_map_i
 
-        res_ReIm_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_arr[i,:] )
+        res_ReIm_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_orig[i,:] )
         res_ReIm_orig[i,:] = res_ReIm_i
         res_cconj_map[i,:] = res_cconj_map_i
 
@@ -217,6 +217,8 @@ if do_test:
             of each case as the guiding metric during the gradient descent.
             '''
 
+            #TODO: Consider reverting scaling for cases where the original scale
+            #   is catually higher than the normalized one (higher error magnitude).
             # Compute error magnitude table.
             abs_err = tf.abs( y_true_norm - y_pred_norm )                   # (batch, m)
             # Compute smoothed out max/average of each case of the batch.
@@ -233,13 +235,13 @@ if do_test:
             layers.Dense(T.shape[1], activation='linear')
         ])
         model.compile(optimizer='adam', loss=smooth_max_loss_phys)
-        model.fit(Xtr, Ttr, validation_data=(Xval, Tval), epochs=200, batch_size=32, verbose=1)
+        model.fit(Xtr, Ttr, validation_data=(Xval, Tval), epochs=250, batch_size=32, verbose=1)
 
 # ------------------------------------------------------------------ <<<<<
 
 
 # ------------------------------------------------------------------ >>>>>
-#       Model Evaluation (Normalized)
+#       Model Error Evaluation (Normalized)
 # ------------------------------------------------------------------ >>>>>
 
         T_eval = model.predict( X )
@@ -280,13 +282,11 @@ if do_test:
             ax2.set_ylabel("Norm Res Err Mag")
             ax2.grid( True, 'both' )
 
-            plt.show()   
-
 # ------------------------------------------------------------------ <<<<<
 
 
 # ------------------------------------------------------------------ >>>>>
-#       Model Evaluation (Original Format)
+#       Model Error Evaluation (Original Format)
 # ------------------------------------------------------------------ >>>>>
 
         # Normalization reversion.
@@ -304,7 +304,8 @@ if do_test:
         print( "Poles RMS error: \n", pole_ReIm_RMS_err )
         print( "Residues RMS error: \n", res_ReIm_RMS_err )
 
-        do_plot = True
+        do_plot = False
+        # Poles and Residues real and imaginary parts error magnitude plot.
         if do_plot:
 
             fig1, ax1 = plt.subplots()
@@ -325,38 +326,47 @@ if do_test:
             ax2.set_ylabel("Res Err Mag")
             ax2.grid( True, 'both' )
 
-            plt.show() 
+        
             
 # ------------------------------------------------------------------ <<<<<
 
+
 # ------------------------------------------------------------------ >>>>>
-#       Model Evaluation (Through Plots)
+#       Model Error Evaluation (Complex Poles and Residues)
 # ------------------------------------------------------------------ >>>>>
 
-        # T_eval = model.predict( X )
-        # p_eval_cnt = T_eval.shape[0]
+        pole_appr = np.zeros( ( p_cnt, poleRes_cnt ), dtype = complex )
+        res_appr = np.zeros( ( p_cnt, poleRes_cnt ), dtype = complex )
 
-        # pole_ReIm_norm_appr = T_eval[:,0:poleRes_cnt]
-        # res_ReIm_norm_appr = T_eval[:,poleRes_cnt:]
-
-
-        # # Normalization reversion.
-        # pole_ReIm_appr = pole_ReIm_norm_appr * scale_p[np.newaxis, :]
-        # res_ReIm_appr  = res_ReIm_norm_appr  * scale_r[np.newaxis, :]
-
-        # pole_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
-        # res_appr = np.zeros( ( p_eval_cnt, poleRes_cnt ), dtype = complex )
-        # # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
-        # # complex values.
-        # for i in range( p_cnt ):
+        # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
+        # complex values.
+        for i in range( p_cnt ):
             
-        #     pole_i = convert_ReIm_to_cconj_format( pole_ReIm_appr[i,:], pole_cconj_map[0,:] )
-        #     pole_appr[i,:] = pole_i
+            pole_i = convert_ReIm_to_cconj_format( pole_ReIm_appr[i,:], pole_cconj_map[0,:] )
+            pole_appr[i,:] = pole_i
     
-        #     res_i = convert_ReIm_to_cconj_format( res_ReIm_appr[i,:], res_cconj_map[0,:] )
-        #     res_appr[i,:] = res_i
+            res_i = convert_ReIm_to_cconj_format( res_ReIm_appr[i,:], res_cconj_map[0,:] )
+            res_appr[i,:] = res_i
 
-        
 
-        # print( pole_appr[10,:] )
-        # print( pole_arr[10,:] )
+        do_plot = True
+        # Poles magnitude and phase comparison.
+        if do_plot:
+
+            fig1, ax1 = plt.subplots()
+            fig2, ax2 = plt.subplots()
+
+            for z in range( poleRes_cnt ):
+                ax1.plot( p_arr, abs( pole_appr[:,z] ) )
+                ax1.plot( p_arr, abs( pole_orig[:,z] ) )
+                ax2.plot( p_arr, np.angle( pole_appr[:,z] ) )
+                ax2.plot( p_arr, np.angle( pole_orig[:,z] ) )
+
+
+# ------------------------------------------------------------------ <<<<<
+
+
+
+    
+if len( plt.get_fignums() ) > 0:
+    plt.show()
