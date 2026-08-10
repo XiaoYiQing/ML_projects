@@ -230,24 +230,9 @@ if do_test:
 #       Data Reformatting for ML Training
 # ------------------------------------------------------------------ >>>>>
 
-    # Define poles and residues arrays under real and imaginary part format.
-    pole_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
-    res_mag_arr = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
-    # Define boolean map keeping track whether a value is complex conjugate or not.
-    pole_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
-    res_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
-
-    # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
-    # complex values.
-    for i in range( p_cnt ):
-        
-        pole_mag_i, pole_cconj_map_i = convert_cconj_to_ReIm_format( pole_arr[i,:] )
-        pole_mag_arr[i,:] = pole_mag_i
-        pole_cconj_map[i,:] = pole_cconj_map_i
-
-        res_mag_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_arr[i,:] )
-        res_mag_arr[i,:] = res_mag_i
-        res_cconj_map[i,:] = res_cconj_map_i
+    # Convert from complex to real-imaginary format poles and residues arrays.
+    pole_mag_arr, pole_cconj_map = convert_cconj_to_ReIm_format( pole_arr )
+    res_mag_arr, res_cconj_map = convert_cconj_to_ReIm_format( res_arr )
 
     
     # Compute the column wise maximum magnitude.

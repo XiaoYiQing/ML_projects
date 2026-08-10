@@ -1,8 +1,9 @@
 
 
 import numpy as np
-import random
 import os
+import random
+import sys
 
 from PIL import Image
 
@@ -218,9 +219,35 @@ def convert_ReIm_to_cconj_format( tar_mag_vec, vec_cconj_map ):
   return vec
 
 
-
-
 def convert_cconj_to_ReIm_format( tar_vec ):
+
+  # Make sure we have a 2D np array.
+  if( ( not isinstance(tar_vec, np.ndarray) ) or tar_vec.ndim > 2 ):
+    print( "Error: argument must be a 2D np array", file=sys.stderr )
+    return np.array( [] )
+
+  if( tar_vec.ndim == 1 ):
+     return convert_cconj_to_ReIm_format_vec( tar_vec )
+
+  # Number of rows.
+  row_cnt = tar_vec.shape[0]
+  col_cnt = tar_vec.shape[1]
+
+  # Real-Imaginary format 2D array initialization.
+  ans_ReIm = np.zeros( ( row_cnt, col_cnt ), dtype=tar_vec.dtype )
+  ans_cconj_map = np.zeros( ( row_cnt, col_cnt ), dtype=bool )
+
+  # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
+  # complex values.
+  for i in range( row_cnt ):
+      
+    ReIm_i, cconj_map_i = convert_cconj_to_ReIm_format_vec( tar_vec[i,:] )
+    ans_ReIm[i,:] = ReIm_i
+    ans_cconj_map[i,:] = cconj_map_i
+
+  return ans_ReIm, ans_cconj_map
+
+def convert_cconj_to_ReIm_format_vec( tar_vec ):
   '''
   Convert the target complex conjugate vector set to the real-imaginary format.
   
@@ -234,6 +261,11 @@ def convert_cconj_to_ReIm_format( tar_vec ):
   Return:
 
   '''
+
+  # Make sure we have a 2D np array.
+  if( ( not isinstance(tar_vec, np.ndarray) ) or tar_vec.ndim != 1 ):
+      print( "Error: argument must be a 1D np array", file=sys.stderr )
+      return np.array( [] )
 
   # Define numerical floor.
   tol = 1e-12

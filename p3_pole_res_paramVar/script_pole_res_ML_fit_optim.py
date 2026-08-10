@@ -117,26 +117,10 @@ if do_test:
 #       Data Reformatting for ML Training
 # ------------------------------------------------------------------ >>>>>
 
-    # Define poles and residues arrays under real and imaginary part format.
-    pole_ReIm_orig = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
-    res_ReIm_orig = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
-    # Define boolean map keeping track whether a value is complex conjugate or not.
-    pole_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
-    res_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
+    # Convert from complex to real-imaginary format poles and residues arrays.
+    pole_ReIm_orig, pole_cconj_map = convert_cconj_to_ReIm_format( pole_orig )
+    res_ReIm_orig, res_cconj_map = convert_cconj_to_ReIm_format( res_orig )
 
-    # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
-    # complex values.
-    for i in range( p_cnt ):
-        
-        pole_ReIm_i, pole_cconj_map_i = convert_cconj_to_ReIm_format( pole_orig[i,:] )
-        pole_ReIm_orig[i,:] = pole_ReIm_i
-        pole_cconj_map[i,:] = pole_cconj_map_i
-
-        res_ReIm_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_orig[i,:] )
-        res_ReIm_orig[i,:] = res_ReIm_i
-        res_cconj_map[i,:] = res_cconj_map_i
-
-    
     # Compute the column wise maximum magnitude.
     scale_p = np.max( np.abs( pole_ReIm_orig ), axis = 0 )
     scale_r = np.max( np.abs( res_ReIm_orig ), axis = 0 )
@@ -495,25 +479,9 @@ if do_test:
 #       Data Reformatting for ML Training
 # ------------------------------------------------------------------ >>>>>
 
-    # Define poles and residues arrays under real and imaginary part format.
-    pole_ReIm_orig = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
-    res_ReIm_orig = np.zeros( ( p_cnt, poleRes_cnt ), dtype=float )
-    # Define boolean map keeping track whether a value is complex conjugate or not.
-    pole_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
-    res_cconj_map = np.zeros( ( p_cnt, poleRes_cnt ), dtype=bool )
-
-    # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
-    # complex values.
-    for i in range( p_cnt ):
-        
-        pole_ReIm_i, pole_cconj_map_i = convert_cconj_to_ReIm_format( pole_orig[i,:] )
-        pole_ReIm_orig[i,:] = pole_ReIm_i
-        pole_cconj_map[i,:] = pole_cconj_map_i
-
-        res_ReIm_i, res_cconj_map_i = convert_cconj_to_ReIm_format( res_orig[i,:] )
-        res_ReIm_orig[i,:] = res_ReIm_i
-        res_cconj_map[i,:] = res_cconj_map_i
-
+    # Convert from complex to real-imaginary format poles and residues arrays.
+    pole_ReIm_orig, pole_cconj_map = convert_cconj_to_ReIm_format( pole_orig )
+    res_ReIm_orig, res_cconj_map = convert_cconj_to_ReIm_format( res_orig )
     
     # Compute the column wise maximum magnitude.
     scale_p = np.max( np.abs( pole_ReIm_orig ), axis = 0 )
@@ -534,8 +502,19 @@ if do_test:
 
         fig1, ax1 = plt.subplots()
         fig2, ax2 = plt.subplots()
-        for z in range( p_cnt ):
-            ax1.plot( f_arr, abs( S_arr[z,:] ) )
+        for z in range( poleRes_cnt ):
+            ax1.plot( p_arr, pole_ReIm_norm_orig[:,z] )
+            ax2.plot( p_arr, res_ReIm_norm_orig[:,z] )
+
+        ax1.set_title("Normalize Pole ReIm Plot")
+        ax1.set_xlabel("p")
+        ax1.set_ylabel("Pole ReIm")
+        ax1.grid( True, 'both' )
+
+        ax2.set_title("Normalize Residue ReIm Plot")
+        ax2.set_xlabel("p")
+        ax2.set_ylabel("Res ReIm")
+        ax2.grid( True, 'both' )
 
 # ------------------------------------------------------------------ <<<<<
 
