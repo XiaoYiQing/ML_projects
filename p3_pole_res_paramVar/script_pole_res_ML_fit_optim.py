@@ -31,6 +31,7 @@ from func_depo import convert_cconj_to_ReIm_format
 from func_depo import convert_ReIm_to_cconj_format
 from func_depo import random_re_poly_roots
 from toolbox.dataUtils import random_in_range
+from toolbox.dataUtils import zscore_normalize_features
 
 
 
@@ -473,7 +474,10 @@ if do_test:
     # Convert from complex to real-imaginary format poles and residues arrays.
     pole_ReIm_orig, pole_cconj_map = convert_cconj_to_ReIm_format( pole_orig )
     res_ReIm_orig, res_cconj_map = convert_cconj_to_ReIm_format( res_orig )
-    
+
+    # Obtain standardize parameter array.
+    p_norm, p_mean, p_std = zscore_normalize_features( p_arr[:] )
+
     # Compute the column wise maximum magnitude.
     scale_p = np.max( np.abs( pole_ReIm_orig ), axis = 0 )
     scale_r = np.max( np.abs( res_ReIm_orig ), axis = 0 )
@@ -514,7 +518,7 @@ if do_test:
 #       Model Training
 # ------------------------------------------------------------------ >>>>>
 
-    do_train = True
+    do_train = False
     if do_train:
 
         # Arrange the parameter data into intended shape.

@@ -213,6 +213,32 @@ def load_png_as_gs_wt_num_labels( folder, twoDSizes ):
 
 
 
+def center_and_rescale( X ):
+  '''
+  Perform centering and rescaling by column.
+
+  Args:
+    X (ndarray (m,n))     : input data, m examples, n features
+
+  Returns:
+    X_norm (ndarray (m,n)): input normalized by column
+    mean (ndarray (n,))   : mean of each feature
+    scale (ndarray (n,))  : scale of each feature
+  '''
+
+  # Mean of each column.
+  mean_cols = X.mean(axis=0)
+  # Center each column data around 0.
+  X_cent = X - mean_cols
+  # Obtain the post-centering maximum magnitude in each column.
+  scale_cols = np.max(np.abs(X_cent), axis=0)
+  # Force any 0 scale to 1.
+  scale_cols[scale_cols==0] = 1.0
+
+  X_cnorm = ( X_cent / scale_cols ).astype('float32')
+
+  return X_cnorm
+
 # X_norm, X_mu, X_sigma = zscore_normalize_features(X_train)
 def zscore_normalize_features(X):
     """
