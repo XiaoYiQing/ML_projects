@@ -24,12 +24,14 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from sklearn.model_selection import train_test_split
 
-from func_depo import PoleResSyst_SISO
+
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (needed for 3D)
-from toolbox.dataUtils import convert_cconj_to_ReIm_format
-from toolbox.dataUtils import convert_ReIm_to_cconj_format
+from func_depo import PoleResSyst_SISO
+from func_depo import convert_cconj_to_ReIm_format
+from func_depo import convert_ReIm_to_cconj_format
+from func_depo import random_re_poly_roots
 from toolbox.dataUtils import random_in_range
-from toolbox.dataUtils import random_re_poly_roots
+
 
 
 # ======================================================================= >>>>>
@@ -485,7 +487,7 @@ if do_test:
     pole_ReIm_norm_orig = pole_ReIm_orig / scale_p[np.newaxis, :]
     res_ReIm_norm_orig = res_ReIm_orig / scale_r[np.newaxis, :]
 
-    do_plots = True
+    do_plots = False
     # Normalize poles and residues real and imaginary part plot.
     if do_plots:
 
