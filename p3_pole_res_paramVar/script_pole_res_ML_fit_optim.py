@@ -322,19 +322,8 @@ if do_test:
 #       Model Error Evaluation (Complex Poles and Residues)
 # ------------------------------------------------------------------ >>>>>
 
-        pole_appr = np.zeros( ( p_cnt, poleRes_cnt ), dtype = complex )
-        res_appr = np.zeros( ( p_cnt, poleRes_cnt ), dtype = complex )
-
-        # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
-        # complex values.
-        for i in range( p_cnt ):
-            
-            pole_i = convert_ReIm_to_cconj_format( pole_ReIm_appr[i,:], pole_cconj_map[0,:] )
-            pole_appr[i,:] = pole_i
-    
-            res_i = convert_ReIm_to_cconj_format( res_ReIm_appr[i,:], res_cconj_map[0,:] )
-            res_appr[i,:] = res_i
-
+        pole_appr = convert_ReIm_to_cconj_format( pole_ReIm_appr, pole_cconj_map )
+        res_appr = convert_ReIm_to_cconj_format( res_ReIm_appr, res_cconj_map )
 
         do_plot = True
         # Poles magnitude and phase comparison.
@@ -710,19 +699,8 @@ if do_test:
 #       Model Error Evaluation (Complex Poles and Residues)
 # ------------------------------------------------------------------ >>>>>
 
-        pole_appr = np.zeros( ( p_cnt, poleRes_cnt ), dtype = complex )
-        res_appr = np.zeros( ( p_cnt, poleRes_cnt ), dtype = complex )
-
-        # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
-        # complex values.
-        for i in range( p_cnt ):
-            
-            pole_i = convert_ReIm_to_cconj_format( pole_ReIm_appr[i,:], pole_cconj_map[0,:] )
-            pole_appr[i,:] = pole_i
-    
-            res_i = convert_ReIm_to_cconj_format( res_ReIm_appr[i,:], res_cconj_map[0,:] )
-            res_appr[i,:] = res_i
-
+        pole_appr = convert_ReIm_to_cconj_format( pole_ReIm_appr, pole_cconj_map )
+        res_appr = convert_ReIm_to_cconj_format( res_ReIm_appr, res_cconj_map )
 
         do_plot = True
         # Poles magnitude and phase comparison.

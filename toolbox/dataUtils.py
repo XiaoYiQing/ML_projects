@@ -167,12 +167,45 @@ def random_fitted_re_rat_func( num_cnt = 6, denom_cnt = 6, num_rng=(-1,1),
   return func_adj, num_poly, denom_poly
 
 
-def convert_ReIm_to_cconj_format( tar_mag_vec, vec_cconj_map ):
+def convert_ReIm_to_cconj_format( tar_ReIm_vec, vec_cconj_map ):
+  '''
+  Convert the target real-imaginary format array of vectors to complex conjugate 
+  format array of vectors.
+
+  '''
+
+  # Make sure we have a 2D np array.
+  if( ( not isinstance( tar_ReIm_vec, np.ndarray) ) or tar_ReIm_vec.ndim > 2 ):
+    print( "Error: argument must be a 2D np array", file=sys.stderr )
+    return np.array( [] )
+
+  if( tar_ReIm_vec.ndim == 1 ):
+    return convert_ReIm_to_cconj_format_vec( tar_ReIm_vec, vec_cconj_map )
+
+  # Number of rows.
+  row_cnt = tar_ReIm_vec.shape[0]
+  col_cnt = tar_ReIm_vec.shape[1]
+
+
+  ans_cplx = np.zeros( ( row_cnt, col_cnt ), dtype = complex )
+
+  # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than
+  # complex values.
+  for i in range( row_cnt ):
+      
+    cplx_vec_i = convert_ReIm_to_cconj_format_vec( tar_ReIm_vec[i,:], vec_cconj_map[i,:] )
+    ans_cplx[i,:] = cplx_vec_i
+
+  return ans_cplx
+
+
+
+def convert_ReIm_to_cconj_format_vec( tar_ReIm_vec, vec_cconj_map ):
   '''
   Convert the target real-imaginary format vector to complex conjugate format vector.
   
   Args:
-    tar_mag_vec: 
+    tar_ReIm_vec: 
       Contains either real values of either purely real entries or real and imaginary pairs of complex conjugate entries. 
       Complex conjugate pair's real and imaginary parts MUST be placed one after each other.
     vec_cconj_map: 
@@ -185,7 +218,7 @@ def convert_ReIm_to_cconj_format( tar_mag_vec, vec_cconj_map ):
   tol = 1e-12
 
   # Obtain length of the vector.
-  vec_len = len( tar_mag_vec )
+  vec_len = len( tar_ReIm_vec )
 
   # Define array with just real and imaginary part magnitudes.
   vec = np.zeros( vec_len, dtype=complex )
@@ -200,12 +233,12 @@ def convert_ReIm_to_cconj_format( tar_mag_vec, vec_cconj_map ):
       continue
 
     # Current value real part.
-    val_real_z = tar_mag_vec[z]
+    val_real_z = tar_ReIm_vec[z]
 
     # Current value imaginary part if cconj.
     if vec_cconj_map[z]:
 
-      val_imag_z = tar_mag_vec[z+1]
+      val_imag_z = tar_ReIm_vec[z+1]
       vec[z] = val_real_z + val_imag_z * 1j
       vec[z+1] = val_real_z - val_imag_z * 1j
 
@@ -217,7 +250,7 @@ def convert_ReIm_to_cconj_format( tar_mag_vec, vec_cconj_map ):
 
 
   return vec
-
+  
 
 def convert_cconj_to_ReIm_format( tar_vec ):
 
@@ -234,7 +267,7 @@ def convert_cconj_to_ReIm_format( tar_vec ):
   col_cnt = tar_vec.shape[1]
 
   # Real-Imaginary format 2D array initialization.
-  ans_ReIm = np.zeros( ( row_cnt, col_cnt ), dtype=tar_vec.dtype )
+  ans_ReIm = np.zeros( ( row_cnt, col_cnt ), dtype=float )
   ans_cconj_map = np.zeros( ( row_cnt, col_cnt ), dtype=bool )
 
   # Reconfigure pole and residue arrays so they are stored as real and imag parts rather than

@@ -314,10 +314,10 @@ if do_test:
         # # complex values.
         # for i in range( p_cnt ):
             
-        #     pole_i = convert_ReIm_to_cconj_format( pole_mag_appr[i,:], pole_cconj_map[0,:] )
+        #     pole_i = convert_ReIm_to_cconj_format( pole_mag_appr[i,:], pole_cconj_map[i,:] )
         #     pole_appr[i,:] = pole_i
     
-        #     res_i = convert_ReIm_to_cconj_format( res_mag_appr[i,:], res_cconj_map[0,:] )
+        #     res_i = convert_ReIm_to_cconj_format( res_mag_appr[i,:], res_cconj_map[i,:] )
         #     res_appr[i,:] = res_i
 
         
