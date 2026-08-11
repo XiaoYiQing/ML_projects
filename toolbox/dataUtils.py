@@ -212,6 +212,12 @@ def load_png_as_gs_wt_num_labels( folder, twoDSizes ):
   return np.array(img_arr).reshape(-1, twoDSizes[0],  twoDSizes[1], 1), np.array(label_arr)
 
 
+def center_and_rescale_revert( X_cnorm, mean_cols, scale_cols ):
+
+  X_cent = X_cnorm * scale_cols
+  X = X_cent + mean_cols
+
+  return X
 
 def center_and_rescale( X ):
   '''
@@ -235,9 +241,9 @@ def center_and_rescale( X ):
   # Force any 0 scale to 1.
   scale_cols[scale_cols==0] = 1.0
 
-  X_cnorm = ( X_cent / scale_cols ).astype('float32')
+  X_cnorm = ( X_cent / scale_cols )
 
-  return X_cnorm
+  return X_cnorm, mean_cols, scale_cols
 
 # X_norm, X_mu, X_sigma = zscore_normalize_features(X_train)
 def zscore_normalize_features(X):

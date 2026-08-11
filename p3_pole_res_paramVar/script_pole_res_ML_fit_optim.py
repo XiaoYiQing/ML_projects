@@ -33,6 +33,9 @@ from func_depo import random_re_poly_roots
 from toolbox.dataUtils import random_in_range
 from toolbox.dataUtils import zscore_normalize_features
 
+from toolbox.dataUtils import center_and_rescale
+from toolbox.dataUtils import center_and_rescale_revert
+
 
 
 # ======================================================================= >>>>>
@@ -478,6 +481,12 @@ if do_test:
     # Obtain standardize parameter array.
     p_norm, p_mean, p_std = zscore_normalize_features( p_arr[:] )
 
+    pole_ReIm_norm_orig_tmp, pole_ReIm_mean, pole_ReIm_scale = \
+        center_and_rescale( pole_ReIm_orig )
+
+    pole_ReIm_orig_B = center_and_rescale_revert( pole_ReIm_norm_orig_tmp, \
+        pole_ReIm_mean, pole_ReIm_scale )
+
     # Compute the column wise maximum magnitude.
     scale_p = np.max( np.abs( pole_ReIm_orig ), axis = 0 )
     scale_r = np.max( np.abs( res_ReIm_orig ), axis = 0 )
@@ -522,7 +531,7 @@ if do_test:
     if do_train:
 
         # Arrange the parameter data into intended shape.
-        X = p_arr.reshape(-1,1)
+        X = p_norm.reshape(-1,1)
         # Add the residues data to the poles data as an extention along the rows.
         T = np.hstack( [ pole_ReIm_norm_orig, res_ReIm_norm_orig ] )
 
@@ -638,8 +647,8 @@ if do_test:
             fig1, ax1 = plt.subplots()
             fig2, ax2 = plt.subplots()
             for z in range( poleRes_cnt ):
-                ax1.plot( p_arr, abs( pole_ReIm_norm_err[:,z] ) )
-                ax2.plot( p_arr, abs( res_ReIm_norm_err[:,z] ) )
+                ax1.plot( p_norm, abs( pole_ReIm_norm_err[:,z] ) )
+                ax2.plot( p_norm, abs( res_ReIm_norm_err[:,z] ) )
 
             # Poles Error Magnitudes.
             ax1.set_title("Normalized Poles Error Magnitudes")
@@ -682,8 +691,8 @@ if do_test:
             fig1, ax1 = plt.subplots()
             fig2, ax2 = plt.subplots()
             for z in range( poleRes_cnt ):
-                ax1.plot( p_arr, abs( pole_ReIm_err[:,z] ) )
-                ax2.plot( p_arr, abs( res_ReIm_err[:,z] ) )
+                ax1.plot( p_norm, abs( pole_ReIm_err[:,z] ) )
+                ax2.plot( p_norm, abs( res_ReIm_err[:,z] ) )
 
             # Poles Error Magnitudes.
             ax1.set_title("Poles Error Magnitudes")
@@ -719,22 +728,22 @@ if do_test:
 
             for z in range( poleRes_cnt ):
                 
-                line1, = ax1.plot( p_arr, abs( pole_orig[:,z] ), linewidth=1 )
+                line1, = ax1.plot( p_norm, abs( pole_orig[:,z] ), linewidth=1 )
                 color_z = line1.get_color()
-                ax1.plot( p_arr, abs( pole_appr[:,z] ), linewidth=2, linestyle='--', \
+                ax1.plot( p_norm, abs( pole_appr[:,z] ), linewidth=2, linestyle='--', \
                     color=color_z )
                 
-                ax2.plot( p_arr, np.angle( pole_orig[:,z] ), linewidth=1, color=color_z )
-                ax2.plot( p_arr, np.angle( pole_appr[:,z] ), linewidth=2, linestyle='--', \
+                ax2.plot( p_norm, np.angle( pole_orig[:,z] ), linewidth=1, color=color_z )
+                ax2.plot( p_norm, np.angle( pole_appr[:,z] ), linewidth=2, linestyle='--', \
                     color=color_z )
 
-                line1, = ax3.plot( p_arr, abs( res_orig[:,z] ), linewidth=1 )
+                line1, = ax3.plot( p_norm, abs( res_orig[:,z] ), linewidth=1 )
                 color_z = line1.get_color()
-                ax3.plot( p_arr, abs( res_appr[:,z] ), linewidth=2, linestyle='--', \
+                ax3.plot( p_norm, abs( res_appr[:,z] ), linewidth=2, linestyle='--', \
                     color=color_z )
                 
-                ax4.plot( p_arr, np.angle( res_orig[:,z] ), linewidth=1, color=color_z )
-                ax4.plot( p_arr, np.angle( res_appr[:,z] ), linewidth=2, linestyle='--', \
+                ax4.plot( p_norm, np.angle( res_orig[:,z] ), linewidth=1, color=color_z )
+                ax4.plot( p_norm, np.angle( res_appr[:,z] ), linewidth=2, linestyle='--', \
                     color=color_z )
 
             # Poles Error Magnitudes.
