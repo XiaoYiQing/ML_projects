@@ -42,9 +42,10 @@ from toolbox.dataUtils import center_and_rescale_revert
 #       relu Model Optimization
 # ======================================================================= >>>>>
 
-do_test = False
+do_test = True
 # Random single parameter parametrization test.
 if do_test:
+
 
 # ------------------------------------------------------------------ >>>>>
 #       Initialization (Data and Control Variables)
@@ -127,18 +128,40 @@ if do_test:
     pole_ReIm_orig, pole_cconj_map = convert_cconj_to_ReIm_format( pole_orig )
     res_ReIm_orig, res_cconj_map = convert_cconj_to_ReIm_format( res_orig )
 
-    # Compute the column wise maximum magnitude.
-    scale_p = np.max( np.abs( pole_ReIm_orig ), axis = 0 )
-    scale_r = np.max( np.abs( res_ReIm_orig ), axis = 0 )
-    # For columns having 0 max magnitude, force the scaling factor to 1
-    scale_p[ scale_p == 0 ] = 1.0
-    scale_r[ scale_r == 0 ] = 1.0
-    # Create concatenated scaling vector.
-    scale_tf = np.concatenate(( scale_p, scale_r ))
+    # Obtain standardize parameter array.
+    p_norm, p_mean, p_std = zscore_normalize_features( p_arr[:] )
+
+    # Poles centering and normalizing.
+    pole_ReIm_norm_orig, pole_ReIm_mean, pole_ReIm_scale = \
+        center_and_rescale( pole_ReIm_orig )
+    # Residues centering and normalizing.
+    res_ReIm_norm_orig, res_ReIm_mean, res_ReIm_scale = \
+        center_and_rescale( res_ReIm_orig )
+
+    # Concatenate the pole and residue column-wise means.
+    mean_tf = np.concatenate(( pole_ReIm_mean, res_ReIm_mean ))
+    # Concatenate the pole and residue column-wise scales.
+    scale_tf = np.concatenate(( pole_ReIm_scale, res_ReIm_scale ))
     
-    # normalize (broadcast over rows).
-    pole_ReIm_norm_orig = pole_ReIm_orig / scale_p[np.newaxis, :]
-    res_ReIm_norm_orig = res_ReIm_orig / scale_r[np.newaxis, :]
+    do_plots = False
+    # Normalize poles and residues real and imaginary part plot.
+    if do_plots:
+
+        fig1, ax1 = plt.subplots()
+        fig2, ax2 = plt.subplots()
+        for z in range( poleRes_cnt ):
+            ax1.plot( p_norm, pole_ReIm_norm_orig[:,z] )
+            ax2.plot( p_norm, res_ReIm_norm_orig[:,z] )
+
+        ax1.set_title("Normalize Pole ReIm Plot")
+        ax1.set_xlabel("p")
+        ax1.set_ylabel("Pole ReIm")
+        ax1.grid( True, 'both' )
+
+        ax2.set_title("Normalize Residue ReIm Plot")
+        ax2.set_xlabel("p")
+        ax2.set_ylabel("Res ReIm")
+        ax2.grid( True, 'both' )
 
 # ------------------------------------------------------------------ <<<<<
 
@@ -147,18 +170,11 @@ if do_test:
 #       Model Training
 # ------------------------------------------------------------------ >>>>>
 
-    load_from_save = False
-    save_dir = currentdir + '/ML_model_deposit'
-    model_fullfilename = save_dir + '/script_pole_res_eq_test.keras'
-
-    # if load_from_save:
-    #     model = keras.models.load_model( model_fullfilename )
-
     do_train = True
     if do_train:
 
         # Arrange the parameter data into intended shape.
-        X = p_arr.reshape(-1,1)
+        X = p_norm.reshape(-1,1)
         # Add the residues data to the poles data as an extention along the rows.
         T = np.hstack( [ pole_ReIm_norm_orig, res_ReIm_norm_orig ] )
 
@@ -177,7 +193,7 @@ if do_test:
         )
         # Obtain the index array for the validation set, which is all that remains
         # from the starting set after taking out the training set.
-        val_idx = np.setdiff1d(np.arange(p_cnt), train_idx)
+        val_idx = np.setdiff1d( np.arange(p_cnt), train_idx )
 
         # Define the official training and validation sets.
         Xtr, Ttr = X[train_idx], T[train_idx]
@@ -212,10 +228,13 @@ if do_test:
 
             #TODO: Consider reverting scaling for cases where the original scale
             #   is catually higher than the normalized one (higher error magnitude).
+            # y_true_phys = y_true_norm * scale_tf
+            # y_pred_phys = y_pred_norm * scale_tf
+            # abs_err = tf.abs( y_true_phys - y_pred_phys )
             # Compute error magnitude table.
             abs_err = tf.abs( y_true_norm - y_pred_norm )                   # (batch, m)
             # Compute smoothed out max/average of each case of the batch.
-            per_sample_smax = smooth_max_vector( abs_err, alpha )           # (batch,)
+            per_sample_smax = smooth_max_vector( abs_err, alpha=alpha )           # (batch,)
             # Compute the average over the entire batch.
             return tf.reduce_mean(per_sample_smax)                          # scalar
 
@@ -227,8 +246,18 @@ if do_test:
             layers.Dense(128, activation='relu'),
             layers.Dense(T.shape[1], activation='linear')
         ])
-        model.compile(optimizer='adam', loss=smooth_max_loss_phys)
-        model.fit(Xtr, Ttr, validation_data=(Xval, Tval), epochs=250, batch_size=32, verbose=1)
+        model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-3),
+            loss=smooth_max_loss_phys)
+
+        # --- Callbacks ---
+        cb = [
+            keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=10, min_lr=1e-6),
+            keras.callbacks.EarlyStopping(monitor='val_loss', patience=30, restore_best_weights=True)
+        ]
+
+        # --- Train ---
+        history = model.fit(Xtr, Ttr, validation_data=(Xval, Tval),
+            epochs=300, batch_size=32, callbacks=cb, verbose=2)
 
 # ------------------------------------------------------------------ <<<<<
 
@@ -254,14 +283,15 @@ if do_test:
         print( "Normalized poles RMS error: \n", pole_ReIm_norm_RMS_err )
         print( "Normalized residues RMS error: \n", res_ReIm_norm_RMS_err )
 
-        do_plot = False
+        do_plot = True
+        # Normalize pole and residue errors plot.
         if do_plot:
 
             fig1, ax1 = plt.subplots()
             fig2, ax2 = plt.subplots()
             for z in range( poleRes_cnt ):
-                ax1.plot( p_arr, abs( pole_ReIm_norm_err[:,z] ) )
-                ax2.plot( p_arr, abs( res_ReIm_norm_err[:,z] ) )
+                ax1.plot( p_norm, abs( pole_ReIm_norm_err[:,z] ) )
+                ax2.plot( p_norm, abs( res_ReIm_norm_err[:,z] ) )
 
             # Poles Error Magnitudes.
             ax1.set_title("Normalized Poles Error Magnitudes")
@@ -283,8 +313,8 @@ if do_test:
 # ------------------------------------------------------------------ >>>>>
 
         # Normalization reversion.
-        pole_ReIm_appr = pole_ReIm_norm_appr * scale_p[np.newaxis, :]
-        res_ReIm_appr  = res_ReIm_norm_appr  * scale_r[np.newaxis, :]
+        pole_ReIm_appr = center_and_rescale_revert( pole_ReIm_norm_appr, pole_ReIm_mean, pole_ReIm_scale )
+        res_ReIm_appr = center_and_rescale_revert( res_ReIm_norm_appr, res_ReIm_mean, res_ReIm_scale )
 
         # Compute the error.
         pole_ReIm_err = pole_ReIm_orig - pole_ReIm_appr
@@ -304,8 +334,8 @@ if do_test:
             fig1, ax1 = plt.subplots()
             fig2, ax2 = plt.subplots()
             for z in range( poleRes_cnt ):
-                ax1.plot( p_arr, abs( pole_ReIm_err[:,z] ) )
-                ax2.plot( p_arr, abs( res_ReIm_err[:,z] ) )
+                ax1.plot( p_norm, abs( pole_ReIm_err[:,z] ) )
+                ax2.plot( p_norm, abs( res_ReIm_err[:,z] ) )
 
             # Poles Error Magnitudes.
             ax1.set_title("Poles Error Magnitudes")
@@ -319,7 +349,6 @@ if do_test:
             ax2.set_ylabel("Res Err Mag")
             ax2.grid( True, 'both' )
 
-        
             
 # ------------------------------------------------------------------ <<<<<
 
@@ -342,22 +371,22 @@ if do_test:
 
             for z in range( poleRes_cnt ):
                 
-                line1, = ax1.plot( p_arr, abs( pole_orig[:,z] ), linewidth=1 )
+                line1, = ax1.plot( p_norm, abs( pole_orig[:,z] ), linewidth=1 )
                 color_z = line1.get_color()
-                ax1.plot( p_arr, abs( pole_appr[:,z] ), linewidth=2, linestyle='--', \
+                ax1.plot( p_norm, abs( pole_appr[:,z] ), linewidth=2, linestyle='--', \
                     color=color_z )
                 
-                ax2.plot( p_arr, np.angle( pole_orig[:,z] ), linewidth=1, color=color_z )
-                ax2.plot( p_arr, np.angle( pole_appr[:,z] ), linewidth=2, linestyle='--', \
+                ax2.plot( p_norm, np.angle( pole_orig[:,z] ), linewidth=1, color=color_z )
+                ax2.plot( p_norm, np.angle( pole_appr[:,z] ), linewidth=2, linestyle='--', \
                     color=color_z )
 
-                line1, = ax3.plot( p_arr, abs( res_orig[:,z] ), linewidth=1 )
+                line1, = ax3.plot( p_norm, abs( res_orig[:,z] ), linewidth=1 )
                 color_z = line1.get_color()
-                ax3.plot( p_arr, abs( res_appr[:,z] ), linewidth=2, linestyle='--', \
+                ax3.plot( p_norm, abs( res_appr[:,z] ), linewidth=2, linestyle='--', \
                     color=color_z )
                 
-                ax4.plot( p_arr, np.angle( res_orig[:,z] ), linewidth=1, color=color_z )
-                ax4.plot( p_arr, np.angle( res_appr[:,z] ), linewidth=2, linestyle='--', \
+                ax4.plot( p_norm, np.angle( res_orig[:,z] ), linewidth=1, color=color_z )
+                ax4.plot( p_norm, np.angle( res_appr[:,z] ), linewidth=2, linestyle='--', \
                     color=color_z )
 
             # Poles Error Magnitudes.
@@ -385,6 +414,7 @@ if do_test:
             ax4.grid( True, 'both' )
 
 # ------------------------------------------------------------------ <<<<<
+
 # ======================================================================= <<<<<
 
 
@@ -393,7 +423,7 @@ if do_test:
 # ======================================================================= >>>>>
 
 
-do_test = True
+do_test = False
 # Random single parameter parametrization test.
 if do_test:
 
@@ -481,25 +511,18 @@ if do_test:
     # Obtain standardize parameter array.
     p_norm, p_mean, p_std = zscore_normalize_features( p_arr[:] )
 
-    pole_ReIm_norm_orig_tmp, pole_ReIm_mean, pole_ReIm_scale = \
+    # Poles centering and normalizing.
+    pole_ReIm_norm_orig, pole_ReIm_mean, pole_ReIm_scale = \
         center_and_rescale( pole_ReIm_orig )
+    # Residues centering and normalizing.
+    res_ReIm_norm_orig, res_ReIm_mean, res_ReIm_scale = \
+        center_and_rescale( res_ReIm_orig )
 
-    pole_ReIm_orig_B = center_and_rescale_revert( pole_ReIm_norm_orig_tmp, \
-        pole_ReIm_mean, pole_ReIm_scale )
-
-    # Compute the column wise maximum magnitude.
-    scale_p = np.max( np.abs( pole_ReIm_orig ), axis = 0 )
-    scale_r = np.max( np.abs( res_ReIm_orig ), axis = 0 )
-    # For columns having 0 max magnitude, force the scaling factor to 1
-    scale_p[ scale_p == 0 ] = 1.0
-    scale_r[ scale_r == 0 ] = 1.0
-    # Create concatenated scaling vector.
-    scale_tf = np.concatenate(( scale_p, scale_r ))
+    # Concatenate the pole and residue column-wise means.
+    mean_tf = np.concatenate(( pole_ReIm_mean, res_ReIm_mean ))
+    # Concatenate the pole and residue column-wise scales.
+    scale_tf = np.concatenate(( pole_ReIm_scale, res_ReIm_scale ))
     
-    # normalize (broadcast over rows).
-    pole_ReIm_norm_orig = pole_ReIm_orig / scale_p[np.newaxis, :]
-    res_ReIm_norm_orig = res_ReIm_orig / scale_r[np.newaxis, :]
-
     do_plots = False
     # Normalize poles and residues real and imaginary part plot.
     if do_plots:
@@ -507,8 +530,8 @@ if do_test:
         fig1, ax1 = plt.subplots()
         fig2, ax2 = plt.subplots()
         for z in range( poleRes_cnt ):
-            ax1.plot( p_arr, pole_ReIm_norm_orig[:,z] )
-            ax2.plot( p_arr, res_ReIm_norm_orig[:,z] )
+            ax1.plot( p_norm, pole_ReIm_norm_orig[:,z] )
+            ax2.plot( p_norm, res_ReIm_norm_orig[:,z] )
 
         ax1.set_title("Normalize Pole ReIm Plot")
         ax1.set_xlabel("p")
@@ -527,7 +550,7 @@ if do_test:
 #       Model Training
 # ------------------------------------------------------------------ >>>>>
 
-    do_train = False
+    do_train = True
     if do_train:
 
         # Arrange the parameter data into intended shape.
@@ -550,7 +573,7 @@ if do_test:
         )
         # Obtain the index array for the validation set, which is all that remains
         # from the starting set after taking out the training set.
-        val_idx = np.setdiff1d(np.arange(p_cnt), train_idx)
+        val_idx = np.setdiff1d( np.arange(p_cnt), train_idx )
 
         # Define the official training and validation sets.
         Xtr, Ttr = X[train_idx], T[train_idx]
@@ -599,11 +622,11 @@ if do_test:
         # Define the NN model structure.
         model = keras.Sequential([
             layers.Input(shape=(1,)),
-            layers.Dense(64, activation='softplus'),
-            layers.Dense(64, activation='softplus'),
+            layers.Dense(128, activation='softplus'),
+            layers.Dense(128, activation='softplus'),
             layers.Dense(T.shape[1], activation='linear')
         ])
-        model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-3),
+        model.compile(optimizer=keras.optimizers.Adam(learning_rate=2e-3),
             loss=smooth_max_loss_phys)
 
         # --- Callbacks ---
@@ -614,7 +637,7 @@ if do_test:
 
         # --- Train ---
         history = model.fit(Xtr, Ttr, validation_data=(Xval, Tval),
-            epochs=300, batch_size=32, callbacks=cb, verbose=2)
+            epochs=500, batch_size=32, callbacks=cb, verbose=2)
 
 # ------------------------------------------------------------------ <<<<<
 
@@ -640,7 +663,7 @@ if do_test:
         print( "Normalized poles RMS error: \n", pole_ReIm_norm_RMS_err )
         print( "Normalized residues RMS error: \n", res_ReIm_norm_RMS_err )
 
-        do_plot = False
+        do_plot = True
         # Normalize pole and residue errors plot.
         if do_plot:
 
@@ -670,8 +693,8 @@ if do_test:
 # ------------------------------------------------------------------ >>>>>
 
         # Normalization reversion.
-        pole_ReIm_appr = pole_ReIm_norm_appr * scale_p[np.newaxis, :]
-        res_ReIm_appr  = res_ReIm_norm_appr  * scale_r[np.newaxis, :]
+        pole_ReIm_appr = center_and_rescale_revert( pole_ReIm_norm_appr, pole_ReIm_mean, pole_ReIm_scale )
+        res_ReIm_appr = center_and_rescale_revert( res_ReIm_norm_appr, res_ReIm_mean, res_ReIm_scale )
 
         # Compute the error.
         pole_ReIm_err = pole_ReIm_orig - pole_ReIm_appr
